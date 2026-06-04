@@ -1,0 +1,243 @@
+{%- comment -%} Arhaus-style homepage v12 for Hedi's Furniture. Newsletter removed; warm wood story bg; dining promo framed; bigger nav; tighter carousel gap. {%- endcomment -%}
+{%- liquid
+  assign bg = section.settings.bg_color
+  assign ink = section.settings.text_color
+  assign accent = section.settings.accent_color
+  assign muted = section.settings.muted_color
+-%}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap">
+<style>
+  body{ background:{{ bg }}; }
+  #shopify-section-{{ section.id }}{ background:{{ bg }}; }
+  #ah-{{ section.id }}{ --bg:{{ bg }}; --ink:{{ ink }}; --accent:{{ accent }}; --muted:{{ muted }}; color:var(--ink); background:var(--bg); font-family:"Jost","Helvetica Neue",Arial,sans-serif; font-weight:300; overflow:hidden; }
+  #ah-{{ section.id }} *{ box-sizing:border-box; }
+  #ah-{{ section.id }} h1,#ah-{{ section.id }} h2,#ah-{{ section.id }} h3{ font-family:"Cormorant Garamond",Georgia,serif; font-weight:500; line-height:1.04; margin:0; color:var(--ink); }
+  #ah-{{ section.id }} a{ color:inherit; text-decoration:none; }
+  #ah-{{ section.id }} img{ display:block; max-width:none; }
+  .ah-wrap{ max-width:1400px; margin:0 auto; padding:0 40px; }
+  .ah-kick{ margin:0 0 18px; font-size:11px; letter-spacing:.32em; text-transform:uppercase; color:var(--accent); font-weight:400; }
+  .ah-btn{ display:inline-block; margin-top:30px; padding:16px 40px; border:1px solid currentColor; font-size:11px; letter-spacing:.24em; text-transform:uppercase; font-weight:400; transition:all .45s ease; background:transparent; cursor:pointer; }
+  .ah-btn:hover{ background:var(--ink); color:#fff; border-color:var(--ink); }
+  .ah-btn--light{ color:#fff; border-color:rgba(255,255,255,.9); }
+  .ah-btn--light:hover{ background:#fff; color:var(--ink); border-color:#fff; }
+  .ah-rv{ opacity:0; transform:translateY(34px); transition:opacity 1.1s ease,transform 1.1s ease; }
+  .ah-rv.in{ opacity:1; transform:none; }
+  /* Bigger top-nav links, Arhaus-style */
+  .header-nav-plain .menu-lv-1__action,
+  .header-nav-plain .menu-lv-1__action .text{ font-size:15.5px !important; letter-spacing:.085em !important; }
+  /* HERO */
+  .ah-hero{ position:relative; height:92vh; min-height:600px; background:#2b2722; overflow:hidden; }
+  .ah-hero__img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .ah-hero__scrim{ position:absolute; inset:0; z-index:1; background:linear-gradient(180deg,rgba(0,0,0,.46) 0%,rgba(0,0,0,.30) 42%,rgba(0,0,0,.62) 100%); }
+  .ah-hero__in{ position:absolute; inset:0; z-index:2; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:0 24px; text-shadow:0 2px 26px rgba(0,0,0,.55); }
+  .ah-hero__in .ah-kick{ color:#fff; }
+  #ah-{{ section.id }} .ah-hero__title{ color:#fff; font-size:clamp(46px,6.6vw,96px); max-width:16ch; }
+  .ah-hero__sub{ margin:20px 0 0; color:#fff; font-size:15px; letter-spacing:.04em; max-width:44ch; }
+  /* PROMO BANNER */
+  .ah-promo{ position:relative; min-height:90vh; overflow:hidden; background:#2b2722; }
+  .ah-promo__img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 8%; }
+  .ah-promo__veil{ position:absolute; inset:0; z-index:1; background:linear-gradient(180deg,rgba(0,0,0,.58) 0%,rgba(0,0,0,.32) 24%,rgba(0,0,0,0) 54%); pointer-events:none; }
+  .ah-promo__in{ position:absolute; top:8%; left:0; right:0; z-index:2; text-align:center; padding:0 24px; text-shadow:0 2px 22px rgba(0,0,0,.6); }
+  .ah-promo__kick{ margin:0 0 16px; font-size:11px; letter-spacing:.3em; text-transform:uppercase; }
+  #ah-{{ section.id }} .ah-promo__h{ font-size:clamp(40px,5.6vw,86px); line-height:1.0; }
+  .ah-promo__btn{ display:inline-block; margin-top:28px; background:#fff; color:#2a2722; padding:17px 44px; font-size:11px; letter-spacing:.22em; text-transform:uppercase; transition:all .4s ease; text-shadow:none; }
+  .ah-promo__btn:hover{ background:#2a2722; color:#fff; }
+  /* SECTION */
+  .ah-sec{ padding:120px 0 60px; }
+  .ah-head{ text-align:center; max-width:720px; margin:0 auto 56px; }
+  .ah-head h2{ font-size:clamp(34px,4vw,58px); }
+  .ah-head p{ margin:18px auto 0; max-width:48ch; color:var(--muted); font-size:15px; line-height:1.8; }
+  /* CATEGORY CAROUSEL */
+  .ah-rail-wrap{ position:relative; }
+  .ah-catrail{ display:flex; gap:18px; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth; padding:6px 40px; scrollbar-width:none; }
+  .ah-catrail::-webkit-scrollbar{ display:none; }
+  .ah-cat{ position:relative; flex:0 0 auto; width:clamp(280px,31vw,440px); scroll-snap-align:start; overflow:hidden; }
+  .ah-cat__img{ position:relative; aspect-ratio:4/5; overflow:hidden; background:#e3dccd; }
+  .ah-cat__img img{ width:100%; height:100%; object-fit:cover; transition:transform 1.5s cubic-bezier(.2,.6,.2,1); }
+  .ah-cat__img::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(0,0,0,.5) 100%); }
+  .ah-cat:hover .ah-cat__img img{ transform:scale(1.05); }
+  .ah-cat__label{ position:absolute; left:0; right:0; bottom:30px; z-index:2; text-align:center; color:#fff; font-family:"Cormorant Garamond",serif; font-weight:500; font-size:clamp(24px,2vw,32px); letter-spacing:.01em; text-shadow:0 2px 16px rgba(0,0,0,.5); }
+  .ah-nav{ position:absolute; top:42%; width:54px; height:54px; border-radius:50%; border:1px solid rgba(255,255,255,.7); background:rgba(0,0,0,.28); color:#fff; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .3s ease; z-index:3; backdrop-filter:blur(2px); }
+  .ah-nav:hover{ background:#fff; color:#2a2722; border-color:#fff; }
+  .ah-nav--prev{ left:18px; } .ah-nav--next{ right:18px; }
+  /* SPLIT */
+  .ah-split{ display:grid; grid-template-columns:1fr 1fr; align-items:stretch; }
+  .ah-split__media{ overflow:hidden; min-height:62vh; }
+  .ah-split__media img{ width:100%; height:100%; min-height:62vh; object-fit:cover; }
+  .ah-split__body{ display:flex; flex-direction:column; justify-content:center; padding:8vw 7vw; }
+  .ah-split__body h2{ font-size:clamp(32px,3.4vw,52px); }
+  .ah-split__body p{ margin:22px 0 0; color:var(--muted); font-size:15px; line-height:1.85; max-width:42ch; }
+  /* STORY COLUMNS */
+  .ah-cols{ display:grid; grid-template-columns:repeat(3,1fr); gap:54px; }
+  .ah-col{ text-align:center; }
+  .ah-col__rule{ width:34px; height:1px; background:var(--accent); margin:0 auto 22px; }
+  .ah-col h3{ font-size:25px; margin-bottom:12px; }
+  .ah-col p{ color:var(--muted); font-size:14px; line-height:1.8; margin:0; }
+  /* STORY BACKGROUND (warm wood) */
+  .ah-story{ position:relative; padding:132px 0; overflow:hidden; }
+  .ah-story__img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .ah-story__scrim{ position:absolute; inset:0; z-index:1; background:linear-gradient(180deg,rgba(38,25,13,.72) 0%,rgba(38,25,13,.56) 100%); }
+  .ah-story__in{ position:relative; z-index:2; }
+  #ah-{{ section.id }} .ah-story .ah-head h2{ color:#fff; }
+  .ah-story .ah-kick{ color:#E7D6BC; }
+  #ah-{{ section.id }} .ah-story .ah-col h3{ color:#fff; }
+  .ah-story .ah-col p{ color:rgba(255,255,255,.84); }
+  .ah-story .ah-col__rule{ background:#E7D6BC; }
+  @media (max-width:1024px){ .ah-split{ grid-template-columns:1fr; } .ah-split__media,.ah-split__media img{ min-height:54vh; } .ah-cols{ grid-template-columns:1fr; gap:40px; } .ah-sec{ padding:84px 0 44px; } .ah-story{ padding:90px 0; } }
+  @media (max-width:600px){ .ah-wrap{ padding:0 22px; } .ah-cat{ width:78vw; } .ah-hero{ height:84vh; } .ah-promo{ min-height:80vh; } }
+</style>
+
+<div id="ah-{{ section.id }}">
+  <section class="ah-hero">
+    <img class="ah-hero__img" src="{{ section.settings.hero_image_1_url }}" alt="{{ section.settings.hero_heading_1 | escape }}">
+    <div class="ah-hero__scrim"></div>
+    <div class="ah-hero__in">
+      <p class="ah-kick">{{ section.settings.hero_kicker_1 }}</p>
+      <h1 class="ah-hero__title">{{ section.settings.hero_heading_1 }}</h1>
+      <p class="ah-hero__sub">{{ section.settings.hero_text_1 }}</p>
+      <a class="ah-btn ah-btn--light" href="{{ section.settings.hero_link_1 }}">{{ section.settings.hero_btn_1 }}</a>
+    </div>
+  </section>
+
+  <section class="ah-promo ah-rv">
+    <img class="ah-promo__img" src="{{ section.settings.hero_image_2_url }}" alt="{{ section.settings.hero_heading_2 | escape }}" loading="lazy">
+    <div class="ah-promo__veil"></div>
+    <div class="ah-promo__in">
+      {%- if section.settings.promo_kicker != blank -%}<p class="ah-promo__kick" style="color:{{ section.settings.promo_text_color }}">{{ section.settings.promo_kicker }}</p>{%- endif -%}
+      <h2 class="ah-promo__h" style="color:{{ section.settings.promo_text_color }}">{{ section.settings.hero_heading_2 }}</h2>
+      {%- if section.settings.hero_btn_2 != blank -%}<a class="ah-promo__btn" href="{{ section.settings.hero_link_2 }}">{{ section.settings.hero_btn_2 }}</a>{%- endif -%}
+    </div>
+  </section>
+
+  <section class="ah-sec ah-rv">
+    <div class="ah-head"><p class="ah-kick">Explore</p><h2>{{ section.settings.rooms_heading }}</h2></div>
+    <div class="ah-rail-wrap">
+      <button class="ah-nav ah-nav--prev" data-rail="cat{{ section.id }}" aria-label="Previous">&#8249;</button>
+      <button class="ah-nav ah-nav--next" data-rail="cat{{ section.id }}" aria-label="Next">&#8250;</button>
+      <div class="ah-catrail" id="cat{{ section.id }}">
+        {%- for i in (1..5) -%}
+          {%- assign u = 'room_' | append: i | append: '_image_url' -%}
+          {%- assign n = 'room_' | append: i | append: '_title' -%}
+          {%- assign l = 'room_' | append: i | append: '_link' -%}
+          {%- assign img = section.settings[u] -%}
+          {%- if img != blank -%}
+          <a class="ah-cat" href="{{ section.settings[l] }}">
+            <div class="ah-cat__img"><img src="{{ img }}" alt="{{ section.settings[n] | escape }}" loading="lazy"></div>
+            <span class="ah-cat__label">{{ section.settings[n] }}</span>
+          </a>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+
+  <section class="ah-split ah-rv">
+    <div class="ah-split__media"><img src="{{ section.settings.split_image_url }}" alt="{{ section.settings.split_heading | escape }}" loading="lazy"></div>
+    <div class="ah-split__body">
+      <p class="ah-kick">{{ section.settings.split_kicker }}</p>
+      <h2>{{ section.settings.split_heading }}</h2>
+      <p>{{ section.settings.split_text }}</p>
+      <div><a class="ah-btn" href="{{ section.settings.split_link }}">{{ section.settings.split_btn }}</a></div>
+    </div>
+  </section>
+
+  <section class="ah-story ah-rv">
+    <img class="ah-story__img" src="{{ section.settings.story_image_url }}" alt="" loading="lazy">
+    <div class="ah-story__scrim"></div>
+    <div class="ah-wrap ah-story__in">
+      <div class="ah-head"><p class="ah-kick">Why Hedi's</p><h2>{{ section.settings.story_heading }}</h2></div>
+      <div class="ah-cols">
+        {%- for i in (1..3) -%}
+          {%- assign t = 'col_' | append: i | append: '_title' -%}
+          {%- assign d = 'col_' | append: i | append: '_text' -%}
+          <div class="ah-col"><div class="ah-col__rule"></div><h3>{{ section.settings[t] }}</h3><p>{{ section.settings[d] }}</p></div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  var root=document.getElementById('ah-{{ section.id }}');
+  if(!root) return;
+  var items=root.querySelectorAll('.ah-rv');
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:0.1});
+    items.forEach(function(el){io.observe(el);});
+  } else { items.forEach(function(el){el.classList.add('in');}); }
+  root.querySelectorAll('.ah-nav').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var rail=document.getElementById(btn.getAttribute('data-rail'));
+      if(!rail) return;
+      var first=rail.children[0];
+      var step=first?(first.getBoundingClientRect().width+18):Math.round(rail.clientWidth*0.6);
+      rail.scrollBy({left: btn.classList.contains('ah-nav--prev')?-step:step, behavior:'smooth'});
+    });
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Arhaus Home",
+  "tag": "section",
+  "settings": [
+    { "type": "header", "content": "Palette" },
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#F3EBDD" },
+    { "type": "color", "id": "text_color", "label": "Text / headings", "default": "#5C4327" },
+    { "type": "color", "id": "accent_color", "label": "Accent (kicker)", "default": "#8C6E45" },
+    { "type": "color", "id": "muted_color", "label": "Muted text", "default": "#8E7E68" },
+    { "type": "header", "content": "Hero (static)" },
+    { "type": "text", "id": "hero_image_1_url", "label": "Hero image URL", "default": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/huxley-sofa-in-modern-spacious-living-room-with-natural-light-fulfily-0.jpg?v=1780164479" },
+    { "type": "text", "id": "hero_kicker_1", "label": "Kicker", "default": "Hedi's Furniture" },
+    { "type": "text", "id": "hero_heading_1", "label": "Heading", "default": "Timeless pieces for a life well lived" },
+    { "type": "text", "id": "hero_text_1", "label": "Subtext", "default": "Handcrafted sofas, tables and lighting, designed to last for generations." },
+    { "type": "text", "id": "hero_btn_1", "label": "Button", "default": "Shop the collection" },
+    { "type": "url", "id": "hero_link_1", "label": "Button link" },
+    { "type": "header", "content": "Promo Banner" },
+    { "type": "text", "id": "hero_image_2_url", "label": "Image URL", "default": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/full-view-elegant-dining-setting-cardell-chair-fulfily-1.jpg?v=1775675144" },
+    { "type": "text", "id": "promo_kicker", "label": "Kicker", "default": "New Season" },
+    { "type": "text", "id": "hero_heading_2", "label": "Heading", "default": "The Autumn Collection" },
+    { "type": "text", "id": "hero_btn_2", "label": "Button", "default": "Shop the collection" },
+    { "type": "url", "id": "hero_link_2", "label": "Button link" },
+    { "type": "color", "id": "promo_text_color", "label": "Headline colour", "default": "#ffffff" },
+    { "type": "header", "content": "Category Carousel" },
+    { "type": "text", "id": "rooms_heading", "label": "Heading", "default": "Shop by category" },
+    { "type": "text", "id": "room_1_image_url", "label": "Tile 1 image", "default": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/huxley-sofa-stylish-living-room-display-fulfily-1.jpg?v=1780168583" },
+    { "type": "text", "id": "room_1_title", "label": "Tile 1 title", "default": "Living Room" },
+    { "type": "url", "id": "room_1_link", "label": "Tile 1 link" },
+    { "type": "text", "id": "room_2_image_url", "label": "Tile 2 image", "default": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/intricate-basant-rug-on-polished-hardwood-floor-fulfily-0.jpg?v=1780280211" },
+    { "type": "text", "id": "room_2_title", "label": "Tile 2 title", "default": "Rugs" },
+    { "type": "url", "id": "room_2_link", "label": "Tile 2 link" },
+    { "type": "text", "id": "room_3_image_url", "label": "Tile 3 image", "default": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/falco-nesting-tables-living-room-layered-nesting-design-fulfily-1.jpg?v=1779818357" },
+    { "type": "text", "id": "room_3_title", "label": "Tile 3 title", "default": "Tables" },
+    { "type": "url", "id": "room_3_link", "label": "Tile 3 link" },
+    { "type": "text", "id": "room_4_image_url", "label": "Tile 4 image", "default": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/close-up-of-huxley-sofa-stitch-work-and-fabric-weave-in-cozyreadingnook-fulfily-1.jpg?v=1780164479" },
+    { "type": "text", "id": "room_4_title", "label": "Tile 4 title", "default": "Seating" },
+    { "type": "url", "id": "room_4_link", "label": "Tile 4 link" },
+    { "type": "text", "id": "room_5_image_url", "label": "Tile 5 image", "default": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/petite-flamingo-sculpture-on-natural-stone-in-rustic-garden-daylight-fulfily-2.jpg?v=1779562131" },
+    { "type": "text", "id": "room_5_title", "label": "Tile 5 title", "default": "Outdoor" },
+    { "type": "url", "id": "room_5_link", "label": "Tile 5 link" },
+    { "type": "header", "content": "Editorial Split" },
+    { "type": "text", "id": "split_image_url", "label": "Image", "default": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/full-body-view-of-huxley-sofa-in-contemporary-open-plan-living-space-fulfily-2.jpg?v=1780164479" },
+    { "type": "text", "id": "split_kicker", "label": "Kicker", "default": "The craft" },
+    { "type": "text", "id": "split_heading", "label": "Heading", "default": "Made by hand, built to last" },
+    { "type": "textarea", "id": "split_text", "label": "Text", "default": "Every piece is crafted from solid woods, natural fibres and full-grain leathers by makers who care about the details, so it only gets better with time." },
+    { "type": "text", "id": "split_btn", "label": "Button", "default": "Our story" },
+    { "type": "url", "id": "split_link", "label": "Button link" },
+    { "type": "header", "content": "Story" },
+    { "type": "text", "id": "story_image_url", "label": "Background image", "default": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/rusticwormwoodoak.jpg?v=1776704700" },
+    { "type": "text", "id": "story_heading", "label": "Heading", "default": "Crafted with intention" },
+    { "type": "text", "id": "col_1_title", "label": "Col 1 title", "default": "Artisan made" },
+    { "type": "text", "id": "col_1_text", "label": "Col 1 text", "default": "Skilled makers, time-honoured techniques and a refusal to cut corners." },
+    { "type": "text", "id": "col_2_title", "label": "Col 2 title", "default": "Natural materials" },
+    { "type": "text", "id": "col_2_text", "label": "Col 2 text", "default": "Solid woods, natural fibres and full-grain leathers chosen to age beautifully." },
+    { "type": "text", "id": "col_3_title", "label": "Col 3 title", "default": "Design help" },
+    { "type": "text", "id": "col_3_text", "label": "Col 3 text", "default": "Complimentary guidance to plan, style and furnish every room with ease." }
+  ],
+  "presets": [ { "name": "Arhaus Home" } ]
+}
+{% endschema %}

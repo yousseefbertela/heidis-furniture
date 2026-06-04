@@ -1,0 +1,28 @@
+<script>
+    function ymqLockPriceNeedHide() {
+        try{
+            var { price_parent_dom, price_need_hide_dom } = ymq_lock.theme_config,
+                price_parent_dom = eval(price_parent_dom),
+                price_need_hide_dom = eval(price_need_hide_dom),
+                elements = document.querySelectorAll('.ymq-lock-hide-price-box');
+            if (Array.isArray(price_parent_dom) && Array.isArray(price_need_hide_dom) && (price_parent_dom.length == price_need_hide_dom.length)) {
+                elements.forEach(element => {
+                    price_parent_dom.forEach((parent,index) => {
+                        var parent_dom = element.closest(parent);
+                        if(parent_dom){
+                            parent_dom.querySelectorAll(price_need_hide_dom[index]).forEach(child => {
+                                child.remove()
+                            })
+                        }
+                    })
+                });
+            }
+        }catch(e){
+    
+        }
+    }
+    ymqLockPriceNeedHide();
+    setInterval(() => {
+        ymqLockPriceNeedHide()
+    },666)
+</script>

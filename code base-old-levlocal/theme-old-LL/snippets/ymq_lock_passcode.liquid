@@ -1,0 +1,51 @@
+{% comment %}
+  Register form provided by Ymq B2B Login/Lock Hide Price App
+  Warn! ! ! Do not write your code in this file as we will update this file regularly.
+  
+  Usage:
+  {% render 'ymq_lock_register', module: module, passAttrName: passAttrName, id: id, id: id, pass_label: pass_label, wrong_pass_msg: wrong_pass_msg, submit_text: submit_text, pass_placeholder: pass_placeholder %}
+{% endcomment %}
+{% assign ymq_lock_min = 1 %}
+{% assign ymq_lock_max = 999999999999999999999 %}
+{% assign ymq_lock_diff = ymq_lock_max | minus: ymq_lock_min %}
+{% assign ymq_lock_random = "now" | date: "%N" | modulo: ymq_lock_diff | plus: ymq_lock_min %}
+
+<div class="ymq-lock-account-layout ymq-lock-login-form">
+    <div class="ymq-lock-account-box">
+        {% if module == 'passcode' %}
+            <h2 class="ymq-lock-account-title">{{ pass_label }}</h2>
+        {% endif %}
+        
+        <div class="ymq-lock-account-item">
+            <input
+                id="ymq-lock-passcode-{{ module }}-{{ ymq_lock_random }}-{{ id }}"
+                class="ymq-lock-passcode-input"
+                type="password"
+                data-ymq-lock-passcode-id="{{ id }}"
+                data-ymq-lock-passcode-attr-name="{{ passAttrName }}"
+                data-ymq-lock-passcode-module="{{ module }}"
+                required
+                data-wrong_pass_msg="{{ wrong_pass_msg }}"
+                {% if form.errors contains 'form' %}
+                    aria-invalid="true"
+                {% endif %}
+            >
+            <label for="ymq-lock-passcode-{{ module }}-{{ ymq_lock_random }}-{{ id }}">{{ pass_placeholder }}</label>
+            <svg viewBox="0 0 20 20" class="ymq-lock-input-right-icon ymq-lock-eye">
+                <path fill-rule="evenodd" d="M19.928 9.629c-2.137-5.343-6.247-7.779-10.355-7.565-4.06.21-7.892 3.002-9.516 7.603l-.118.333.118.333c1.624 4.601 5.455 7.393 9.516 7.603 4.108.213 8.218-2.222 10.355-7.565l.149-.371-.149-.371zm-9.928 5.371a5 5 0 1 0 0-10 5 5 0 0 0 0 10z"></path><circle cx="10" cy="10" r="3"></circle>
+            </svg>
+        </div>
+        <div class="ymq-lock-input-bottom-text ymq-lock-error-msg">
+            <svg viewBox="0 0 20 20" style="fill: currentColor;" class="ymq-lock-error-svg"><path fill-rule="evenodd" d="M11.42 2.588a2.007 2.007 0 0 0-2.84 0l-5.992 5.993a2.007 2.007 0 0 0 0 2.838l5.993 5.993a2.007 2.007 0 0 0 2.838 0l5.993-5.993a2.007 2.007 0 0 0 0-2.838l-5.993-5.993Zm-2.223 4.2a.803.803 0 1 1 1.606 0v3.212a.803.803 0 1 1-1.606 0v-3.211Zm1.606 6.423a.803.803 0 1 1-1.606 0 .803.803 0 0 1 1.606 0Z"></path></svg>
+            <span class="ymq-lock-error-msg-info"></span>
+        </div>
+
+        {% if module == 'passcode' %}
+            <div class="ymq-lock-input-bottom-text ymq-lock-request-passcode">{{ request_passcode }}</div>
+        {% endif %}
+      
+        <div class="ymq-lock-account-item ymq-lock-account-submit">
+            <button class="ymq-lock-account-submit-button ymq-lock-passcode-submit-button">{{ submit_text }}</button>
+        </div>
+    </div>
+</div>

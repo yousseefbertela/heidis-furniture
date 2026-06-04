@@ -1,0 +1,35 @@
+{% comment %}
+  Register form provided by Ymq B2B Login/Lock Hide Price App
+  Warn! ! ! Do not write your code in this file as we will update this file regularly.
+  
+  Usage:
+  {% render 'ymq_lock_subscribe ', id: id, attr_name: attr_name,  thanks_msg: thanks_msg %}
+{% endcomment %}
+
+<div class="ymq-lock-account-layout ymq-lock-login-form">
+    <div class="ymq-lock-account-box">
+        <h2 class="ymq-lock-account-title">{{ pass_label }}</h2>
+        <div class="ymq-lock-account-item">
+            <input
+                id="ymq-lock-subscribe-{{ id }}"
+                class="ymq-lock-subscribe-input"
+                type="text"
+                data-ymq-lock-subscribe-id="{{ id }}"
+                data-ymq-lock-subscribe-attr_name="{{ attr_name }}"
+                required
+                data-thanks_msgg="{{ thanks_msg }}"
+                {% if form.errors contains 'form' %}
+                    aria-invalid="true"
+                {% endif %}
+            >
+            <label for="ymq-lock-subscribe-{{ id }}">{{ 'customer.login_page.email' | t }}</label>
+            <svg viewBox="0 0 20 20" class="ymq-lock-input-right-icon ymq-lock-subscribe">
+                <path d="m17.707 9.293-5-5a.999.999 0 1 0-1.414 1.414l3.293 3.293h-11.586a1 1 0 1 0 0 2h11.586l-3.293 3.293a.999.999 0 1 0 1.414 1.414l5-5a.999.999 0 0 0 0-1.414z"></path>
+            </svg>
+        </div>
+        <div class="ymq-lock-input-bottom-text ymq-lock-error-msg">
+            <svg viewBox="0 0 20 20" style="fill: currentColor;" class="ymq-lock-error-svg"><path fill-rule="evenodd" d="M11.42 2.588a2.007 2.007 0 0 0-2.84 0l-5.992 5.993a2.007 2.007 0 0 0 0 2.838l5.993 5.993a2.007 2.007 0 0 0 2.838 0l5.993-5.993a2.007 2.007 0 0 0 0-2.838l-5.993-5.993Zm-2.223 4.2a.803.803 0 1 1 1.606 0v3.212a.803.803 0 1 1-1.606 0v-3.211Zm1.606 6.423a.803.803 0 1 1-1.606 0 .803.803 0 0 1 1.606 0Z"></path></svg>
+            <span class="ymq-lock-error-msg-info"></span>
+        </div>
+    </div>
+</div>

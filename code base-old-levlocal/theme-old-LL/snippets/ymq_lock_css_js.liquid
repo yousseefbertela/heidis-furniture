@@ -1,0 +1,11 @@
+{% if content_for_header contains 'zbqolyohuyfsvyft' %}
+    {% capture ymq_lock_login_to_see_price_custom_js %}{% render 'ymq_lock_login_to_see_price_custom_js' %}{% endcapture %}
+    {% unless ymq_lock_login_to_see_price_custom_js contains 'Liquid error' %}
+        {% render 'ymq_lock_login_to_see_price_custom_js' -%}
+    {% endunless %}
+
+    {% capture ymq_lock_custom_css %}{% render 'ymq_lock_custom_css' %}{% endcapture %}
+    {% unless ymq_lock_custom_css contains 'Liquid error' %}
+        {% render 'ymq_lock_custom_css' %}
+    {% endunless %}
+{% endif %}

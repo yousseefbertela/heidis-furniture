@@ -1,0 +1,18 @@
+{% assign price_content = old_price %}
+{% assign ymq_lock_current_date = 'now' | date: '%s' %}
+{% unless content_for_header contains "Shopify.designMode" or content_for_header contains "previewBarInjector.init()" %}
+    {% capture price_content_after_ltsp %}
+        {% render 'ymq_lock_ltsp_rules', price_content_ltsp: price_content, old_price_ltsp: old_price, ymq_product: ymq_product, ymq_lock_current_date: ymq_lock_current_date %}
+    {% endcapture %}
+    {% unless price_content_after_ltsp contains 'Liquid error' %}
+        {% assign price_content = price_content_after_ltsp %}
+    {% endunless %}
+    
+    {% capture price_content_after_ptvp %}
+        {% render 'ymq_lock_ptvp_rules', price_content_ptvp: price_content, old_price_ptvp: old_price, ymq_product: ymq_product, ymq_lock_current_date: ymq_lock_current_date %}
+    {% endcapture %}
+    {% unless price_content_after_ptvp contains 'Liquid error' %}
+        {% assign price_content = price_content_after_ptvp %}
+    {% endunless %}
+{% endunless %}   
+{{ price_content }}

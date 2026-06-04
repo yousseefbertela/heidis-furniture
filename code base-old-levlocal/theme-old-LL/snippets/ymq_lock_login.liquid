@@ -1,0 +1,74 @@
+{% comment %}
+  Login form provided by Ymq B2B Login/Lock Hide Price App
+  Warn! ! ! Do not write your code in this file as we will update this file regularly.
+  
+  Usage:
+  {% render 'ymq_lock_login', redirect_to: redirect_to %}
+{% endcomment %}
+<div class="ymq-lock-account-layout ymq-lock-recover-form ymq-lock-hidden">
+    {%- form 'recover_customer_password' -%}
+        <div class="ymq-lock-account-box">
+            <input type="hidden" name="return_url" class="ymq-lock-checkout-url" value="{{ redirect_to }}">
+            <h2 class="ymq-lock-account-title">{{ 'customer.recover_password.title' | t }}</h2>
+            <div class="ymq-lock-account-item">
+                <input
+                    id="ymq-lock-recover-email"
+                    type="text"
+                    name="customer[email]"
+                    required
+                    {% if form.errors contains 'form' %}
+                        aria-invalid="true"
+                    {% endif %}
+                >
+                <label for="ymq-lock-recover-email">{{ 'customer.login_page.email' | t }}</label>
+            </div>
+            <div class="ymq-lock-account-item ymq-lock-account-submit">
+                <button class="ymq-lock-account-submit-button">{{ 'customer.login_page.submit' | t }}</button>
+            </div>
+            <div class="ymq-lock-input-bottom-text ymq-lock-cancel">{{ 'customer.login_page.cancel' | t }}</div>
+        </div>
+        
+    {%- endform -%}
+</div>   
+
+<div class="ymq-lock-account-layout ymq-lock-login-form">
+    {%- form 'customer_login', novalidate: 'novalidate' -%}
+        <div class="ymq-lock-account-box">
+            <input type="hidden" name="return_url" class="ymq-lock-checkout-url" value="{{ redirect_to }}">
+            <h2 class="ymq-lock-account-title">{{ 'customer.login_page.title' | t }}</h2>
+            <div class="ymq-lock-account-item">
+                <input
+                    id="ymq-lock-login-email"
+                    type="text"
+                    name="customer[email]"
+                    required
+                    {% if form.errors contains 'form' %}
+                        aria-invalid="true"
+                    {% endif %}
+                >
+                <label for="ymq-lock-login-email">{{ 'customer.login_page.email' | t }}</label>
+            </div>
+            <div class="ymq-lock-account-item">
+                <input
+                    id="ymq-lock-login-password"
+                    type="password"
+                    name="customer[password]"
+                    required
+                    {% if form.errors contains 'form' %}
+                        aria-invalid="true"
+                    {% endif %}
+                >
+                <label for="ymq-lock-login-password">{{ 'customer.login_page.password' | t }}</label>
+                <svg viewBox="0 0 20 20" class="ymq-lock-input-right-icon ymq-lock-eye">
+                    <path fill-rule="evenodd" d="M19.928 9.629c-2.137-5.343-6.247-7.779-10.355-7.565-4.06.21-7.892 3.002-9.516 7.603l-.118.333.118.333c1.624 4.601 5.455 7.393 9.516 7.603 4.108.213 8.218-2.222 10.355-7.565l.149-.371-.149-.371zm-9.928 5.371a5 5 0 1 0 0-10 5 5 0 0 0 0 10z"></path><circle cx="10" cy="10" r="3"></circle>
+                </svg>
+            </div>
+            <div class="ymq-lock-input-bottom-text ymq-lock-forgot-password">{{ 'customer.login_page.forgot_password' | t }}</div>
+            
+            <div class="ymq-lock-account-item ymq-lock-account-submit">
+                <button class="ymq-lock-account-submit-button">{{ 'customer.login_page.sign_in' | t }}</button>
+            </div>
+            <a href="{{ routes.account_register_url }}" class="ymq-lock-input-bottom-text ymq-lock-create-account">{{ 'customer.login_page.create_account' | t }}</a>
+        </div>
+    {%- endform -%}
+</div>

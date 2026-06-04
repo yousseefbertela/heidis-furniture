@@ -1,0 +1,19 @@
+{
+  "sections": {
+    "main": {
+      "type": "arhaus-home",
+      "settings": {
+        "hero_link_1": "shopify://collections/sofas",
+        "hero_link_2": "shopify://collections/home-19-featured-products",
+        "room_1_link": "shopify://collections/sofas",
+        "room_2_link": "shopify://collections/rugs",
+        "room_3_link": "shopify://collections/tables",
+        "room_4_link": "shopify://collections/chairs",
+        "room_5_image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/petite-flamingo-sculpture-on-natural-stone-in-rustic-garden-daylight-fulfily-2.jpg?v=1779562131",
+        "room_5_link": "shopify://collections/outdoor",
+        "split_link": "shopify://collections/all"
+      }
+    }
+  },
+  "order": ["main"]
+}

@@ -1,0 +1,12 @@
+{% if content_for_header contains 'zbqolyohuyfsvyft' %}
+    {% capture ymq_lock_login_to_see_price %}
+        {% render 'ymq_lock_login_to_see_price_rules_logic', ymq_product: ymq_product, old_price: old_price %}
+    {% endcapture %}
+    {% unless ymq_lock_login_to_see_price contains 'Liquid error' %}
+        {{ ymq_lock_login_to_see_price }}
+    {% else %}
+        {{ old_price }}
+    {% endunless %}
+{% else %}
+    {{ old_price }}
+{% endif %}

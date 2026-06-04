@@ -1,0 +1,538 @@
+{%- comment -%}
+  Arhaus-style collection header + page restyle for Hedi's Furniture.
+{%- endcomment -%}
+
+{%- liquid
+  assign menu = linklists[section.settings.menu]
+  assign sublinks = null
+
+  for link in menu.links
+    assign is_match = false
+    if link.url == collection.url
+      assign is_match = true
+    elsif link.type == 'collection_link' and link.object.handle == collection.handle
+      assign is_match = true
+    endif
+    if is_match
+      assign sublinks = link.links
+      break
+    endif
+  endfor
+
+  unless sublinks
+    for link in menu.links
+      assign found = false
+      for child in link.links
+        if child.url == collection.url
+          assign found = true
+        elsif child.type == 'collection_link' and child.object.handle == collection.handle
+          assign found = true
+        endif
+        if found
+          assign sublinks = link.links
+          break
+        endif
+      endfor
+      if sublinks
+        break
+      endif
+    endfor
+  endunless
+
+  assign bg = section.settings.bg_color
+  assign ink = section.settings.text_color
+  assign accent = section.settings.accent_color
+  assign muted = section.settings.muted_color
+  assign line = section.settings.line_color
+
+  assign ratio_css = '1 / 1'
+  case section.settings.card_ratio
+    when 'portrait'
+      assign ratio_css = '4 / 5'
+    when 'landscape'
+      assign ratio_css = '4 / 3'
+  endcase
+
+  # Flatten one level so the carousel shows the leaf categories (Sofas, Living Chairs,
+  # Coffee Tables…) even when the menu groups them under Seating / Tables & Storage / etc.
+  # If a group has children, expand to its children; collections with no grouping fall back
+  # to their own direct children.
+  assign tiles = '' | split: ''
+  if sublinks
+    for parent in sublinks
+      if parent.links != blank and parent.links.size > 0
+        assign tiles = tiles | concat: parent.links
+      endif
+    endfor
+    if tiles.size == 0
+      assign tiles = sublinks
+    endif
+  endif
+
+  assign has_rail = false
+  if tiles.size > 0
+    assign has_rail = true
+  endif
+-%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap">
+
+<style>
+  #ahc-{{ section.id }}{
+    --ahc-bg:{{ bg }}; --ahc-ink:{{ ink }}; --ahc-accent:{{ accent }};
+    --ahc-muted:{{ muted }}; --ahc-line:{{ line }}; --ahc-ratio:{{ ratio_css }};
+    --ahc-pad:clamp(16px,3.6vw,63px); --ahc-pad-sm:clamp(12px,1.4vw,24px);
+    background:var(--ahc-bg); color:var(--ahc-ink);
+    font-family:"Jost","Helvetica Neue",Arial,sans-serif; font-weight:300;
+    padding-top:24px;
+  }
+  #ahc-{{ section.id }} *{ box-sizing:border-box; }
+  #ahc-{{ section.id }} a{ color:inherit; text-decoration:none; }
+  #ahc-{{ section.id }} img{ display:block; }
+
+  /* Arhaus-style insets: BIG margin on the hero (breadcrumb, title, carousel),
+     SMALL margin on the toolbar + product grid so products run nearly edge-to-edge. */
+  #ahc-{{ section.id }} .container{
+    max-width:none !important;
+    padding-left:var(--ahc-pad) !important; padding-right:var(--ahc-pad) !important;
+    margin-left:auto !important; margin-right:auto !important;
+  }
+  /* toolbar + its divider break out of the big inset to line up with the wider grid */
+  #ahc-{{ section.id }} .ahc-rule,
+  #ahc-{{ section.id }} .ahc-toolbar{
+    margin-left:calc(var(--ahc-pad-sm) - var(--ahc-pad)) !important;
+    margin-right:calc(var(--ahc-pad-sm) - var(--ahc-pad)) !important;
+  }
+  /* product grid: small inset, near edge-to-edge like Arhaus */
+  .collection-default .container{
+    max-width:none !important;
+    padding-left:clamp(12px,1.4vw,24px) !important; padding-right:clamp(12px,1.4vw,24px) !important;
+    margin-left:auto !important; margin-right:auto !important;
+  }
+
+  .ahc-crumb{ font-size:12px; letter-spacing:.04em; color:var(--ahc-muted); margin:0 0 16px; }
+  .ahc-crumb a:hover{ color:var(--ahc-ink); }
+  .ahc-crumb .sep{ margin:0 8px; opacity:.6; }
+
+  .ahc-title{
+    font-family:"Cormorant Garamond",Georgia,serif; font-weight:300; line-height:1.04;
+    color:var(--ahc-ink); margin:0; letter-spacing:.02em;
+    font-size:clamp(34px,4.6vw,58px); text-transform:uppercase;
+  }
+  .ahc-desc{ margin:18px 0 0; max-width:60ch; color:var(--ahc-muted); font-size:14px; line-height:1.8; }
+
+  .ahc-railwrap{ position:relative; margin-top:24px; }
+  .ahc-rail{
+    display:flex; gap:8px; overflow-x:auto; scroll-snap-type:x mandatory;
+    scroll-behavior:smooth; padding-bottom:6px; scrollbar-width:none; -webkit-overflow-scrolling:touch;
+  }
+  .ahc-rail::-webkit-scrollbar{ display:none; }
+  .ahc-cat{ flex:0 0 auto; width:clamp(220px,23vw,310px); scroll-snap-align:start; }
+  .ahc-cat__img{
+    position:relative; aspect-ratio:var(--ahc-ratio); overflow:hidden;
+    background:#efe9df; border:1px solid var(--ahc-line);
+  }
+  .ahc-cat__img img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:transform 1.4s cubic-bezier(.2,.6,.2,1); }
+  .ahc-cat:hover .ahc-cat__img img{ transform:scale(1.05); }
+  .ahc-cat__ph{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--ahc-muted); font-family:"Cormorant Garamond",serif; font-size:30px; }
+  .ahc-cat__label{
+    display:block; margin-top:12px; text-align:left;
+    font-family:"Cormorant Garamond",Georgia,serif; font-weight:400;
+    font-size:clamp(16px,1.3vw,20px); color:var(--ahc-ink); letter-spacing:.02em; line-height:1.2;
+  }
+
+  .ahc-nav{
+    position:absolute; top:calc(50% - 20px); transform:translateY(-50%);
+    width:50px; height:50px; border-radius:50%; border:1px solid var(--ahc-line);
+    background:rgba(255,255,255,.92); color:var(--ahc-ink); font-size:18px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; transition:all .25s ease; z-index:3;
+    box-shadow:0 4px 18px rgba(0,0,0,.08);
+  }
+  .ahc-nav:hover{ background:var(--ahc-ink); color:#fff; border-color:var(--ahc-ink); }
+  .ahc-nav[hidden]{ display:none; }
+  .ahc-nav--prev{ left:-8px; } .ahc-nav--next{ right:-8px; }
+
+  .ahc-rule{ margin:20px 0 0; border:0; border-top:1px solid var(--ahc-line); }
+
+  .ahc-toolbar{
+    display:flex; align-items:center; justify-content:space-between; gap:24px;
+    padding:14px 0 16px; border-bottom:1px solid var(--ahc-line); margin-bottom:24px;
+    font-family:"Jost","Helvetica Neue",Arial,sans-serif;
+  }
+  .ahc-chips{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .ahc-chip{
+    appearance:none; background:transparent; color:var(--ahc-ink);
+    border:1px solid var(--ahc-line); border-radius:999px;
+    padding:10px 18px; font-size:13px; letter-spacing:.03em; line-height:1;
+    font-family:inherit; font-weight:400; cursor:pointer;
+    display:inline-flex; align-items:center; gap:8px; transition:all .2s ease;
+  }
+  .ahc-chip:hover{ border-color:var(--ahc-ink); background:#fafaf7; }
+  .ahc-chip .ahc-caret{ font-size:10px; opacity:.55; transform:translateY(1px); }
+  .ahc-chip--more{ background:#f6f3ec; }
+  .ahc-chip--more .ahc-plus{ font-size:14px; opacity:.7; }
+  .ahc-chip[aria-expanded="true"]{ background:var(--ahc-ink); color:#fff; border-color:var(--ahc-ink); }
+
+  .ahc-tools{ display:flex; align-items:center; gap:28px; margin-left:auto; }
+  .ahc-count{ font-size:13px; letter-spacing:.02em; color:var(--ahc-ink); }
+  .ahc-sort{ display:inline-flex; align-items:center; gap:10px; }
+  .ahc-sort__label{ font-size:13px; letter-spacing:.02em; color:var(--ahc-muted); }
+  .ahc-sort__select{
+    appearance:none; -webkit-appearance:none; background:transparent;
+    border:0; border-bottom:1px solid transparent; padding:4px 22px 4px 0;
+    font-family:inherit; font-size:13px; letter-spacing:.02em; color:var(--ahc-ink);
+    cursor:pointer; outline:0;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'><path d='M1 1.5L6 6.5L11 1.5' stroke='%2323201B' stroke-width='1.2'/></svg>");
+    background-repeat:no-repeat; background-position:right center; background-size:10px;
+  }
+  .ahc-sort__select:hover{ border-bottom-color:var(--ahc-ink); }
+
+  .ahc-panel{
+    position:absolute; left:0; margin-top:10px; min-width:240px;
+    background:#fff; border:1px solid var(--ahc-line); padding:18px 18px 16px;
+    box-shadow:0 18px 36px -16px rgba(20,18,15,.18); z-index:5; display:none;
+  }
+  .ahc-chip[aria-expanded="true"] + .ahc-panel{ display:block; }
+  .ahc-panel__title{ font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ahc-muted); margin:0 0 12px; }
+  .ahc-panel__list{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 18px; }
+  .ahc-panel__list a{ font-size:13px; color:var(--ahc-ink); padding:5px 0; display:block; }
+  .ahc-panel__list a:hover{ text-decoration:underline; text-underline-offset:3px; }
+  .ahc-chip-wrap{ position:relative; }
+
+  .collection-default .toolbar{ display:none !important; }
+  .collection-default .articleLookbook-des{ display:none !important; }
+  .collection-default{ font-family:"Jost","Helvetica Neue",Arial,sans-serif; }
+
+  /* Real CSS Grid — kills the theme's float/inline staircase gaps, gives even tight rows */
+  .collection-default .productGrid{
+    display:grid !important;
+    grid-template-columns:repeat(3, minmax(0,1fr)) !important;
+    column-gap:6px !important; row-gap:24px !important;
+    margin:0 !important;
+  }
+  .collection-default .productGrid > .product{
+    width:auto !important; max-width:none !important; float:none !important;
+    margin:0 !important; padding:0 !important; list-style:none !important;
+  }
+  .collection-default .product-item .card{ border:0 !important; box-shadow:none !important; background:transparent !important; }
+  .collection-default .product-item .card-product__wrapper{ position:relative; overflow:hidden; }
+  .collection-default .product-item .card-media{
+    background:transparent !important; border:0 !important;
+    padding-bottom:100% !important;
+    overflow:hidden; position:relative;
+  }
+  .collection-default .product-item .card-media > img,
+  .collection-default .product-item .card-media picture,
+  .collection-default .product-item .card-media picture > img,
+  .collection-default .product-item .card-media .media,
+  .collection-default .product-item .card-media a{
+    position:absolute !important; inset:0 !important;
+    width:100% !important; height:100% !important;
+    object-fit:contain !important; object-position:center !important;
+    display:block !important; padding:0 !important;
+  }
+  .collection-default .product-item .card-media img{ transition:transform 1.4s cubic-bezier(.2,.6,.2,1); }
+  .collection-default .product-item:hover .card-media img{ transform:scale(1.04); }
+  /* Left-align the whole info block — theme centers it via .card-information__wrapper */
+  .collection-default .card-information,
+  .collection-default .card-information__wrapper,
+  .collection-default .card-information *{ text-align:left !important; }
+  .collection-default .card-information{ padding:14px 0 2px !important; align-items:flex-start !important; }
+  .collection-default .card-information__wrapper{ align-items:flex-start !important; }
+  /* Arhaus serif product title — uppercase, left, tracked, thin */
+  .collection-default .card__heading,
+  .collection-default .card-information .card-title,
+  .collection-default .card-information .card-title a{
+    font-family:"Cormorant Garamond",Georgia,serif !important;
+    font-weight:400 !important; font-size:16px !important; line-height:1.3 !important;
+    letter-spacing:.06em !important; text-transform:uppercase !important; color:var(--ahc-ink) !important;
+  }
+  .collection-default .card-vendor,
+  .collection-default .card-vendor a{
+    font-size:11px !important; letter-spacing:.16em !important; text-transform:uppercase !important;
+    color:var(--ahc-muted) !important;
+  }
+  /* Arhaus serif price — left, normal case */
+  .collection-default .card-price,
+  .collection-default .card-price .price-item{
+    font-family:"Cormorant Garamond",Georgia,serif !important; font-size:16px !important; font-weight:400 !important;
+    letter-spacing:.01em !important; color:var(--ahc-ink) !important;
+  }
+  .collection-default .card-price{ margin-top:5px !important; justify-content:flex-start !important; }
+  .collection-default .card-price .price-item--sale{ color:#8C2A2A !important; margin-left:8px; }
+  /* (row + column spacing handled by the CSS Grid gap above) */
+
+  .collection-default .card__badge,
+  .collection-default .halo-productBadges{
+    top:14px !important; left:14px !important; right:auto !important;
+    background:transparent !important; padding:0 !important;
+  }
+  .collection-default .card__badge .badge,
+  .collection-default .halo-productBadges .badge,
+  .collection-default .halo-productBadges > span,
+  .collection-default .halo-productBadges > div{
+    background:rgba(255,255,255,.92) !important; color:var(--ahc-ink) !important;
+    border:1px solid var(--ahc-line) !important;
+    font-size:10px !important; letter-spacing:.16em !important; text-transform:uppercase !important;
+    padding:5px 10px !important; border-radius:0 !important; box-shadow:none !important;
+    font-weight:500 !important;
+  }
+
+  .collection-default .product-item .card-product__wrapper::after{
+    content:"QUICK VIEW";
+    position:absolute; left:0; right:0; bottom:0; height:42px;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(35,32,27,.86); color:#fff;
+    font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+    opacity:0; transform:translateY(100%); transition:all .35s ease;
+    pointer-events:none; z-index:2;
+  }
+  .collection-default .product-item:hover .card-product__wrapper::after{ opacity:1; transform:translateY(0); }
+
+  @media (max-width:1024px){
+    #ahc-{{ section.id }}{ padding-top:18px; }
+    #ahc-{{ section.id }} .container,
+    .collection-default .container{ padding-left:clamp(16px,4vw,28px) !important; padding-right:clamp(16px,4vw,28px) !important; }
+    #ahc-{{ section.id }} .ahc-rule,
+    #ahc-{{ section.id }} .ahc-toolbar{ margin-left:0 !important; margin-right:0 !important; }
+    .ahc-railwrap{ margin-top:20px; }
+    .ahc-nav{ display:none; }
+    .ahc-toolbar{ flex-wrap:wrap; gap:14px; padding:14px 0; margin-bottom:20px; }
+    .ahc-tools{ width:100%; justify-content:space-between; }
+    .collection-default .productGrid{ grid-template-columns:repeat(2, minmax(0,1fr)) !important; column-gap:6px !important; row-gap:20px !important; }
+  }
+  @media (max-width:600px){
+    .ahc-cat{ width:64vw; }
+    .ahc-title{ font-size:clamp(30px,9vw,42px); }
+    .ahc-chips{ overflow-x:auto; flex-wrap:nowrap; padding-bottom:4px; scrollbar-width:none; }
+    .ahc-chips::-webkit-scrollbar{ display:none; }
+    .ahc-chip{ flex:0 0 auto; padding:9px 14px; font-size:12px; }
+    .collection-default .productGrid{ grid-template-columns:repeat(2, minmax(0,1fr)) !important; column-gap:8px !important; row-gap:18px !important; }
+    .collection-default .product-item .card-media{ padding-bottom:100% !important; }
+    .collection-default .card__heading,
+    .collection-default .card-information .card-title{ font-size:15px !important; letter-spacing:.05em !important; }
+    .collection-default .card-price, .collection-default .card-price .price-item{ font-size:15px !important; }
+    .collection-default .product-item .card-product__wrapper::after{ display:none; }
+  }
+</style>
+
+<div id="ahc-{{ section.id }}">
+  <div class="{% if section.settings.container == '1170' %}container-1170{% elsif section.settings.container == '1770' %}container-1770{% elsif section.settings.container == 'fullwidth' %}container-full{% else %}container{% endif %}">
+    <nav class="ahc-crumb" aria-label="Breadcrumb">
+      <a href="{{ routes.root_url }}">Home</a>
+      <span class="sep">/</span>
+      <span aria-current="page">{{ collection.title }}</span>
+    </nav>
+
+    <h1 class="ahc-title">{{ collection.title }}</h1>
+
+    {%- if section.settings.show_description and collection.description != blank -%}
+      <div class="ahc-desc">{{ collection.description | strip_html | truncatewords: 40 }}</div>
+    {%- endif -%}
+
+    {%- if has_rail -%}
+      <div class="ahc-railwrap">
+        {%- if section.settings.show_arrows -%}
+          <button class="ahc-nav ahc-nav--prev" type="button" data-ahc-rail="ahc-rail-{{ section.id }}" aria-label="Scroll left">&#8249;</button>
+          <button class="ahc-nav ahc-nav--next" type="button" data-ahc-rail="ahc-rail-{{ section.id }}" aria-label="Scroll right">&#8250;</button>
+        {%- endif -%}
+        <div class="ahc-rail" id="ahc-rail-{{ section.id }}">
+          {%- for child in tiles -%}
+            {%- liquid
+              assign img = null
+              # 1. the linked collection's own image, else its first product image
+              if child.type == 'collection_link'
+                if child.object.image != blank
+                  assign img = child.object.image
+                elsif child.object.products.first.featured_media.preview_image != blank
+                  assign img = child.object.products.first.featured_media.preview_image
+                endif
+              endif
+              # 2. fallback: this item is a group (e.g. Seating) with sub-links — borrow the
+              #    first sub-collection's image, else that sub-collection's first product image
+              if img == null and child.links != blank and child.links.size > 0
+                for sub in child.links
+                  if sub.type == 'collection_link'
+                    if sub.object.image != blank
+                      assign img = sub.object.image
+                      break
+                    elsif sub.object.products.first.featured_media.preview_image != blank
+                      assign img = sub.object.products.first.featured_media.preview_image
+                      break
+                    endif
+                  endif
+                endfor
+              endif
+              assign alt_text = child.title | escape
+            -%}
+            <a class="ahc-cat" href="{{ child.url }}">
+              <div class="ahc-cat__img">
+                {%- if img -%}
+                  {{ img | image_url: width: 620 | image_tag: loading: 'lazy', widths: '240, 320, 420, 620, 820', sizes: '(max-width:600px) 64vw, 23vw', alt: alt_text }}
+                {%- else -%}
+                  <span class="ahc-cat__ph">{{ child.title | slice: 0 }}</span>
+                {%- endif -%}
+              </div>
+              <span class="ahc-cat__label">{{ child.title }}</span>
+            </a>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    <hr class="ahc-rule">
+
+    {%- liquid
+      assign sort_current = collection.sort_by | default: collection.default_sort_by
+      assign sort_options = collection.sort_options
+    -%}
+
+    <div class="ahc-toolbar" id="ahc-toolbar-{{ section.id }}">
+      <div class="ahc-chips" role="group" aria-label="Refine">
+        {%- assign chip_count = 0 -%}
+        {%- for filter in collection.filters limit: 4 -%}
+          {%- if filter.values.size > 0 -%}
+            <div class="ahc-chip-wrap">
+              <button class="ahc-chip" type="button" aria-expanded="false" data-ahc-chip>
+                {{ filter.label }}
+                <span class="ahc-caret">&#9662;</span>
+              </button>
+              <div class="ahc-panel" role="menu">
+                <p class="ahc-panel__title">{{ filter.label }}</p>
+                <ul class="ahc-panel__list">
+                  {%- for v in filter.values limit: 14 -%}
+                    <li><a href="{{ v.url }}" role="menuitem">{{ v.label }}</a></li>
+                  {%- endfor -%}
+                </ul>
+              </div>
+            </div>
+            {%- assign chip_count = chip_count | plus: 1 -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- if chip_count == 0 -%}
+          <button class="ahc-chip" type="button" disabled>Material <span class="ahc-caret">&#9662;</span></button>
+          <button class="ahc-chip" type="button" disabled>Size <span class="ahc-caret">&#9662;</span></button>
+          <button class="ahc-chip" type="button" disabled>Color <span class="ahc-caret">&#9662;</span></button>
+        {%- endif -%}
+
+        <button class="ahc-chip ahc-chip--more" type="button" data-ahc-more aria-expanded="false">
+          More Filters <span class="ahc-plus">+</span>
+        </button>
+      </div>
+
+      <div class="ahc-tools">
+        <span class="ahc-count">{{ collection.products_count | default: collection.all_products_count }} Items</span>
+        <div class="ahc-sort">
+          <label class="ahc-sort__label" for="ahc-sort-{{ section.id }}">Sort by</label>
+          <select class="ahc-sort__select" id="ahc-sort-{{ section.id }}" data-ahc-sort>
+            {%- for option in sort_options -%}
+              <option value="{{ option.value }}" {% if option.value == sort_current %}selected{% endif %}>{{ option.name }}</option>
+            {%- endfor -%}
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var root = document.getElementById('ahc-{{ section.id }}');
+  if(!root) return;
+
+  var rail = document.getElementById('ahc-rail-{{ section.id }}');
+  var navs = root.querySelectorAll('.ahc-nav');
+  function step(){ var c = rail && rail.children[0]; return c ? (c.getBoundingClientRect().width + 8) : 300; }
+  function sync(){
+    if(!rail) return;
+    var max = rail.scrollWidth - rail.clientWidth - 2;
+    navs.forEach(function(b){
+      var prev = b.classList.contains('ahc-nav--prev');
+      if(rail.scrollWidth <= rail.clientWidth + 4){ b.hidden = true; return; }
+      b.hidden = prev ? rail.scrollLeft <= 2 : rail.scrollLeft >= max;
+    });
+  }
+  navs.forEach(function(b){
+    b.addEventListener('click', function(){
+      if(!rail) return;
+      rail.scrollBy({ left: b.classList.contains('ahc-nav--prev') ? -step()*1.4 : step()*1.4, behavior:'smooth' });
+    });
+  });
+  if(rail){
+    rail.addEventListener('scroll', sync, { passive:true });
+    window.addEventListener('resize', sync);
+    sync();
+  }
+
+  var chips = root.querySelectorAll('[data-ahc-chip]');
+  function closeAllChips(except){
+    chips.forEach(function(c){ if(c !== except) c.setAttribute('aria-expanded','false'); });
+  }
+  chips.forEach(function(chip){
+    chip.addEventListener('click', function(e){
+      e.stopPropagation();
+      var open = chip.getAttribute('aria-expanded') === 'true';
+      closeAllChips(chip);
+      chip.setAttribute('aria-expanded', open ? 'false' : 'true');
+    });
+  });
+  document.addEventListener('click', function(e){
+    if(!root.contains(e.target)) closeAllChips(null);
+    else if(!e.target.closest('[data-ahc-chip]') && !e.target.closest('.ahc-panel')) closeAllChips(null);
+  });
+
+  var sort = root.querySelector('[data-ahc-sort]');
+  if(sort){
+    sort.addEventListener('change', function(){
+      var url = new URL(window.location.href);
+      url.searchParams.set('sort_by', sort.value);
+      url.searchParams.delete('page');
+      window.location.href = url.toString();
+    });
+  }
+
+  var more = root.querySelector('[data-ahc-more]');
+  if(more){
+    more.addEventListener('click', function(){
+      var drawer = document.querySelector('[data-collection-filter-drawer], .filterPLP-trigger, .toolbar-filter');
+      if(drawer && typeof drawer.click === 'function'){ drawer.click(); return; }
+      var sidebar = document.querySelector('.sidebar-collection, .collection-sidebar');
+      if(sidebar) sidebar.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Arhaus Collection Header",
+  "tag": "section",
+  "settings": [
+    { "type": "paragraph", "content": "Shows a breadcrumb, the collection title, and a carousel of subcategories pulled automatically from the menu below." },
+    { "type": "link_list", "id": "menu", "label": "Subcategory source menu", "default": "main-menu" },
+    { "type": "select", "id": "container", "label": "Width", "default": "container", "options": [
+      { "value": "container", "label": "Default" },
+      { "value": "1170", "label": "Narrow" },
+      { "value": "1770", "label": "Wide" },
+      { "value": "fullwidth", "label": "Full width" }
+    ] },
+    { "type": "select", "id": "card_ratio", "label": "Card image shape", "default": "square", "options": [
+      { "value": "square", "label": "Square" },
+      { "value": "portrait", "label": "Portrait" },
+      { "value": "landscape", "label": "Landscape" }
+    ] },
+    { "type": "checkbox", "id": "show_arrows", "label": "Show carousel arrows", "default": true },
+    { "type": "checkbox", "id": "show_description", "label": "Show description under title", "default": false },
+    { "type": "header", "content": "Palette" },
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#FFFFFF" },
+    { "type": "color", "id": "text_color", "label": "Title / text", "default": "#23201B" },
+    { "type": "color", "id": "accent_color", "label": "Accent", "default": "#8C6E45" },
+    { "type": "color", "id": "muted_color", "label": "Muted text", "default": "#8E7E68" },
+    { "type": "color", "id": "line_color", "label": "Lines / borders", "default": "#E7E1D6" }
+  ],
+  "presets": [ { "name": "Arhaus Collection Header" } ]
+}
+{% endschema %}

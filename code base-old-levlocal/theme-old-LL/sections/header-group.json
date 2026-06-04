@@ -1,0 +1,457 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "header",
+  "name": "Header Group",
+  "sections": {
+    "announcement-bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "9da20430-b562-46f1-9f28-e5592eeec567": {
+          "type": "announcement",
+          "settings": {
+            "text": "<div class=\"message\" style=\"font-weight: 400;padding: 5px 15px;\">\nSave now: 50% <a href=\"#\">furniture &amp; kitchen </a> discount*\n</div>",
+            "btn_color": "#f84248",
+            "btn_border_color": "#232323",
+            "btn_bg_color": "#232323",
+            "btn_bg_color_gradient": ""
+          }
+        }
+      },
+      "block_order": [
+        "9da20430-b562-46f1-9f28-e5592eeec567"
+      ],
+      "settings": {
+        "enable_announcement": false,
+        "layout": "slider",
+        "enable_close": false,
+        "color_text": "#232323",
+        "bg_color_text": "#232323",
+        "bg_color_text_gradient": "",
+        "font_size_text": 14,
+        "font_style_text": "normal",
+        "font_weight_text": "500",
+        "arrow_active": false,
+        "content_max_width": 38,
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "header_minimal_nALk6f": {
+      "type": "header-minimal",
+      "blocks": {
+        "group_1_p7wERj": {
+          "type": "group_1",
+          "settings": {
+            "color": "#ffffff"
+          }
+        },
+        "group_2_XpKGWF": {
+          "type": "group_2",
+          "settings": {
+            "show_language_currency": true,
+            "language_currency_color": "#323232",
+            "language_currency_bg": "#ddbdb0",
+            "show_cart": false,
+            "cart_color_item": "#323232",
+            "cart_bg_item": "#ddbdb0",
+            "cart_item_font_size": 14
+          }
+        }
+      },
+      "block_order": [
+        "group_1_p7wERj",
+        "group_2_XpKGWF"
+      ],
+      "settings": {
+        "container": "1170",
+        "padding_full_width": 0,
+        "header_bg": "#26292d",
+        "header_bg_gradient": "",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "d128316a-9eef-4ad8-9e41-3e9614db5ae2": {
+      "type": "header-utility",
+      "blocks": {
+        "sections--14682829619277__d128316a-9eef-4ad8-9e41-3e9614db5ae2-16808670863a7d2551-2": {
+          "type": "search",
+          "settings": {
+            "search_color": "#232323",
+            "bg_search_color": "#ffffff",
+            "search_icon_color": "#000000",
+            "search_border_radius": 50
+          }
+        },
+        "text_8ggq7U": {
+          "type": "text",
+          "settings": {
+            "customer_service_text": "<p></p><p></p>",
+            "text_color": "#2d2d2d"
+          }
+        },
+        "sections--14682829619277__d128316a-9eef-4ad8-9e41-3e9614db5ae2-16808670863a7d2551-0": {
+          "type": "logo",
+          "settings": {
+            "logo": "shopify://shop_images/hedis_logo.webp",
+            "logo_width": 140,
+            "logo_text": "",
+            "logo_font_size": 30,
+            "logo_font_weight": "900",
+            "logo_text_transform": "uppercase",
+            "logo_color": "#232323"
+          }
+        },
+        "sections--14682829619277__d128316a-9eef-4ad8-9e41-3e9614db5ae2-16808670863a7d2551-3": {
+          "type": "function_group",
+          "settings": {
+            "show_customer": true,
+            "customer_color": "#232323",
+            "show_wishlist": true,
+            "wishlist_color": "#232323",
+            "show_cart": true,
+            "cart_color": "#232323",
+            "cart_color_item": "#ffffff",
+            "cart_bg_item": "#000000",
+            "cart_item_font_size": 12,
+            "show_language_currency": false,
+            "language_currency_color": "#232323"
+          }
+        }
+      },
+      "block_order": [
+        "sections--14682829619277__d128316a-9eef-4ad8-9e41-3e9614db5ae2-16808670863a7d2551-2",
+        "text_8ggq7U",
+        "sections--14682829619277__d128316a-9eef-4ad8-9e41-3e9614db5ae2-16808670863a7d2551-0",
+        "sections--14682829619277__d128316a-9eef-4ad8-9e41-3e9614db5ae2-16808670863a7d2551-3"
+      ],
+      "settings": {
+        "container": "full",
+        "padding_full_width": 20,
+        "header_bg": "#ffffff",
+        "header_bg_gradient": "",
+        "padding_top": 10,
+        "padding_bottom": 0
+      }
+    },
+    "00c92468-4e6c-42f1-85ad-ba2b3977ed37": {
+      "type": "header-navigation-plain",
+      "blocks": {
+        "sections--14682829619277__00c92468-4e6c-42f1-85ad-ba2b3977ed37-1680867093b1fbc19d-0": {
+          "type": "logo",
+          "settings": {
+            "logo_position": "sticky_menu",
+            "logo": "shopify://shop_images/hedis_logo.png",
+            "logo_transparent": "shopify://shop_images/hedis_logo.png",
+            "logo_width": 105,
+            "logo_width_fixed": 100,
+            "logo_text": "",
+            "logo_font_size": 20,
+            "logo_font_weight": "900",
+            "logo_text_transform": "uppercase",
+            "logo_color": "#ffffff"
+          }
+        },
+        "sections--14682829619277__00c92468-4e6c-42f1-85ad-ba2b3977ed37-1680867093b1fbc19d-1": {
+          "type": "main_menu",
+          "settings": {
+            "menu": "main-menu",
+            "menu_top_spacing": 17,
+            "menu_bottom_spacing": 17,
+            "grid_gap_menu_item": 20,
+            "alignment": "center",
+            "bg_mega_menu": "#ffffff",
+            "bg_mega_menu_gradient": "",
+            "lv_1_color": "#2d2d2d",
+            "lv_1_color_hover": "#000000",
+            "lv_2_color": "#000000",
+            "lv_2_color_hover": "#000000",
+            "lv_3_color": "#424242",
+            "lv_3_color_hover": "#2a6876",
+            "sale_item_1": "",
+            "sale_item_2": "",
+            "sale_item_3": "",
+            "sale_item_color": "#b30e13",
+            "label_position": "main_menu",
+            "show_label_blink": true,
+            "new_label_1": "Theme Demo",
+            "new_label_2": "Wishlist",
+            "new_label_3": "Home 21 - Yoga, Home 22 - Eyes Wears, Home 23 - Plant+ Garden, Home 24 - Bicycle, Mobile Sticky Toolbar, Home 25 - Swimwear 2, Sticky Promotion, Marquee Function",
+            "new_label_color": "#ffffff",
+            "new_label_bg": "#06bfe2",
+            "new_label_bg_gradient": "",
+            "sale_label_1": "Buy Ella",
+            "sale_label_2": "",
+            "sale_label_3": "",
+            "sale_label_color": "#ffffff",
+            "sale_label_bg": "#ef6454",
+            "sale_label_bg_gradient": "",
+            "hot_label_1": "Product",
+            "hot_label_2": "RTL Layout, Store Locator",
+            "hot_label_3": "Bundle - Upsell, Variant Image Grouped, Home 02 - Trendy Style, Home 04 - High Fashion, Home 06 - SuperMarket, Home 15 - Automotive 2, Home 09 - Pet Supplies, Different Mobile Menu, Custom Options, Variant Metafield, Notify Me (Out Of Stock), Color Comparison, RTL Layout",
+            "hot_label_color": "#ffffff",
+            "hot_label_bg": "#ffbb49",
+            "hot_label_bg_gradient": ""
+          }
+        },
+        "sections--14682829619277__00c92468-4e6c-42f1-85ad-ba2b3977ed37-1680867093b1fbc19d-2": {
+          "type": "header_icons",
+          "settings": {
+            "show_language_currency": false,
+            "show_search": false,
+            "show_customer": false,
+            "show_wishlist": false,
+            "show_cart": false,
+            "text_font_size": 13,
+            "show_language_currency_sticky": false,
+            "show_search_sticky": true,
+            "show_customer_sticky": false,
+            "show_wishlist_sticky": false,
+            "show_cart_sticky": true,
+            "header_icons_color": "#232323",
+            "header_icons_color_hover": "#232323",
+            "header_icons_border_color": "rgba(0,0,0,0)",
+            "header_icons_border_sticky_color": "rgba(0,0,0,0)",
+            "cart_count_bubble_color": "#ffffff",
+            "cart_count_bubble_bg": "#000000",
+            "cart_count_bubble_bg_gradient": ""
+          }
+        },
+        "megamenu_living": {
+          "type": "megamenu_style_5",
+          "settings": {
+            "layout_block": "custom_width",
+            "header_custom_width_size": 1280,
+            "mega_tyle": "style1",
+            "item": "Living",
+            "column": 3,
+            "show_product": true,
+            "product_limit": 4,
+            "product_title": "",
+            "product_collection": "living",
+            "show_banner_1": false,
+            "banner_1": "",
+            "banner_url_1": ""
+          }
+        },
+        "megamenu_dining": {
+          "type": "megamenu_style_5",
+          "settings": {
+            "layout_block": "custom_width",
+            "header_custom_width_size": 1280,
+            "mega_tyle": "style1",
+            "item": "Dining",
+            "column": 2,
+            "show_product": true,
+            "product_limit": 4,
+            "product_title": "",
+            "product_collection": "dining",
+            "show_banner_1": false,
+            "banner_1": "",
+            "banner_url_1": ""
+          }
+        },
+        "megamenu_bedroom": {
+          "type": "megamenu_style_5",
+          "settings": {
+            "layout_block": "custom_width",
+            "header_custom_width_size": 1280,
+            "mega_tyle": "style1",
+            "item": "Bedroom",
+            "column": 2,
+            "show_product": true,
+            "product_limit": 4,
+            "product_title": "",
+            "product_collection": "bedroom",
+            "show_banner_1": false,
+            "banner_1": "",
+            "banner_url_1": ""
+          }
+        },
+        "megamenu_lighting": {
+          "type": "megamenu_style_5",
+          "settings": {
+            "layout_block": "custom_width",
+            "header_custom_width_size": 1280,
+            "mega_tyle": "style1",
+            "item": "Lighting",
+            "column": 2,
+            "show_product": true,
+            "product_limit": 4,
+            "product_title": "",
+            "product_collection": "lighting",
+            "show_banner_1": false,
+            "banner_1": "",
+            "banner_url_1": ""
+          }
+        },
+        "megamenu_decor": {
+          "type": "megamenu_style_5",
+          "settings": {
+            "layout_block": "custom_width",
+            "header_custom_width_size": 1280,
+            "mega_tyle": "style1",
+            "item": "Decor",
+            "column": 3,
+            "show_product": true,
+            "product_limit": 4,
+            "product_title": "",
+            "product_collection": "decor",
+            "show_banner_1": false,
+            "banner_1": "",
+            "banner_url_1": ""
+          }
+        },
+        "megamenu_office": {
+          "type": "megamenu_style_5",
+          "settings": {
+            "layout_block": "custom_width",
+            "header_custom_width_size": 1280,
+            "mega_tyle": "style1",
+            "item": "Office",
+            "column": 2,
+            "show_product": true,
+            "product_limit": 4,
+            "product_title": "",
+            "product_collection": "office",
+            "show_banner_1": false,
+            "banner_1": "",
+            "banner_url_1": ""
+          }
+        },
+        "megamenu_outdoor": {
+          "type": "megamenu_style_5",
+          "settings": {
+            "layout_block": "custom_width",
+            "header_custom_width_size": 1280,
+            "mega_tyle": "style1",
+            "item": "Outdoor",
+            "column": 2,
+            "show_product": true,
+            "product_limit": 4,
+            "product_title": "",
+            "product_collection": "outdoor",
+            "show_banner_1": false,
+            "banner_1": "",
+            "banner_url_1": ""
+          }
+        },
+        "megamenu_rugs": {
+          "type": "megamenu_style_5",
+          "settings": {
+            "layout_block": "custom_width",
+            "header_custom_width_size": 1280,
+            "mega_tyle": "style1",
+            "item": "Rugs",
+            "column": 2,
+            "show_product": true,
+            "product_limit": 4,
+            "product_title": "",
+            "product_collection": "rug",
+            "show_banner_1": false,
+            "banner_1": "",
+            "banner_url_1": ""
+          }
+        }
+      },
+      "block_order": [
+        "sections--14682829619277__00c92468-4e6c-42f1-85ad-ba2b3977ed37-1680867093b1fbc19d-0",
+        "sections--14682829619277__00c92468-4e6c-42f1-85ad-ba2b3977ed37-1680867093b1fbc19d-1",
+        "sections--14682829619277__00c92468-4e6c-42f1-85ad-ba2b3977ed37-1680867093b1fbc19d-2",
+        "megamenu_living",
+        "megamenu_dining",
+        "megamenu_bedroom",
+        "megamenu_lighting",
+        "megamenu_decor",
+        "megamenu_office",
+        "megamenu_outdoor",
+        "megamenu_rugs"
+      ],
+      "settings": {
+        "container": "1170",
+        "padding_full_width": 0,
+        "header_navigation_bg": "#ffffff",
+        "header_navigation_bg_gradient": "",
+        "sticky_header_type": "always",
+        "sticky_header_width": "full",
+        "enable_transparent": false,
+        "transparent_color": "#232323",
+        "transparent_color_hover": "#ffffff"
+      }
+    },
+    "header-mobile": {
+      "type": "header-mobile",
+      "blocks": {
+        "7de2266e-0cd4-4fda-9f09-06f75a17f944": {
+          "type": "menu",
+          "settings": {
+            "color": "#232323"
+          }
+        },
+        "163e2cb5-14f2-4af6-9ac3-77193c082f53": {
+          "type": "search",
+          "settings": {
+            "color": "#232323"
+          }
+        },
+        "550fbd21-75fb-4051-9dee-77d91b5239f0": {
+          "type": "logo",
+          "settings": {
+            "logo_mobile": "shopify://shop_images/hedis_logo.png",
+            "logo_width_mobile": 100,
+            "logo_text": "",
+            "logo_font_size": 20,
+            "logo_font_weight": "900",
+            "logo_text_transform": "uppercase",
+            "logo_color": "#232323"
+          }
+        },
+        "20dae707-64c0-4ea3-a05e-561cae9836d8": {
+          "type": "customer",
+          "settings": {
+            "icon": "1",
+            "color": "#232323"
+          }
+        },
+        "633f9dae-3f65-4bda-9ca8-9d3e231aaf9d": {
+          "type": "cart",
+          "settings": {
+            "icon": "2",
+            "color": "#232323",
+            "color_bubble": "#ffffff",
+            "bg_bubble": "#232323"
+          }
+        }
+      },
+      "block_order": [
+        "7de2266e-0cd4-4fda-9f09-06f75a17f944",
+        "163e2cb5-14f2-4af6-9ac3-77193c082f53",
+        "550fbd21-75fb-4051-9dee-77d91b5239f0",
+        "20dae707-64c0-4ea3-a05e-561cae9836d8",
+        "633f9dae-3f65-4bda-9ca8-9d3e231aaf9d"
+      ],
+      "settings": {
+        "background": "#ffffff",
+        "gradient": "",
+        "sticky_header_type": "on_scroll",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    }
+  },
+  "order": [
+    "announcement-bar",
+    "header_minimal_nALk6f",
+    "d128316a-9eef-4ad8-9e41-3e9614db5ae2",
+    "00c92468-4e6c-42f1-85ad-ba2b3977ed37",
+    "header-mobile"
+  ]
+}

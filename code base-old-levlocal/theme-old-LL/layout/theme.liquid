@@ -1,0 +1,346 @@
+{% capture ymq_lock_login_require_template %}{% include 'ymq_lock' %}{% endcapture %}{% unless ymq_lock_login_require_template contains 'Liquid error' %}{{ ymq_lock_login_require_template }}{% endunless %}<!doctype html>
+{%- liquid
+  if settings.list_iso_rtl != blank
+    assign locale_iso_code = request.locale.iso_code
+    assign arr_list_rtl = settings.list_iso_rtl | remove: ' ' | split: ','
+    if arr_list_rtl contains locale_iso_code
+      assign enable_iso_rtl = true
+    else
+      assign enable_iso_rtl = false
+    endif
+  endif
+-%}
+<html
+  class="no-js"
+  lang="{{ request.locale.iso_code }}"
+  {% if settings.enable_layout_rtl and enable_iso_rtl %}
+    dir="rtl"
+  {% endif %}
+>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="">
+    <!-- Google Site Verification -->
+    <meta name="google-site-verification" content="cc4uEMMYj2miD2qLJogO75l1-oVyY2l80Qs7Wq79nSw">
+
+  <style>
+    .product-form__swatch {
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .swatch-wrapper {
+      display: inline-block !important;
+      margin-bottom: 0 !important;
+    }
+  </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Hedis Furniture",
+  "image": "https://hedisfurniture.com/cdn/shop/files/hedis_logo.png?v=1708153588&width=300",
+  "@id": "",
+  "url": "https://hedisfurniture.com/",
+  "telephone": "857-317-0775",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "199 Boylston st, N 231",
+    "addressLocality": "Chestnut Hill",
+    "addressRegion": "MA",
+    "postalCode": "02467",
+    "addressCountry": "US"
+  },
+  "openingHoursSpecification": [{
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday"
+    ],
+    "opens": "11:00",
+    "closes": "06:00"
+  },{
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": "Sunday",
+    "opens": "12:00",
+    "closes": "06:00"
+  }],
+  "sameAs": [
+    "https://www.facebook.com/hedis.furniture",
+    "https://www.instagram.com/hedis.furniture/",
+    "https://www.pinterest.com/hedisfurniture/"
+  ] 
+}
+</script>
+
+    <meta name="twitter:image" content="https://cdn.shopify.com/s/files/1/0560/2600/5592/files/hedis_logo_1.png?v=1747054412">
+<meta name="twitter:image:alt" content="Hedis Furniture">
+<meta name="twitter:site" content=" " />
+
+    
+
+    <link rel="canonical" href="{{ canonical_url }}">
+    <link rel="canonical" href="{{ canonical_url }}" canonical-shop-url="{{ shop.url }}/">
+    {%- if settings.favicon != blank -%}
+      <link rel="shortcut icon" href="{{ settings.favicon | img_url: '32x32' }}" type="image/png">
+    {%- endif -%}
+    <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+    <title>
+      {{ page_title }}
+      {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
+      {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
+      {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+    </title>
+
+    {%- if page_description -%}
+      <meta name="description" content="{{ page_description | escape }}">
+    {%- endif -%}
+    {% render 'meta-tags' %}
+    {{ content_for_header }}
+    {% render 'variable' %}
+    {% render 'global-style' %}
+    {{ 'custom.css' | asset_url | stylesheet_tag }}
+    {% render 'global-script' %}
+
+    <script>
+      document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+    </script>
+
+    {%- liquid
+      if settings.layout_body == 'full'
+        assign layout_body = 'body-full-width'
+      elsif settings.layout_body == 'boxed'
+        assign layout_body = 'body-boxed'
+      elsif settings.layout_body == 'custom_width'
+        assign layout_body = 'body-custom-width'
+      endif
+
+      if settings.style_dots == '02'
+        assign style_dots = 'style-dots-2'
+      endif
+
+      if settings.style_arrows == '02'
+        assign style_arrows = 'style-arrows-2'
+      elsif settings.style_arrows == '05'
+        assign style_arrows = 'style-arrows-5'
+      endif
+
+      if settings.product_card_layout == '02'
+        assign product_card_layout = 'product-card-layout-02'
+      elsif settings.product_card_layout == '03'
+        assign product_card_layout = 'product-card-layout-03'
+      elsif settings.product_card_layout == '04'
+        assign product_card_layout = 'product-card-layout-04'
+      elsif settings.product_card_layout == '05'
+        assign product_card_layout = 'product-card-layout-05'
+      elsif settings.product_card_layout == '06'
+        assign product_card_layout = 'product-card-layout-06'
+      elsif settings.product_card_layout == '07'
+        assign product_card_layout = 'product-card-layout-07'
+      else
+        assign product_card_layout = 'product-card-layout-01'
+      endif
+
+      if settings.quick_shop_type == '2'
+        assign quick_shop_type = 'quick_shop_option_2'
+      elsif settings.quick_shop_type == '3'
+        assign quick_shop_type = 'quick_shop_option_3'
+      endif
+
+      if settings.style_text_size_varriant == '02'
+        assign style_text_size_varriant = 'size_varriant_style_2'
+      endif
+    -%}
+    <meta name="google-site-verification" content="LqAspWqhk4UVz_sjknaFd4G0iYpP_uyU1GMkFOpPW4Q">
+  </head>
+
+  <body class="template-{{ request.page_type }} {{layout_body}} {{style_dots}} {{style_text_size_varriant}} {{style_arrows}} {{product_card_layout}} {% if settings.enable_button_disable_arrows %} enable_button_disable_arrows{% endif %}{% if settings.display_text_color_title %} enable_text_color_title{% endif %}{% if settings.style_text_color_varriant == '02' %} style_2_text_color_varriant{% endif %}{% if settings.hide_compare_homepage %} hide_compare_homepage{% endif %} {{ quick_shop_type }}{% if settings.show_image_loading %} show_image_loading{% endif %}{% if settings.show_effect_close %} show_effect_close{% endif %}{% if settings.enable_layout_rtl and enable_iso_rtl %} layout_rtl{% endif %}{% if request.design_mode %} shopify-design-mode{% endif %}{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}">
+    <div class="body-content-wrapper">
+      <a class="skip-to-content-link button visually-hidden" href="#MainContent">
+        {{- 'accessibility.skip_to_text' | t -}}
+      </a>
+
+      {% sections 'header-group' %}
+      {% render 'wrapper-header' %}
+
+      {%- if settings.layout_body == 'boxed' -%}
+        <div class="wrapper-hasbanner-adv">
+      {%- endif -%}
+      {% render 'halo-banner-adv-left' %}
+      {% render 'halo-banner-adv-right' %}
+      <main id="MainContent" class="wrapper-body content-for-layout focus-none" role="main" tabindex="-1">
+        {{ content_for_layout }}{% include 'ymq_lock_css_js' %}
+
+      </main>
+      {%- if settings.layout_body == 'boxed' -%}
+        </div>
+      {%- endif -%}
+
+      <div class="wrapper-footer">{% sections 'footer-group' %}</div>
+
+      {% section 'halo-toolbar-mobile' %}
+
+      <ul hidden>
+        <li id="a11y-refresh-page-message">{{ 'accessibility.refresh_page' | t }}</li>
+      </ul>
+
+      {% render 'global-script-2' %}
+    </div>
+    {% render 'halo-popup' %}
+
+    {%- if settings.enable_view_documentation -%}
+      {% render 'theme-editor-notification' %}
+    {%- endif -%}
+
+    {%- if settings.use_custom_js -%}
+      {{ 'custom.js' | asset_url | script_tag }}
+    {%- endif -%}
+
+    <div class="background-overlay">
+      {%- if settings.show_effect_close -%}
+        <div class="background-cursor-wrapper">
+          <div class="background-cursor-wrapper_outer">
+            <div class="background-cursor-wrapper_inner">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20">
+                <g class="nc-icon-wrapper" fill="#ffffff" transform="translate(0.5, 0.5)"><line fill="none" stroke-width="6" x1="46" y1="2" x2="2" y2="46"/> <line fill="none" stroke-width="6" x1="46" y1="46" x2="2" y2="2"/></g>
+              </svg>
+            </div>
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+    {% render 'halo-sidebar' %}
+    <a href="#" id="back-to-top" title="Back to Top"> back to top</a>
+    <style>
+            #back-to-top {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: none; /* Hidden until scrolled */
+        background-color: #000; /* Button background */
+        color: #fff; /* Text color */
+        padding: 12px 18px; /* Padding around the text */
+        border-radius: 30px; /* Rounded corners for button */
+        font-size: 16px; /* Font size */
+        font-weight: bold; /* Bold text */
+        text-transform: uppercase; /* Uppercase letters */
+        text-align: center;
+        z-index: 1000; /* High z-index to keep it on top */
+        cursor: pointer; /* Pointer cursor on hover */
+        transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth hover effects */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+      }
+
+      #back-to-top:hover {
+        background-color: #333; /* Darker background on hover */
+        transform: translateY(-5px); /* Slight lift on hover */
+      }
+
+      @media (max-width: 768px) {
+        #back-to-top {
+          font-size: 14px; /* Adjust font size for smaller screens */
+          padding: 10px 15px; /* Smaller padding on mobile */
+        }
+      }
+    </style>
+         <!-- Global Swatch Hover Modal -->
+<div id="global-swatch-hover-modal" class="swatch-hover-modal" style="display: none;">
+  <div class="swatch-hover-inner">
+    <img id="modal-fabric-image" class="fabric-image" />
+    <h4 id="modal-title" style="font-weight: bold;"></h4>
+
+    <div class="attribute"><strong>Pattern:</strong> <span id="modal-pattern"></span></div>
+    <div class="attribute"><strong>Cleaning Code:</strong> 
+      <a href="https://hedisfurniture.com/pages/cleaningcode" target="_blank" id="modal-cleaning-code"></a>
+    </div>
+    <div class="attribute"><strong>Fabric Content:</strong> <span id="modal-fabric-content"></span></div>
+  </div>
+</div>
+
+<style>
+.swatch-hover-modal {
+  position: absolute;
+  z-index: 9999999;
+  width: 280px;
+  padding: 16px;
+  background: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 200ms ease-in-out, visibility 200ms ease-in-out;
+}
+
+.swatch-hover-modal.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.swatch-hover-inner img.fabric-image {
+  width: 100%;
+  margin-bottom: 10px;
+  display: block;
+}
+  .product-form__swatch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px; /* spacing between swatches */
+  flex-direction: row; /* force horizontal */
+}
+
+.swatch-wrapper {
+  display: inline-block;
+}
+
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const modal = document.getElementById("global-swatch-hover-modal");
+
+  document.querySelectorAll(".swatch-wrapper").forEach(wrapper => {
+    const template = wrapper.querySelector("template.swatch-hover-data");
+    if (!template) return;
+
+    wrapper.addEventListener("mouseenter", () => {
+      const clone = template.content.cloneNode(true);
+
+      const img = clone.querySelector("img.fabric-image");
+      const title = clone.querySelector("h4")?.textContent?.trim();
+      const pattern = clone.querySelector(".attribute:nth-child(3)")?.textContent?.replace("Pattern:", "").trim();
+      const cleaningCode = clone.querySelector(".attribute:nth-child(4) a")?.textContent?.trim();
+      const fabricContent = clone.querySelector(".attribute:nth-child(5)")?.textContent?.replace("Fabric Content:", "").trim();
+
+      document.getElementById("modal-fabric-image").src = img?.src || '';
+      document.getElementById("modal-title").textContent = title || '';
+      document.getElementById("modal-pattern").textContent = pattern || 'N/A';
+      document.getElementById("modal-cleaning-code").textContent = cleaningCode || 'N/A';
+      document.getElementById("modal-fabric-content").textContent = fabricContent || 'N/A';
+
+      const rect = wrapper.getBoundingClientRect();
+      modal.style.top = `${rect.bottom + window.scrollY + 10}px`;
+      modal.style.left = `${rect.left + rect.width / 2 - 140}px`;
+      modal.style.display = "block";
+      modal.classList.add("active");
+    });
+
+    wrapper.addEventListener("mouseleave", () => {
+      modal.classList.remove("active");
+    });
+  });
+});
+</script>
+         
+  </body>
+</html>

@@ -1,0 +1,153 @@
+{% raw %}<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap"><style>:root{
+--ar-green:#1f3d2f;--ar-green-h:#27503c;--ar-rust:#a85420;--ar-ink:#1a1a1a;
+--ar-muted:#6b6b6b;--ar-line:#d9d6cf;--ar-pill:#efeeea;
+--ar-serif:"Cormorant Garamond","EB Garamond",Georgia,"Times New Roman",serif;
+}
+
+/* ===== info column width / rhythm (Arhaus = narrow, airy, left-aligned) ===== */
+.productView-details.halo-productView-right{padding-left:clamp(20px,4vw,64px);}
+@media (min-width:1025px){.productView-details .productView-product{max-width:560px;}}
+
+/* ===== breadcrumb: quiet "Home / Product" ===== */
+.breadcrumb-container .breadcrumb{font-size:12px;letter-spacing:.04em;text-transform:none;color:var(--ar-muted);}
+.breadcrumb-container .breadcrumb a{color:var(--ar-muted);}
+.breadcrumb-container .breadcrumb a:hover{color:var(--ar-ink);text-decoration:underline;}
+.breadcrumb .separate svg{display:none;}
+.breadcrumb .separate::after{content:"/";opacity:.5;margin:0 2px;}
+
+/* ===== "Discount Taken Off Ã¢â‚¬Â¦ Price" pill ===== */
+.arhaus-pill{display:inline-block;background:var(--ar-pill);color:#4a4a4a;font-size:11px;
+letter-spacing:.06em;text-transform:uppercase;padding:6px 12px;border-radius:999px;margin:0 0 14px;font-weight:500;}
+
+/* ===== title: refined serif, title-case, near-black ===== */
+.productView-title{font-family:var(--ar-serif)!important;font-size:clamp(30px,3.4vw,42px)!important;
+line-height:1.08!important;font-weight:500!important;letter-spacing:.002em!important;
+text-transform:none!important;color:var(--ar-ink)!important;margin:4px 0 14px!important;}
+.productView-title span{font-family:inherit;font-weight:inherit;text-transform:none;}
+
+/* ===== price: sale (rust) first, compare-at (struck, gray) after ===== */
+.productView-price .price{font-size:26px;}
+.productView-price .price__sale{display:flex;flex-direction:row-reverse;justify-content:flex-end;align-items:baseline;gap:12px;}
+.productView-price .price-item--sale{color:var(--ar-rust)!important;font-weight:500;font-size:26px;}
+.productView-price .price__compare{margin:0;}
+.productView-price .price__compare .price-item--regular,
+.productView-price .price__compare s{color:var(--ar-muted)!important;text-decoration:line-through;font-weight:400;font-size:22px;}
+.productView-price .price__regular .price-item--regular{color:var(--ar-ink)!important;font-weight:500;font-size:26px;}
+.productView-price .price__saved{display:none;}
+
+/* ===== SKU + "See the full collection" ===== */
+#variant-sku{font-size:13px;letter-spacing:.06em;color:var(--ar-muted);text-transform:uppercase;margin:14px 0 4px;}
+.arhaus-collection-link{display:inline-flex;align-items:center;gap:7px;font-size:13px;letter-spacing:.04em;
+color:var(--ar-ink);text-decoration:underline;text-underline-offset:3px;margin:6px 0 22px;}
+.arhaus-collection-link svg{width:15px;height:15px;}
+.arhaus-collection-link:hover{color:var(--ar-green);}
+
+/* ===== variant / FABRIC picker ===== */
+.productView-options{border:0!important;padding:0;margin-bottom:6px;}
+.product-form__input>.form__label,.productView-options legend.form__label{
+font-size:12px!important;letter-spacing:.10em;text-transform:uppercase;color:var(--ar-muted);font-weight:500;margin-bottom:10px;}
+.productView-options legend.form__label [data-header-option]{color:var(--ar-ink);margin-left:6px;}
+.product-form__input .swatch-wrapper .product-form__label,
+.product-form__input .product-form__label.available{border-radius:2px;border:1px solid var(--ar-line);width:42px;height:42px;padding:2px;overflow:hidden;}
+.product-form__radio:checked+.swatch-wrapper .product-form__label,
+.product-form__radio:checked+.product-form__label{outline:1.5px solid var(--ar-ink);outline-offset:2px;border-color:transparent;}
+.product-form__label .pattern{border-radius:0;}
+.product-form__input:not(.product-form__swatch) .product-form__label{
+border:1px solid var(--ar-line);border-radius:2px;min-width:54px;padding:11px 16px;font-size:13px;
+letter-spacing:.03em;color:var(--ar-ink);background:#fff;text-transform:none;}
+.product-form__input:not(.product-form__swatch) .product-form__radio:checked+.product-form__label{border-color:var(--ar-ink);}
+
+/* ===== QTY + availability ===== */
+.productView-quantity{align-items:center;gap:14px;}
+.quantity__label{font-size:12px!important;letter-spacing:.10em;text-transform:uppercase;color:var(--ar-muted);font-weight:500;margin:0 4px 0 0;}
+.quantity__container{border:1px solid var(--ar-line);border-radius:2px;}
+.btn-quantity{background:transparent;color:var(--ar-ink);border:0;}
+.btn-quantity:hover{color:var(--ar-green);}
+.quantity__input{border:0;font-size:15px;}
+.arhaus-availability{display:block;font-size:13px;color:var(--ar-muted);letter-spacing:.02em;margin:0 0 4px;text-align:right;}
+
+/* ===== ADD TO BAG: full-width, square, deep green ===== */
+.productView-buttons .productView-action,.productView-buttons .product-form__buttons{width:100%;}
+#product-add-to-cart.product-form__submit,.productView-buttons .product-form__submit{
+width:100%!important;background:var(--ar-green)!important;border:1px solid var(--ar-green)!important;color:#fff!important;
+border-radius:2px!important;min-height:56px;font-size:13px!important;letter-spacing:.14em!important;text-transform:uppercase!important;font-weight:600!important;}
+#product-add-to-cart.product-form__submit:hover,.productView-buttons .product-form__submit:hover{background:var(--ar-green-h)!important;border-color:var(--ar-green-h)!important;color:#fff!important;}
+.product-form__submit.button--secondary,.product-form__submit[disabled]{background:#9a9a9a!important;border-color:#9a9a9a!important;color:#fff!important;opacity:1!important;}
+
+/* hide Shop Pay dynamic checkout + installment messaging */
+.productView-groupBottom,.productView-payment,.productView-form .installment,.shopify-payment-button{display:none!important;}
+
+/* ===== "Save to List": centered link, heart + label ===== */
+.productView-wishlist{text-align:center;margin:16px 0 4px;}
+.productView-wishlist [data-wishlist]{display:inline-flex;flex-direction:row-reverse;align-items:center;gap:8px;
+font-size:13px;letter-spacing:.05em;color:var(--ar-ink);text-decoration:underline;text-underline-offset:3px;}
+.productView-wishlist [data-wishlist]::after{content:"Save to List";}
+.productView-wishlist [data-wishlist] svg{width:16px;height:16px;}
+.productView-wishlist [data-wishlist]:hover{color:var(--ar-green);}
+
+/* ===== accordion sections (DIMENSIONS / DETAILS / SHIPPING Ã¢â‚¬Â¦) ===== */
+.productView-tab.layout-vertical{margin-top:30px;border-top:1px solid var(--ar-line);}
+.productView-tab .tab-content{border-bottom:1px solid var(--ar-line);}
+.productView-tab .toggle-title .toggleLink{padding:20px 2px;font-size:13px;letter-spacing:.12em;
+text-transform:uppercase;color:var(--ar-ink);font-weight:600;font-family:inherit;}
+.productView-tab .toggleLink .text{font-weight:600;}
+.productView-tab .toggle-content{font-size:14px;line-height:1.7;color:#4a4a4a;padding-bottom:18px;}
+.productView-tab .toggleLink .icon-plus,.productView-tab .toggleLink .icon-dropdown{color:var(--ar-ink);}
+
+/* ===== gallery: soften badge to a quiet pill ===== */
+.halo-productBadges .badge{border-radius:2px;letter-spacing:.04em;font-size:11px;text-transform:uppercase;}
+.halo-productBadges .sale-badge{background:var(--ar-rust);color:#fff;}
+.halo-productBadges .new-badge{background:var(--ar-green);color:#fff;}
+
+/* ===== mobile ===== */
+@media (max-width:1024px){
+.productView-details.halo-productView-right{padding-left:0;}
+.productView-title{font-size:clamp(26px,7vw,32px)!important;}
+.arhaus-availability{text-align:left;}
+}
+
+/* delivery line (JS tags the block) */
+.arhaus-availability b,.arhaus-availability p{font-weight:400!important;display:inline;margin:0;font-size:inherit;color:inherit;}
+/* anti-FOUC: hide info column until reordered (CSS reveals at 1.2s even if JS fails) */
+.productView-product{opacity:0;animation:arReveal .01s linear 1.2s forwards;}
+@keyframes arReveal{to{opacity:1;}}
+.productView-product.arhaus-ready{opacity:1!important;animation:none!important;}</style><script>(function(){
+ if(window.__arhausPDP)return; window.__arhausPDP=1;
+ function done(){var c=document.querySelector('.productView-product'); if(c)c.classList.add('arhaus-ready');}
+ function run(){
+  var col=document.querySelector('.productView-product');
+  if(!col){done();return;}
+  try{
+   var items=[].slice.call(col.children).filter(function(e){return e.classList&&(e.classList.contains('productView-moreItem')||e.tagName.toLowerCase()==='product-tab');});
+   function has(e,s){return !!e.querySelector(s);}
+   function f(t){for(var i=0;i<items.length;i++){if(t(items[i]))return items[i];}return null;}
+   function isTab(e){return e.tagName.toLowerCase()==='product-tab'||has(e,'.toggleLink')||has(e,'.productView-tab')||has(e,'.tab-content');}
+   var elTitle=f(function(e){return has(e,'.productView-title');});
+   var elPrice=f(function(e){return has(e,'.productView-price');});
+   var elSku=f(function(e){return has(e,'#variant-sku');});
+   var elVar=f(function(e){return has(e,'.productView-options');});
+   var elVarDesc=f(function(e){return has(e,'.productView-variantDescription,.variant-description');});
+   var elQty=f(function(e){return has(e,'.productView-quantity');});
+   var elBuy=f(function(e){return has(e,'.productView-buttons');});
+   var elCrumb=f(function(e){return has(e,'.breadcrumb-container')||(e.classList&&e.classList.contains('moreItem-breadcrumb'));});
+   var elDeliver=f(function(e){return /to deliver/i.test(e.textContent||'');});
+   var pill=null;
+   if(elPrice&&(document.querySelector('.productView-price .price--on-sale')||document.querySelector('.productView-price .price__compare'))){
+     pill=document.createElement('div');pill.className='productView-moreItem arhaus-keep';
+     pill.innerHTML='<span class="arhaus-pill">Discount Taken Off Original Price</span>';
+   }
+   var coll=null,cl=document.querySelector('.breadcrumb-container a.breadcrumb-collection,.breadcrumb-container .breadcrumb a[href*="/collections/"]');
+   if(cl){coll=document.createElement('div');coll.className='productView-moreItem arhaus-keep';
+     coll.innerHTML='<a class="arhaus-collection-link" href="'+cl.getAttribute('href')+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>See the full collection</a>';}
+   if(elDeliver)elDeliver.classList.add('arhaus-availability');
+   var info=[elCrumb,pill,elTitle,elPrice,elSku,coll,elVar,elVarDesc,elDeliver,elQty,elBuy].filter(Boolean);
+   var tabs=items.filter(isTab);
+   var keepAll=info.concat(tabs);
+   items.forEach(function(e){if(keepAll.indexOf(e)===-1)e.style.display='none';});
+   info.forEach(function(e){col.appendChild(e);});
+   tabs.forEach(function(e){col.appendChild(e);});
+  }catch(err){if(window.console)console.warn('arhaus-pdp',err);}
+  done();
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run); else run();
+})();</script>{% endraw %}

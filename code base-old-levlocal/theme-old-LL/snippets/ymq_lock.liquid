@@ -1,0 +1,159 @@
+{% if content_for_header contains 'zbqolyohuyfsvyft' %}
+    {%- capture contentHeaderForUrlQuery -%}{{ content_for_header }}{%- endcapture -%}
+    {%- assign page_url = contentHeaderForUrlQuery | split:'"pageurl":"' | last | split:'"' | first | split:'.myshopify.com' | last |   replace:'\/','/' |    replace:'%20',' ' |    replace:'\u0026','&'  -%}
+
+    {% assign ymqUrltoken = "" %}
+    {% assign ymqUrlParams = page_url | split: "?" %}
+    {% assign ymqUrlParams = ymqUrlParams[1] | split: "&" %}
+    {% assign ymq_product = product %}
+    {% for ymqUrlParam in ymqUrlParams %}
+        {% assign ymqUrlParamArray = ymqUrlParam | split: "=" %}
+        {% if ymqUrlParamArray[0] == 'token' %}
+            {% assign ymqUrltoken = ymqUrlParamArray[1] %}
+            {% break %}
+        {% endif %}
+    {% endfor %}
+
+    {% assign page_url =  "https://" | append: page_url  %}
+    {% assign ymqPageUrlWithParams = page_url | remove: shop.url %}
+    {% assign ymqCurrentPath = request.path | split: '/' | join: '/' %}
+    {% assign isApplyForceLogin = false %}
+    {% assign ymqLockCurrentPage = canonical_url | remove: shop.url %}
+    {% assign old_content_for_layout = content_for_layout %}
+    {% capture ymqLockAppCartAttribute %}
+        <script>
+            window.ymqLockAppCartAttribute = async (attribute, value = '', callback) => {
+                var attributes = {
+                    attributes: {}
+                };
+                attributes['attributes'][attribute] = value;
+                var request = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(attributes),
+                };
+        
+                var response = await fetch(`/cart/update.js`, request);
+                var data = await response.json();
+        
+                if (response.ok) {
+                    if(value == 'ymq-lock-empty'){
+                        ymqLockAppCartAttribute(attribute);
+                    }else{
+                        if(typeof callback == 'function'){
+                            callback(1)
+                        }
+                    }
+                } else {
+                    if(typeof callback == 'function'){
+                        callback(0)
+                    }
+                }
+            };
+        </script>
+    {% endcapture %}
+    {% capture disableHeaderFooter_FL %}
+        <style type="text/css">
+            #shopify-section-header,
+            #shopify-section-sidebar,
+            #shopify-section-sidebar,
+            #shopify-section-announcement-bar,
+            footer,
+            header,
+            #shopify-section-footer,
+            #shopify-section-text-columns-with-icons,
+            a.in-page-link.visually-hidden.skip-link,
+            #shopify-section-announcement,
+            .site-header.site-header--minimal,
+            #shopify-section-static-footer,
+            #shopify-section-static-announcement,
+            .header-section,
+            .site-footer,
+            #shopify-section-header-template,
+            .shopify-section-group-header-group,
+            .announcement-bar-section,
+            .section-header,
+            .shopify-section-group-footer-group {
+                display: none;
+            }
+
+            html {
+                background: transparent;
+                height: 100%;
+            }
+        </style>
+        <script id="ymq-lock-enable-header-footer" type="text/javascript">
+            let arrayHeader = ['#shopify-section-header', '#shopify-section-sidebar', '.site-header.site-header--minimal', '#shopify-section-static-announcement', '.header-section', '#shopify-section-header-template'];
+            let customSelector = ['#shopify-section-sidebar', '#shopify-section-announcement-bar', 'a.in-page-link.visually-hidden.skip-link', '#shopify-section-text-columns-with-icons', '#shopify-section-announcement', '#shopify-section-static-header', '.site-footer', '.header-wrapper'];
+            let arrayFooter = ['footer', '#shopify-section-footer',];
+            customSelector = customSelector.concat(arrayFooter, arrayHeader);
+            let disableHeaderFooter = setInterval(timeDisableHeaderFooter, 500);
+            function timeDisableHeaderFooter() {
+                document.querySelector(customSelector).remove();
+                if (document.querySelector(customSelector) == null) {
+                    clearInterval(disableHeaderFooter);
+                }
+            }
+        </script>
+    {% endcapture %}
+
+    {% unless content_for_header contains "Shopify.designMode" or content_for_header contains "previewBarInjector.init()" %}
+
+        {% if  template != "customers/reset_password" and template != "customers/register" and template != "customers/activate_account" and request.path != "/challenge" %}
+            {% assign ymq_lock_current_date = 'now' | date: '%s' %}
+            {% capture include_ymq_lock_sntap_rules %}
+                {% render 'ymq_lock_sntap_rules' %}
+            {% endcapture %}
+            {% unless include_ymq_lock_sntap_rules contains "Liquid error" %}
+                {% include 'ymq_lock_sntap_rules' %}
+            {% endunless %}
+        {% endif %}
+
+        {% assign old_content_for_layout = content_for_layout %}
+        {% if  template != "customers/reset_password" and template != "customers/register" and template != "customers/activate_account" and request.path != "/challenge" %}
+            {% assign ymq_lock_current_date = 'now' | date: '%s' %}
+            {% capture include_ymq_lock_fl_rules %}
+                {% render 'ymq_lock_fl_rules' %}
+            {% endcapture %}
+            {% unless include_ymq_lock_fl_rules contains "Liquid error" %}
+                {% include 'ymq_lock_fl_rules' %}
+            {% endunless %}
+        {% endif %}
+
+        {% assign old_content_for_layout = content_for_layout %}
+        {% if  template != "customers/reset_password" and template != "customers/register" and template != "customers/activate_account" and request.path != "/challenge" %}
+            {% assign ymq_lock_current_date = 'now' | date: '%s' %}
+            {% capture include_ymq_lock_pc_rules %}
+                {% render 'ymq_lock_pc_rules' %}
+            {% endcapture %}
+            {% unless include_ymq_lock_pc_rules contains "Liquid error" %}
+                {% include 'ymq_lock_pc_rules' %}
+            {% endunless %}
+        {% endif %}
+
+        {% assign old_content_for_layout = content_for_layout %}
+        {% if  template != "customers/reset_password" and template != "customers/register" and template != "customers/activate_account" and request.path != "/challenge" %}
+            {% assign ymq_lock_current_date = 'now' | date: '%s' %}
+            {% capture include_ymq_lock_sl_rules %}
+                {% render 'ymq_lock_sl_rules' %}
+            {% endcapture %}
+            {% unless include_ymq_lock_sl_rules contains "Liquid error" %}
+                {% include 'ymq_lock_sl_rules' %}
+            {% endunless %}
+        {% endif %}
+
+        {% assign old_content_for_layout = content_for_layout %}
+        {% if  template != "customers/reset_password" and template != "customers/register" and template != "customers/activate_account" and request.path != "/challenge" %}
+            {% assign ymq_lock_current_date = 'now' | date: '%s' %}
+            {% capture include_ymq_lock_hpc_rules %}
+                {% render 'ymq_lock_hpc_rules' %}
+            {% endcapture %}
+            {% unless include_ymq_lock_hpc_rules contains "Liquid error" %}
+                {% include 'ymq_lock_hpc_rules' %}
+            {% endunless %}
+        {% endif %}
+
+    {% endunless %}
+{% endif %}

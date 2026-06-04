@@ -1,0 +1,17 @@
+# Scratch / temp working directories
+.tmp_frames/
+.tmp_theme/
+.work/
+
+# Local tooling state
+.claude/
+.gstack/
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Shopify CLI session files
+.shopify-cli.theme.lock
+.shopifyignore

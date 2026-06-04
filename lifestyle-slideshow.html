@@ -1,0 +1,54 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hedi's Furniture — Lifestyle Preview</title>
+<style>
+  :root{--bg:#1c1814;--fg:#f3ebdd;--accent:#8c6e45}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--fg);font-family:"Jost",system-ui,Arial,sans-serif;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+  header{padding:14px 22px;display:flex;align-items:center;gap:18px;border-bottom:1px solid rgba(255,255,255,.08)}
+  header h1{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;font-size:19px;letter-spacing:.02em}
+  header .count{margin-left:auto;font-size:13px;opacity:.85;letter-spacing:.05em}
+  .stage{flex:1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .stage img{max-width:92%;max-height:92%;object-fit:contain;box-shadow:0 24px 70px rgba(0,0,0,.55);border-radius:4px}
+  .cap{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:12px;opacity:.72;background:rgba(0,0,0,.45);padding:5px 14px;border-radius:20px;max-width:80%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .nav{position:absolute;top:50%;transform:translateY(-50%);width:54px;height:54px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(0,0,0,.35);color:#fff;font-size:23px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+  .nav:hover{background:#fff;color:#1c1814;border-color:#fff}
+  .prev{left:20px}.next{right:20px}
+  .bar{display:flex;gap:16px;align-items:center;padding:11px 22px;border-top:1px solid rgba(255,255,255,.08);font-size:12px;opacity:.9}
+  .bar button{background:transparent;border:1px solid rgba(255,255,255,.3);color:var(--fg);padding:7px 18px;border-radius:20px;cursor:pointer;font-size:11px;letter-spacing:.12em;text-transform:uppercase;transition:.2s}
+  .bar button:hover{background:var(--fg);color:var(--bg)}
+  .thumbs{display:flex;gap:6px;overflow-x:auto;padding:9px 18px;border-top:1px solid rgba(255,255,255,.08)}
+  .thumbs::-webkit-scrollbar{height:8px}.thumbs::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:4px}
+  .thumbs img{height:60px;width:60px;object-fit:cover;border-radius:3px;cursor:pointer;opacity:.45;transition:.15s;flex:0 0 auto}
+  .thumbs img.active,.thumbs img:hover{opacity:1;outline:2px solid var(--accent)}
+</style>
+</head>
+<body>
+  <header><h1>Hedi&#39;s Furniture &mdash; Lifestyle Preview</h1><span class="count" id="count"></span></header>
+  <div class="stage">
+    <button class="nav prev" onclick="go(-1)" aria-label="Previous">&#8249;</button>
+    <img id="main" src="" alt="">
+    <div class="cap" id="cap"></div>
+    <button class="nav next" onclick="go(1)" aria-label="Next">&#8250;</button>
+  </div>
+  <div class="bar">
+    <button id="playBtn" onclick="toggle()">Play</button>
+    <span>Arrow keys to move &middot; Space to play/pause &middot; click a thumbnail to jump</span>
+  </div>
+  <div class="thumbs" id="thumbs"></div>
+<script>
+  var imgs=['artistic-olive-tree-from-low-angle-rustic-background-fulfily-2.jpg','artistic-overhead-nest-sofa-elegant-silhouette-fulfily-3.jpg','asher-dining-table-rectangular-artistic-shot-fulfily2.jpg','asher-dining-table-rectangular-artistic-shot-fulfily-2.jpg','asher-dining-table-rectangular-closeup-fulfily0.jpg','asher-dining-table-rectangular-closeup-fulfily-0.jpg','asher-dining-table-rectangular-full-view-fulfily-1.jpg','claireleather-chair-close-up-armrest-fulfily0.jpg','claireleather-chair-close-up-armrest-fulfily-0.jpg','claireleather-chair-in-modern-dining-room-fulfily1.jpg','claireleather-chair-in-modern-dining-room-fulfily-1.jpg','claireleather-chair-overhead-shot-fulfily3.jpg','claireleather-chair-overhead-shot-fulfily-3.jpg','claireleather-chair-side-profile-dining-fulfily2.jpg','claireleather-chair-side-profile-dining-fulfily-2.jpg','close-up-braided-backside-seat-belt-rocking-chair-fulfily0.jpg','close-up-braided-backside-seat-belt-rocking-chair-fulfily-0.jpg','close-up-detailed-olive-tree-olives-and-leaf-texture-fulfily-0.jpg','close-up-of-huxley-sofa-stitch-work-and-fabric-weave-in-cozyreadingnook-fulfily-1.jpg','close-up-textured-fabric-and-armrest-serena-92-sofa-fulfily-0.jpg','close-up-textured-fabric-cardell-dining-chair-fulfily-0.jpg','close-up-textured-nest-sofa-fabric-fulfily0.jpg','close-up-textured-nest-sofa-fabric-fulfily-0.jpg','close-up-textured-teak-dining-table-with-rustic-grooves-fulfily-0.jpg','close-up-upholstery-texture-of-frannie-sofa-with-micro-texture-details-fulfily-0.jpg','close-up-view-of-kandor-leather-sofa-fine-grain-texture-fulfily-0.jpg','close-up-weathered-teak-table-surface-texture-fulfily-0.jpg','close-up-white-miramara-chandelier-rattan-detail-fulfily-0.jpg','coastal-teak-dining-table-with-hidden-butterfly-leaf-fulfily-0.jpg','creative-angle-upscale-living-room-serena-92-sofa-fulfily-2.jpg','dylan-sofa-modern-living-room-view-fulfily-1.jpg','elegant-dining-room-white-miramara-chandelier-styled-setting-fulfily-2.jpg','falco-nesting-tables-close-up-reclaimed-french-oak-bases-fulfily-0.jpg','falco-nesting-tables-living-room-layered-nesting-design-fulfily-1.jpg','falco-nesting-tables-used-on-sofa-midcentury-inspired-design-fulfily-2.jpg','fiber-texture-swatch-showcasing-babric-pattern-fulfily-0.jpg','full-body-modern-living-room-nest-sofa-fulfily1.jpg','full-body-modern-living-room-nest-sofa-fulfily-1.jpg','full-body-modern-living-space-serena-92-sofa-fulfily-1.jpg','full-body-modern-seat-belt-rocking-chair-in-living-space-fulfily1.jpg','full-body-modern-seat-belt-rocking-chair-in-living-space-fulfily-1.jpg','full-body-view-of-huxley-sofa-in-contemporary-open-plan-living-space-fulfily-2.jpg','full-height-realistic-olive-tree-in-modern-interior-fulfily-1.jpg','full-height-white-miramara-chandelier-in-modern-interior-fulfily-1.jpg','full-shot-of-kandor-leather-sofa-in-modern-living-room-fulfily-1.jpg','full-view-coastal-teak-extension-table-in-outdoor-patio-fulfily-1.jpg','full-view-elegant-dining-setting-cardell-chair-fulfily-1.jpg','full-view-of-modern-minimalist-frannie-sofa-in-living-room-fulfily-1.jpg','full-view-outdoor-teak-table-garden-dining-scene-fulfily-1.jpg','huxley-sofa-close-up-curly-fabric-texture-fulfily-0.jpg','huxley-sofa-in-modern-spacious-living-room-with-natural-light-fulfily-0.jpg','huxley-sofa-modern-side-profile-wood-frame-details-fulfily-2.jpg','huxley-sofa-stylish-living-room-display-fulfily-1.jpg','interior-modern-organic-seat-belt-rocking-chair-setup-fulfily-2.jpg','intricate-basant-rug-on-polished-hardwood-floor-fulfily-0.jpg','mccoy-sectional-artistic-perspective-modern-interior-fulfily-2.jpg','mccoy-sectional-close-up-fabric-texture-macro-shot-fulfily-0.jpg','mccoy-sectional-close-up-modern-living-room-fulfily-0.jpg','mccoy-sectional-closeup-textured-fabric-zoom-fulfily-0.jpg','mccoy-sectional-full-body-modern-open-space-fulfily-1.jpg','mccoy-sectional-full-view-contemporary-living-room-fulfily-1.jpg','mccoy-sectional-full-view-inviteing-living-room-fulfily-1.jpg','mccoy-sectional-modern-l-shaped-couch-for-living-room-fulfily-0.jpg','mccoy-sectional-outdoor-elevated-view-fulfily-2.jpg','mccoy-sectional-side-profile-modern-interior-fulfily-2.jpg','miramar-chandelier-white-close-up-texture-focus-fulfily-0.jpg','miramar-chandelier-white-modern-dining-area-fulfily-2.jpg','miramar-chandelier-white-portrait-ceiling-view-fulfily-1.jpg','modern-coastal-interior-dining-space-with-teak-table-fulfily-2.jpg','modern-minimalist-basant-rug-on-concrete-floor-fulfily-2.jpg','outdoor-coastal-teak-dining-table-on-sunlit-patio-fulfily-1.jpg','peretti-92-sofa-armrest-craftsmanship-outdoor-setting-fulfily-2.jpg','peretti-92-sofa-close-up-cushioning-structure-detail-fulfily-0.jpg','peretti-92-sofa-full-view-stylish-living-room-fulfily-1.jpg','person-seated-on-sapphire-olive-dylan-sofa-fulfily-2.jpg','petite-flamingo-sculpture-on-natural-stone-in-rustic-garden-daylight-fulfily-2.jpg','rustic-room-spacious-basant-rug-with-cozy-armchair-fulfily-1.jpg','side-angle-modern-dining-room-cardell-dining-chair-fulfily-2.jpg','side-perspective-teak-dining-table-with-mechanism-fulfily-2.jpg','side-profile-cozy-nest-sofa-details-fulfily2.jpg','side-profile-cozy-nest-sofa-details-fulfily-2.jpg','side-profile-of-frannie-sofa-in-stylish-contemporary-setting-fulfily-2.jpg','side-view-kandor-leather-sofa-emphasizing-vertical-channels-fulfily-2.jpg','small-flamingo-sculpture-on-minimalist-concrete-pedestal-outdoor-golden-hour-fulfily-0.jpg','stitches-dining-chair-close-up-tufted-back-fulfily0.jpg','stitches-dining-chair-close-up-tufted-back-fulfily-0.jpg','stitches-dining-chair-detail-stitching-and-legs-fulfily2.jpg','stitches-dining-chair-detail-stitching-and-legs-fulfily-2.jpg','stitches-dining-chair-full-view-modern-dining-fulfily1.jpg','stitches-dining-chair-full-view-modern-dining-fulfily-1.jpg','stitches-dining-chair-overhead-pattern-view-fulfily3.jpg','stitches-dining-chair-overhead-pattern-view-fulfily-3.jpg','tiny-flamingo-sculpture-modern-interior-soft-cinematic-light-fulfily-1.jpg','top-down-view-textured-teak-table-grain-pattern-fulfily-2.jpg'];
+  var dir="images/", i=0, timer=null;
+  var main=document.getElementById("main"),cap=document.getElementById("cap"),count=document.getElementById("count"),thumbs=document.getElementById("thumbs"),playBtn=document.getElementById("playBtn");
+  function show(n){i=(n+imgs.length)%imgs.length;main.src=dir+encodeURIComponent(imgs[i]);cap.textContent=imgs[i];count.textContent=(i+1)+" / "+imgs.length;var ts=thumbs.children;for(var k=0;k<ts.length;k++){ts[k].className=(k===i?"active":"")}if(ts[i])ts[i].scrollIntoView({inline:"center",block:"nearest"})}
+  function go(d){show(i+d)}
+  function toggle(){if(timer){clearInterval(timer);timer=null;playBtn.textContent="Play"}else{timer=setInterval(function(){go(1)},2200);playBtn.textContent="Pause"}}
+  for(var k=0;k<imgs.length;k++){(function(idx){var t=document.createElement("img");t.src=dir+encodeURIComponent(imgs[idx]);t.loading="lazy";t.onclick=function(){show(idx)};thumbs.appendChild(t)})(k)}
+  document.addEventListener("keydown",function(e){if(e.key==="ArrowRight")go(1);else if(e.key==="ArrowLeft")go(-1);else if(e.key===" "){e.preventDefault();toggle()}});
+  show(0);toggle();
+</script>
+</body>
+</html>
