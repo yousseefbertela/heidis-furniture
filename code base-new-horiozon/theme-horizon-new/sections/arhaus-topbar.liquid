@@ -1,0 +1,46 @@
+{%- comment -%} Arhaus-style top utility bar for Hedi's Furniture. Self-contained. {%- endcomment -%}
+<style>
+  #atb-{{ section.id }}{ background:{{ section.settings.bg_color }}; color:#fff; font-family:"Jost","Helvetica Neue",Arial,sans-serif; }
+  #atb-{{ section.id }} .atb-in{ display:flex; align-items:center; justify-content:space-between; gap:20px; padding:11px clamp(16px,3vw,40px); }
+  #atb-{{ section.id }} a{ color:#fff; text-decoration:none; }
+  #atb-{{ section.id }} .atb-promo{ font-size:12px; letter-spacing:.08em; text-transform:uppercase; }
+  #atb-{{ section.id }} .atb-promo a{ text-decoration:underline; text-underline-offset:2px; margin-left:6px; }
+  #atb-{{ section.id }} .atb-links{ display:flex; gap:30px; }
+  #atb-{{ section.id }} .atb-links a{ font-size:12px; letter-spacing:.04em; transition:opacity .2s ease; }
+  #atb-{{ section.id }} .atb-links a:hover{ opacity:.7; }
+  @media (max-width:749px){
+    #atb-{{ section.id }} .atb-links{ display:none; }
+    #atb-{{ section.id }} .atb-in{ justify-content:center; }
+  }
+</style>
+<div id="atb-{{ section.id }}">
+  <div class="atb-in">
+    <div class="atb-promo">
+      {{ section.settings.promo_text }}
+      {%- if section.settings.promo_link_text != blank -%}<a href="{{ section.settings.promo_link | default: '#' }}">{{ section.settings.promo_link_text }}</a>{%- endif -%}
+    </div>
+    <div class="atb-links">
+      {%- if section.settings.link_1_text != blank -%}<a href="{{ section.settings.link_1_url | default: '#' }}">{{ section.settings.link_1_text }}</a>{%- endif -%}
+      {%- if section.settings.link_2_text != blank -%}<a href="{{ section.settings.link_2_url | default: '#' }}">{{ section.settings.link_2_text }}</a>{%- endif -%}
+      {%- if section.settings.link_3_text != blank -%}<a href="{{ section.settings.link_3_url | default: '#' }}">{{ section.settings.link_3_text }}</a>{%- endif -%}
+    </div>
+  </div>
+</div>
+{% schema %}
+{
+  "name": "Arhaus Top Bar",
+  "settings": [
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#1E3D2F" },
+    { "type": "text", "id": "promo_text", "label": "Promo text", "default": "Save up to 25% off your order*" },
+    { "type": "text", "id": "promo_link_text", "label": "Promo link text", "default": "Learn more" },
+    { "type": "url", "id": "promo_link", "label": "Promo link" },
+    { "type": "text", "id": "link_1_text", "label": "Link 1", "default": "Trade" },
+    { "type": "url", "id": "link_1_url", "label": "Link 1 URL" },
+    { "type": "text", "id": "link_2_text", "label": "Link 2", "default": "Make An Appointment" },
+    { "type": "url", "id": "link_2_url", "label": "Link 2 URL" },
+    { "type": "text", "id": "link_3_text", "label": "Link 3", "default": "Hedi's Business" },
+    { "type": "url", "id": "link_3_url", "label": "Link 3 URL" }
+  ],
+  "presets": [ { "name": "Arhaus Top Bar" } ]
+}
+{% endschema %}

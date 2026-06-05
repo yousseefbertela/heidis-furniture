@@ -1,17 +1,22 @@
-# Scratch / temp working directories
-.tmp_frames/
-.tmp_theme/
-.work/
-
-# Local tooling state
+# --- Agent / session / local working dirs (not project code) ---
 .claude/
 .gstack/
+.work/
+.tmp_frames/
+.tmp_theme/
 
-# OS junk
+# --- OS / editor junk ---
 .DS_Store
 Thumbs.db
 desktop.ini
+*.log
 
-# Shopify CLI session files
-.shopify-cli.theme.lock
-.shopifyignore
+# --- Dependencies / build output (none expected, here for safety) ---
+node_modules/
+
+# --- Local credentials / secrets (safety net) ---
+.git-credentials
+.env
+*.env
+.shopify/
+shopify.theme.toml

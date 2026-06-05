@@ -70,6 +70,16 @@
     assign price_min = price_min | money
     assign price_max = price_max | money
   endif
+
+  # Arhaus-style "From {lowest price}" on product cards when variants vary in price.
+  assign price_varies = false
+  if is_product_card and product_resource.price_varies
+    assign price_varies = true
+  endif
+  assign regular_display = price
+  if price_varies
+    assign regular_display = price_min | prepend: 'From '
+  endif
 -%}
 
 <div ref="priceContainer">
@@ -95,7 +105,7 @@
         {% endif %}
       "
     >
-      <span class="price">{{ price | default: '&nbsp;' }}</span>
+      <span class="price">{{ regular_display | default: '&nbsp;' }}</span>
     </div>
     <div
       class="
@@ -108,7 +118,7 @@
       {% if show_sale_price_first %}
         <span class="price-item__group">
           <span class="visually-hidden">{{ 'content.price_sale' | t }}&nbsp;</span>
-          <span class="price-item--sale price">{{ price | default: '&nbsp;' }}</span>
+          <span class="price-item--sale price">{{ regular_display | default: '&nbsp;' }}</span>
         </span>
         <span class="price-item__group">
           <span class="visually-hidden">{{ 'content.price_regular' | t }}&nbsp;</span>
@@ -121,7 +131,7 @@
         </span>
         <span class="price-item__group">
           <span class="visually-hidden">{{ 'content.price_sale' | t }}&nbsp;</span>
-          <span class="price-item--sale price">{{ price | default: '&nbsp;' }}</span>
+          <span class="price-item--sale price">{{ regular_display | default: '&nbsp;' }}</span>
         </span>
       {% endif %}
     </div>

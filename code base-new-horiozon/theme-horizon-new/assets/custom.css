@@ -1,0 +1,639 @@
+/* ==========================================================================
+   Hedi's Furniture — Arhaus-style global overrides (Horizon theme)
+   Single override file. Loaded AFTER base.css + color-schemes in theme.liquid,
+   so these rules win. Never edit vendor base.css.
+   ========================================================================== */
+
+/* ---- 1. Typography: Arhaus fonts site-wide --------------------------------
+   Headings = Cormorant Garamond (serif). Body / UI = Jost (sans).
+   Horizon derives all type from these CSS variables, so this re-skins
+   every native section, card, menu and the footer at once. */
+:root {
+  --font-primary--family: "Cormorant Garamond", Georgia, serif !important;
+  --font-heading--family: "Cormorant Garamond", Georgia, serif !important;
+  --font-accent--family: "Cormorant Garamond", Georgia, serif !important;
+  --font-body--family: "Jost", "Helvetica Neue", Arial, sans-serif !important;
+  --font-subheading--family: "Jost", "Helvetica Neue", Arial, sans-serif !important;
+}
+
+/* ---- 2. Background: light Nardo grey, site-wide (premium) ------------------
+   Override only the LIGHT color schemes. Dark schemes (e.g. footer band,
+   hero overlay) are intentionally left alone. Easy to retune: one value. */
+body {
+  background-color: #e7e7e5;
+}
+.color-scheme-1,
+.color-scheme-2,
+.color-scheme-3,
+.color-scheme-4 {
+  --color-background: #e7e7e5 !important;
+  --color-background-rgb: 231 231 229 !important;
+}
+
+/* ---- 3. Logo: larger, refined serif wordmark ------------------------------ */
+.header-logo {
+  font-family: var(--font-primary--family) !important;
+  font-size: clamp(17px, 1.7vw, 24px) !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  line-height: 1.05 !important;
+}
+
+/* ---- 4. Product cards: Arhaus text style — matches the LL draft exactly -----
+   Serif, REGULAR weight (400, not 500), title + price both 16px / 1rem.
+   The LL draft uses Cormorant 400 for both the title and the price; our price
+   was also rendering at the theme's small 12px, so we pin it to 1rem here. */
+.product-card [class*="product_title"],
+.product-card .product-title,
+.product-card [class*="product-title"] {
+  font-family: var(--font-primary--family) !important;
+  font-size: 1rem !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  line-height: 1.3 !important;
+}
+.product-card .price,
+.product-card .price *,
+.product-card .price__regular,
+.product-card [class*="price"] {
+  font-family: var(--font-primary--family) !important;
+  font-size: 1rem !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.01em !important;
+}
+/* Sale price in the LL draft's red. */
+.product-card .price-item--sale,
+.product-card .price__sale {
+  color: #8c2a2a !important;
+}
+
+/* ---- 5. Mega menu: featured pair + Arhaus "SHOP …" titles -----------------
+   Keep Horizon's native multi-column category layout untouched: its 6-col
+   subgrid already sits the category groups SIDE-BY-SIDE with the featured
+   images on the right, exactly like Arhaus. We only tune the featured area. */
+/* Two featured images filling their area; hide the 3rd onward. */
+.mega-menu__content-list--products {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: clamp(16px, 1.6vw, 28px) !important;
+}
+.mega-menu__content-list--products .mega-menu__content-list-item:nth-of-type(n + 3) {
+  display: none !important;
+}
+/* No prices in the menu (Arhaus shows none). */
+.mega-menu .resource-card [class*="price"],
+.mega-menu .resource-card__price,
+.mega-menu .price {
+  display: none !important;
+}
+/* Image titles: Arhaus "SHOP …" label — left-aligned, uppercase, tracked,
+   semibold, underlined. */
+.mega-menu__content .resource-card__content {
+  align-items: flex-start !important;
+  text-align: left !important;
+  gap: 0 !important;
+}
+.mega-menu__content .resource-card__title {
+  font-family: var(--font-body--family) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  text-decoration: underline !important;
+  text-underline-offset: 4px !important;
+  text-decoration-thickness: 1px !important;
+  -webkit-line-clamp: 1 !important;
+  color: var(--color-foreground) !important;
+  margin-block-start: 14px !important;
+}
+.mega-menu__content .resource-card__title::before {
+  content: "Shop ";
+}
+
+/* ---- 6. Header: Arhaus look (dark green top bar, uppercase centered nav) --- */
+/* Dark forest-green announcement / top utility bar with white text. */
+.announcement-bar {
+  background-color: #1e3d2f !important;
+  --color-background: #1e3d2f !important;
+  --color-foreground: #ffffff !important;
+  --color-foreground-rgb: 255 255 255 !important;
+  border: 0 !important;
+}
+.announcement-bar,
+.announcement-bar a,
+.announcement-bar * {
+  color: #ffffff !important;
+}
+/* Centered uppercase main nav, Arhaus tracking. */
+.header__row--bottom .menu-list__link {
+  letter-spacing: 0.12em !important;
+  font-weight: 400 !important;
+}
+/* "SEARCH" text label next to the left search icon (Arhaus-style). */
+.header__row--top .search-action:not(.search-action--hidden-on-menu) {
+  display: inline-flex !important;
+  align-items: center;
+}
+.header__row--top .search-action:not(.search-action--hidden-on-menu)::after {
+  content: "Search";
+  font-family: var(--font-body--family);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-inline-start: 8px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+@media screen and (max-width: 749px) {
+  .header__row--top .search-action:not(.search-action--hidden-on-menu)::after {
+    display: none;
+  }
+}
+
+/* ---- 7. Mega menu: grey panel (our brand grey) --------------------------- */
+.header__underlay-open,
+.header__underlay-closed,
+#header-component {
+  --color-submenu: #e7e7e5 !important;
+}
+
+/* ==========================================================================
+   8. Product page (PDP) — match the Arhaus product page exactly.
+   Scoped to .product-information so nothing else is affected.
+   ========================================================================== */
+
+/* Details column: comfortable inset + hairline dividers (Arhaus). */
+.product-information .product-details {
+  --color-border: #e3ded6;
+  padding-inline: clamp(16px, 2vw, 38px) !important;
+  padding-block-start: clamp(6px, 1vw, 16px) !important;
+}
+
+/* Title — serif, large, near-black, title case. */
+.product-information .product-details h1 {
+  font-family: var(--font-primary--family) !important;
+  font-size: clamp(28px, 2.4vw, 40px) !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.005em !important;
+  line-height: 1.05 !important;
+  text-transform: none !important;
+  color: #1b1b1b !important;
+  margin: 0 !important;
+}
+
+/* Price — serif, medium. */
+.product-information .product-details .group-block-content .price,
+.product-information .product-details .price {
+  font-family: var(--font-primary--family) !important;
+  font-size: clamp(18px, 1.4vw, 22px) !important;
+  font-weight: 400 !important;
+  color: #1b1b1b !important;
+}
+
+/* SKU — tiny uppercase tracked light grey, with "SKU :" label (Arhaus). */
+.product-information product-sku-component {
+  font-family: var(--font-body--family) !important;
+  font-size: 10px !important;
+  font-weight: 300 !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+  color: #a8a39b !important;
+}
+.product-information product-sku-component .sku::before {
+  content: "SKU : ";
+}
+
+/* Small underlined PDP links (collection / save / dimensions). */
+.product-information .ah-pdp-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-body--family);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: #4a4641;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.product-information .ah-pdp-link:hover { color: #1b1b1b; }
+.product-information .ah-pdp-ico { display: inline-flex; }
+.product-information .ah-collection-link { margin-top: 10px; }
+
+/* Option rows — label LEFT, values RIGHT (Arhaus two-column). */
+.product-information .variant-option--buttons {
+  display: block !important;
+  position: relative !important;
+  border: 0 !important;
+  margin: 0 0 14px !important;
+  padding: 0 0 0 92px !important;
+}
+.product-information .variant-option__legend {
+  position: absolute !important;
+  left: 0 !important;
+  top: 1px !important;
+  width: 84px !important;
+  float: none !important;
+  padding: 0 !important;
+  font-family: var(--font-body--family) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+  color: #1b1b1b !important;
+  line-height: 1.6 !important;
+}
+.product-information .variant-option__values {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+.product-information .variant-option__swatch-value {
+  font-family: var(--font-body--family) !important;
+  font-size: 13px !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  color: #1b1b1b !important;
+}
+.product-information .variant-option__list {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+}
+/* Swatch chips — small squares. */
+.product-information .variant-option--swatches .swatch {
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 2px !important;
+}
+/* Size (text) pills → plain text, underline when selected (Arhaus). */
+.product-information .variant-option--buttons:not(.variant-option--swatches) .variant-option__button-label {
+  border: 0 !important;
+  background: none !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+}
+.product-information .variant-option--buttons:not(.variant-option--swatches) .variant-option__button-label__text {
+  font-family: var(--font-body--family) !important;
+  font-size: 13px !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  color: #4a4641 !important;
+}
+.product-information .variant-option--buttons:not(.variant-option--swatches) .variant-option__button-label:has(input:checked) .variant-option__button-label__text {
+  color: #1b1b1b !important;
+  text-decoration: underline !important;
+  text-underline-offset: 4px !important;
+}
+.product-information .variant-option--buttons:not(.variant-option--swatches) .variant-option__button-label__pill {
+  display: none !important;
+}
+/* Hide the raw radio inputs (we show selection via text underline / swatch ring). */
+.product-information .variant-option__button-label input {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+.product-information .variant-option__button-label {
+  position: relative !important;
+  cursor: pointer !important;
+  outline: none !important;
+}
+/* Remove the rounded outline ring around text sizes (Arhaus = plain text). */
+.product-information .variant-option--buttons:not(.variant-option--swatches) .variant-option__button-label::before {
+  content: none !important;
+  display: none !important;
+}
+
+/* ADD TO BAG — forest green, square, uppercase tracked (matches top bar). */
+.product-information .add-to-cart-button {
+  background: #1e3d2f !important;
+  color: #fff !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.16em !important;
+  font-family: var(--font-body--family) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  min-height: 52px !important;
+}
+.product-information .add-to-cart-button:hover { background: #162c22 !important; }
+/* Text-only button (Arhaus has no icon in the button). */
+.product-information .add-to-cart-button svg,
+.product-information .add-to-cart-button .svg-wrapper {
+  display: none !important;
+}
+/* Hide express-checkout to match the Arhaus single-button layout. */
+.product-information .accelerated-checkout-wrapper,
+.product-information shopify-accelerated-checkout,
+.product-information [class*="accelerated-checkout"] {
+  display: none !important;
+}
+
+/* Inventory + Save to List.
+   Stock status sits on the RIGHT end of the QTY row (Arhaus): the inventory
+   block is the sibling just above the buy-buttons, so we right-align it and
+   pull the buy-buttons up under it so they share one line. */
+.product-information .product-inventory {
+  font-size: 13px !important;
+  color: #4a4641 !important;
+  align-self: flex-end !important;
+  margin: 24px 2px -52px 0 !important;
+  position: relative !important;
+  z-index: 2 !important;
+  line-height: 1 !important;
+}
+.product-information .product-inventory__icon { display: none !important; }
+
+/* Collapse back-to-back dividers (e.g. when a product has no variant picker). */
+.product-information .product-details .divider + .divider { display: none !important; }
+
+/* "QTY :" label before the stepper (Arhaus); keep the stepper compact. */
+.product-information .quantity-selector-wrapper {
+  display: flex !important;
+  align-items: center !important;
+  width: fit-content !important;
+}
+.product-information .quantity-selector-wrapper::before {
+  content: "Qty :";
+  font-family: var(--font-body--family);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #1b1b1b;
+  margin-inline-end: 12px;
+  white-space: nowrap;
+}
+.product-information .ah-savelist {
+  margin-top: 6px;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Dimensions block. */
+.product-information .ah-dims__label {
+  font-family: var(--font-body--family);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #1b1b1b;
+  margin: 0 0 8px;
+}
+.product-information .ah-dims__value {
+  font-family: var(--font-primary--family);
+  font-size: 15px;
+  color: #3a352f;
+  margin: 0 0 8px;
+}
+
+/* Accordion headers — uppercase tracked; serif body copy. */
+.product-information .accordion .details__header {
+  font-family: var(--font-body--family) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+  color: #1b1b1b !important;
+  padding-block: 18px !important;
+}
+.product-information .accordion .details-content {
+  font-family: var(--font-primary--family) !important;
+  color: #3a352f !important;
+}
+
+/* ---- 8b. PDP: white section + wider 70/30 media column + QTY stepper ---------- */
+
+/* Arhaus PDPs are pure white — override the global grey background */
+.product-information {
+  background: #ffffff !important;
+}
+.product-information .section-background {
+  background-color: #ffffff !important;
+}
+
+/* Widen media column to 70% (Arhaus ≈ 69-70%) instead of the default 2fr/1fr = 67% */
+@media screen and (min-width: 750px) {
+  .product-information .product-information__grid.product-information--media-left {
+    grid-template-columns: 70fr 30fr !important;
+  }
+}
+
+/* QTY stepper: square corners, thin border, clean Arhaus style */
+.product-information quantity-selector-component.quantity-selector {
+  border: 1px solid #d9d5cf !important;
+  border-radius: 0 !important;
+  height: 44px !important;
+  background: transparent !important;
+  overflow: hidden !important;
+}
+.product-information .quantity-minus,
+.product-information .quantity-plus {
+  color: #1b1b1b !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  font-size: 17px !important;
+  padding: 0 14px !important;
+  line-height: 1 !important;
+}
+.product-information .quantity-selector-wrapper input {
+  font-family: var(--font-body--family) !important;
+  font-size: 14px !important;
+  color: #1b1b1b !important;
+  text-align: center !important;
+  min-width: 36px !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+}
+
+/* ADD TO BAG: ensure full width in the details column */
+.product-information .buy-buttons-block,
+.product-information buy-buttons {
+  width: 100% !important;
+}
+.product-information .add-to-cart-button:not(.sticky-add-to-cart__button) {
+  width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* ==========================================================================
+   8c. "You May Also Like" carousel — match Arhaus exactly.
+   Full-bleed cards + inset italic-serif heading + always-on circular arrow.
+   ========================================================================== */
+
+/* White background — continuous with the white PDP above (Arhaus). */
+.product-recommendations {
+  background: #ffffff !important;
+}
+.product-recommendations .section-background {
+  background-color: #ffffff !important;
+}
+
+/* Heading: italic Cormorant, inset to align with page content (cards stay full-bleed). */
+.product-recommendations h3,
+.product-recommendations h2 {
+  font-family: var(--font-primary--family) !important;
+  font-style: italic !important;
+  font-weight: 400 !important;
+  font-size: clamp(26px, 2.3vw, 36px) !important;
+  letter-spacing: 0.01em !important;
+  color: #1b1b1b !important;
+}
+.product-recommendations .section-resource-list__content {
+  padding-inline-start: clamp(16px, 3.6vw, 56px) !important;
+  margin-bottom: 6px !important;
+}
+
+/* Bigger peek of the next card (Arhaus shows ~half of the 4th card). */
+.product-recommendations .resource-list__carousel {
+  --peek-next-slide-size: clamp(48px, 13vw, 230px) !important;
+}
+
+/* Card titles — serif uppercase, tight (Arhaus). */
+.product-recommendations .product-card [class*="product-title"],
+.product-recommendations .product-card .product-title {
+  font-family: var(--font-primary--family) !important;
+  font-weight: 400 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  color: #1b1b1b !important;
+  line-height: 1.25 !important;
+}
+/* Price — small Jost, muted (Arhaus "From $X"). */
+.product-recommendations .product-card .price,
+.product-recommendations .product-card [class*="price"] {
+  font-family: var(--font-body--family) !important;
+  font-size: 0.9rem !important;
+  letter-spacing: 0.01em !important;
+  color: #4a4641 !important;
+}
+
+/* Circular next arrow: dark green, always visible on the right (Arhaus). */
+.product-recommendations slideshow-arrows .slideshow-control {
+  opacity: 1 !important;
+}
+.product-recommendations .slideshow-control--shape-circle {
+  background: #ffffff !important;
+  border: 1px solid #d9d5cf !important;
+  color: #1b1b1b !important;
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 50% !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08) !important;
+}
+.product-recommendations .slideshow-control--shape-circle:hover {
+  background: #1e3d2f !important;
+  color: #ffffff !important;
+  border-color: #1e3d2f !important;
+}
+
+/* ==========================================================================
+   9. Product image hover — LL / Halo cross-fade + slow springy zoom.
+   Replicates the LevLocal draft EXACTLY (theme-old-LL component-card.css):
+     • The 2nd image CROSS-FADES in over opacity, instead of Horizon's instant
+       slide (previewImage() calls slideshow.select({animate:false}) = a hard
+       cut). The big visual change in vid 1 is this image-1 -> image-2 fade.
+     • The visible image then SCALES to 1.05 over 2s with an overshoot ease
+       cubic-bezier(0,0,.44,1.18); it returns over .8s. That is the subtle,
+       slow, slightly-springy continuous zoom from vid 1 (LL: transform 2s).
+   Desktop only (min-width:750px): we stack the slideshow slides and drive the
+   fade off [aria-hidden], which slideshow.js sets DIRECTLY on each slide in
+   select()/previewImage() (not from scroll position) — so this is robust.
+   Mobile keeps Horizon's native swipe scroller untouched (hover is desktop
+   only). NOT guarded by prefers-reduced-motion, so it always animates — the
+   Windows "reduce motion" setting is what made ours read as instant.
+   ========================================================================== */
+
+/* -- the slow, springy 5% zoom (applies to whichever card image is visible) -- */
+.card-gallery .product-media__image {
+  transition: transform 0.8s ease !important;          /* zoom-OUT on un-hover */
+  transform-origin: center center !important;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+.product-card:hover .card-gallery .product-media__image {
+  transform: scale(1.05) !important;
+  transition: transform 2s cubic-bezier(0, 0, 0.44, 1.18) !important; /* slow zoom-IN */
+}
+
+/* -- desktop: turn the horizontal slide into an opacity cross-fade --
+   Driven purely off .product-card:hover (NOT [aria-hidden]). Horizon marks
+   slides visible via an IntersectionObserver; once we stack them there is no
+   scroll, so every slide intersects and all would read aria-hidden=false.
+   :hover is reliable. :has() guards single-image products from blanking. */
+@media screen and (min-width: 750px) {
+  .card-gallery slideshow-slides {
+    display: block !important;
+    overflow: hidden !important;
+    position: relative !important;
+    aspect-ratio: var(--gallery-aspect-ratio, 1) !important;
+  }
+  .card-gallery slideshow-slide {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    opacity: 0 !important;
+    transition: opacity 0.5s ease !important;
+  }
+  /* image 1 is the default visible layer */
+  .card-gallery slideshow-slide:first-child {
+    opacity: 1 !important;
+    content-visibility: visible !important;
+  }
+  /* on hover: fade image 1 out, image 2 in — only when a real 2nd image exists */
+  .product-card:hover
+    .card-gallery
+    slideshow-slide:first-child:has(+ slideshow-slide:not([hidden])) {
+    opacity: 0 !important;
+  }
+  .product-card:hover
+    .card-gallery
+    slideshow-slide:first-child:not([hidden])
+    + slideshow-slide:not([hidden]) {
+    opacity: 1 !important;
+    z-index: 2 !important;
+    content-visibility: visible !important;
+  }
+  /* make each layer fill the square */
+  .card-gallery slideshow-slide .product-media {
+    height: 100% !important;
+    width: 100% !important;
+  }
+  .card-gallery slideshow-slide .product-media__image {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+  /* arrows can't drive a stacked gallery — hide for a clean LL-style card */
+  .card-gallery slideshow-arrows {
+    display: none !important;
+  }
+}
+
+/* -- mega-menu resource cards: same slow springy zoom for consistency -- */
+.resource-card__image {
+  transition: transform 0.8s ease !important;
+  transform-origin: center center !important;
+}
+.resource-card:hover .resource-card__image {
+  transform: scale(1.05) !important;
+  transition: transform 2s cubic-bezier(0, 0, 0.44, 1.18) !important;
+}
+.resource-card__media {
+  overflow: hidden !important;
+}
+
+/* -- LL-style clean cards: no quick-add "+" overlay on hover (vid 1 has none).
+   It only ever showed on hover; remove the static "add" link if shown to PDP. */
+.product-card .quick-add,
+.product-card quick-add-component,
+.product-card .quick-add__button {
+  display: none !important;
+}

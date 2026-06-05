@@ -1,0 +1,8 @@
+# Ignore editor / atomic-write temp files so `shopify theme dev` never tries
+# to upload a half-written file (which fails theme validation and 500s the preview).
+*.tmp
+*.tmp*
+*~
+.DS_Store
+**/*.tmp
+**/*.tmp*
