@@ -660,6 +660,16 @@ body {
    Scoped to .product-card so PDP swatches (section 8) are unaffected.
    ========================================================================== */
 
+/* ---- Swatch hover → specific variant image preview (JS-driven) ---- */
+.card-gallery[data-swatch-active] slideshow-slide:first-child {
+  opacity: 0 !important;
+}
+.card-gallery slideshow-slide.is-swatch-preview {
+  opacity: 1 !important;
+  z-index: 3 !important;
+  content-visibility: visible !important;
+}
+
 /* Swatch chips on the card: compact 28px squares */
 .product-card .variant-option--swatches .swatch {
   width: 28px !important;

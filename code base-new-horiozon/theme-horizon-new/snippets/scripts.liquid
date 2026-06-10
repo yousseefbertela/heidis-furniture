@@ -308,3 +308,43 @@
     },
   };
 </script>
+
+{%- comment -%} Product card swatch hover → variant image preview (Arhaus style) {%- endcomment -%}
+<script>
+(function(){
+  if(typeof window.matchMedia==='function'&&!window.matchMedia('(hover:hover)').matches) return;
+
+  document.addEventListener('pointerover',function(e){
+    var label=e.target&&e.target.closest?e.target.closest('product-card .variant-option__button-label'):null;
+    if(!label) return;
+    var mediaId=label.getAttribute('data-media-id');
+    if(!mediaId) return;
+    var card=label.closest('product-card');
+    if(!card) return;
+    var gallery=card.querySelector('.card-gallery');
+    if(!gallery) return;
+
+    // Clear previous preview
+    var slides=gallery.querySelectorAll('slideshow-slide');
+    slides.forEach(function(s){s.classList.remove('is-swatch-preview')});
+
+    // Find slide matching this media ID
+    var target=gallery.querySelector('slideshow-slide[slide-id="'+mediaId+'"]');
+    if(target){
+      target.classList.add('is-swatch-preview');
+      gallery.setAttribute('data-swatch-active','');
+    }
+  });
+
+  document.addEventListener('pointerout',function(e){
+    var label=e.target&&e.target.closest?e.target.closest('product-card .variant-option__button-label'):null;
+    if(!label) return;
+    var card=label.closest('product-card');
+    if(!card) return;
+    var gallery=card.querySelector('.card-gallery');
+    if(!gallery) return;
+    gallery.querySelectorAll('slideshow-slide').forEach(function(s){s.classList.remove('is-swatch-preview')});
+    gallery.removeAttribute('data-swatch-active');
+  });
+})();
+</script>
