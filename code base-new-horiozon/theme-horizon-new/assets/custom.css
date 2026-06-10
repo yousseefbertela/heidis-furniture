@@ -655,6 +655,11 @@ body {
   display: none !important;
 }
 
+/* -- Hide the internal "Sample Swatch" product from predictive search results -- */
+.predictive-search-results__card:has(a[href*="sample-swatch"]) {
+  display: none !important;
+}
+
 /* ==========================================================================
    10. Product card swatches — Arhaus-style small chips + hover tooltip
    Scoped to .product-card so PDP swatches (section 8) are unaffected.
