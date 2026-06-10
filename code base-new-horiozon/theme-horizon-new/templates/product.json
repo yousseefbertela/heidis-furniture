@@ -216,6 +216,24 @@
               },
               "blocks": {}
             },
+            "order_swatches": {
+              "type": "order-swatches",
+              "settings": {
+                "button_label": "Order Swatches",
+                "heading": "Choose Your Fabric Swatches",
+                "max_swatches": 5,
+                "min_swatches": 2,
+                "sample_product": "hedis-sample-swatch",
+                "sample_variant_id": "43130775732312",
+                "price_note": "$5 per swatch — credited back on full order",
+                "fabrics_url": "/collections/upholstery-swatches",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
             "divider_2": {
               "type": "_divider",
               "name": "t:names.divider",
@@ -426,6 +444,7 @@
             "group_header",
             "divider_1",
             "variant_picker",
+            "order_swatches",
             "divider_2",
             "inventory",
             "buy_buttons",

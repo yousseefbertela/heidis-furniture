@@ -1,0 +1,907 @@
+{%- doc -%}
+  Order Swatches block.
+
+  Renders a trigger button + slide-in drawer that lets a customer order up to N physical
+  fabric/colour samples for the current product. Each selected swatch is added to the cart
+  as one line item of a configurable "sample" product, tagged with the colour name + code.
+
+  Built on the product's native Shopify option-value swatches, so it works on any product
+  whose colour/fabric option has swatches configured in Admin. JS: assets/order-swatches.js
+{%- enddoc -%}
+
+{%- liquid
+  # Prefer the contextual product; fall back to the global product object
+  # (available in the product-information section), then to editor preview.
+  assign os_product = closest.product
+  if os_product == blank
+    assign os_product = product
+  endif
+  if os_product == blank and request.visual_preview_mode
+    assign os_product = collections.all.products.first
+  endif
+
+  # Find the product option with the most native swatches (usually Colour / Fabric).
+  assign swatch_option = null
+  assign swatch_values_count = 0
+  for option in os_product.options_with_values
+    assign count = option.values | map: 'swatch' | compact | size
+    if count > swatch_values_count
+      assign swatch_values_count = count
+      assign swatch_option = option
+    endif
+  endfor
+
+  assign max = block.settings.max_swatches | default: 5
+  assign min_swatches = block.settings.min_swatches | default: 2
+
+  # Resolve the sample variant: prefer the picked product, fall back to the id setting.
+  assign sample_variant_id = ''
+  if block.settings.sample_product != blank
+    assign sample_variant_id = block.settings.sample_product.selected_or_first_available_variant.id
+  endif
+  if sample_variant_id == blank
+    assign sample_variant_id = block.settings.sample_variant_id
+  endif
+
+  assign show_block = false
+  if swatch_option and swatch_values_count >= min_swatches
+    assign show_block = true
+  endif
+-%}
+
+
+{%- if show_block -%}
+  <order-swatches-component
+    id="order-swatches-{{ block.id }}"
+    class="order-swatches spacing-style"
+    style="{% render 'spacing-style', settings: block.settings %}"
+    data-max-swatches="{{ max }}"
+    data-sample-variant-id="{{ sample_variant_id }}"
+    data-order-label="{{ block.settings.button_label | default: 'Order Swatches' | escape }}"
+    {{ block.shopify_attributes }}
+  >
+    <button type="button" class="order-swatches__trigger" on:click="/open">
+      <span class="order-swatches__trigger-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1.4"></rect>
+          <rect x="14" y="3" width="7" height="7" rx="1.4"></rect>
+          <rect x="3" y="14" width="7" height="7" rx="1.4"></rect>
+          <rect x="14" y="14" width="7" height="7" rx="1.4"></rect>
+        </svg>
+      </span>
+      <span class="order-swatches__trigger-text">{{ block.settings.button_label | default: 'Order Swatches' }}</span>
+    </button>
+
+    <dialog
+      class="order-swatches__drawer"
+      ref="drawer"
+      aria-label="{{ block.settings.heading | default: 'Order Swatches' | escape }}"
+    >
+      <div class="order-swatches__header">
+        <h2 class="order-swatches__title">{{ block.settings.heading | default: 'Order Swatches' }}</h2>
+        <button type="button" class="order-swatches__close" aria-label="Close" on:click="/close">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      {%- if block.settings.subheading != blank -%}
+        <p class="order-swatches__intro">{{ block.settings.subheading }}</p>
+      {%- endif -%}
+
+      <div class="order-swatches__content">
+        <div class="order-swatches__grid">
+          {%- for value in swatch_option.values -%}
+            {%- liquid
+              assign variant = value.variant
+              assign code = variant.sku | default: value.name
+              assign card_image = ''
+              if value.swatch.image
+                assign card_image = value.swatch.image | image_url: width: 400
+              elsif variant.image
+                assign card_image = variant.image | image_url: width: 400
+              elsif value.swatch.color == blank and os_product.featured_image
+                assign card_image = os_product.featured_image | image_url: width: 400
+              endif
+              assign card_color = ''
+              if value.swatch.color
+                assign card_color = value.swatch.color
+              endif
+            -%}
+            <button
+              type="button"
+              class="order-swatches__card"
+              data-swatch-card
+              data-option-value="{{ value.name | escape }}"
+              data-swatch-code="{{ code | escape }}"
+              data-swatch-image="{{ card_image }}"
+              data-swatch-color="{{ card_color }}"
+              aria-pressed="false"
+              on:click="/toggleSwatch"
+            >
+              <span class="order-swatches__thumb">
+                {%- if card_image != blank -%}
+                  <img src="{{ card_image }}" alt="{{ value.name | escape }}" loading="lazy" width="200" height="200">
+                {%- else -%}
+                  <span class="order-swatches__thumb-color" style="background: {{ card_color | default: 'var(--color-border)' }};"></span>
+                {%- endif -%}
+                <span class="order-swatches__check" aria-hidden="true"></span>
+              </span>
+              <span class="order-swatches__card-name">{{ value.name }}</span>
+            </button>
+          {%- endfor -%}
+        </div>
+      </div>
+
+      <p class="order-swatches__message" ref="message" role="status" aria-live="polite" hidden></p>
+
+      <div class="order-swatches__selection">
+        <span class="order-swatches__selection-label" ref="selectionLabel">Select up to {{ max }}</span>
+        <div class="order-swatches__preview">
+          {%- for i in (1..max) -%}
+            <span class="order-swatches__slot" ref="previewSlots[]"></span>
+          {%- endfor -%}
+        </div>
+      </div>
+
+      <div class="order-swatches__footer">
+        {%- if block.settings.sample_product != blank -%}
+          <p class="order-swatches__price-note">{{ block.settings.sample_product.price | money }} per swatch · applied at checkout</p>
+        {%- elsif block.settings.price_note != blank -%}
+          <p class="order-swatches__price-note">{{ block.settings.price_note }}</p>
+        {%- endif -%}
+        <button type="button" class="order-swatches__submit" ref="orderButton" on:click="/submit">
+          {{ block.settings.button_label | default: 'Order Swatches' }}
+        </button>
+        {%- if block.settings.fabrics_url != blank -%}
+          <a class="order-swatches__fabrics-link" href="{{ block.settings.fabrics_url }}">
+            {{ block.settings.fabrics_link_label | default: 'See all fabrics & care' }}
+          </a>
+        {%- endif -%}
+      </div>
+    </dialog>
+
+    {%- comment -%} Fabric preview popover shown on hover of the native colour swatches {%- endcomment -%}
+    <div class="order-swatches__popover" ref="popover" popover="manual">
+      <button type="button" class="order-swatches__popover-close" aria-label="Close" on:click="/hidePopoverClick">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <div class="order-swatches__popover-inner">
+        <div class="order-swatches__popover-media">
+          <img ref="popoverImg" alt="" width="360" height="360" loading="lazy">
+        </div>
+        <div class="order-swatches__popover-info">
+          <p class="order-swatches__popover-name" ref="popoverName"></p>
+          <p class="order-swatches__popover-code" ref="popoverCode"></p>
+          
+          <div class="order-swatches__popover-tags" ref="popoverTags"></div>
+          
+          <div class="order-swatches__popover-details">
+            <div class="order-swatches__popover-detail-row">
+              <span class="order-swatches__popover-detail-label">INFO</span>
+              <span class="order-swatches__popover-detail-value" ref="popoverInfoText"></span>
+            </div>
+            <div class="order-swatches__popover-detail-row">
+              <span class="order-swatches__popover-detail-label">CARE</span>
+              <span class="order-swatches__popover-detail-value" ref="popoverCareText"></span>
+            </div>
+            <div class="order-swatches__popover-detail-row">
+              <span class="order-swatches__popover-detail-label">CONTENT</span>
+              <span class="order-swatches__popover-detail-value" ref="popoverContentText"></span>
+            </div>
+          </div>
+          
+          <button type="button" class="order-swatches__popover-add" ref="popoverAdd" on:click="/addHovered">
+            Add this swatch
+          </button>
+        </div>
+      </div>
+    </div>
+  </order-swatches-component>
+{%- endif -%}
+
+{% stylesheet %}
+  .order-swatches {
+    display: block;
+    width: 100%;
+  }
+
+  /* -------------------------------------------------------------- trigger button */
+  .order-swatches__trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 46px;
+    padding: 10px 22px;
+    background: transparent;
+    color: var(--color-foreground);
+    border: 1px solid var(--color-border, rgb(var(--color-foreground-rgb) / 0.25));
+    border-radius: var(--style-border-radius-inputs, 0);
+    font-family: var(--font-body--family);
+    font-size: 0.8125rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .order-swatches__trigger:hover {
+    background: rgb(var(--color-foreground-rgb) / 0.04);
+    border-color: var(--color-foreground);
+  }
+
+  .order-swatches__trigger:focus-visible {
+    outline: var(--focus-outline-width, 2px) solid var(--color-foreground);
+    outline-offset: var(--focus-outline-offset, 2px);
+  }
+
+  .order-swatches__trigger-icon {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* -------------------------------------------------------------------- backdrop */
+  .order-swatches__drawer::backdrop {
+    background-color: rgb(0 0 0 / 0);
+    transition: background-color 0.3s ease;
+  }
+
+  .order-swatches__drawer.is-active::backdrop {
+    background-color: rgb(0 0 0 / 0.45);
+  }
+
+  /* ------------------------------------------------ drawer (native <dialog>) */
+  .order-swatches__drawer {
+    position: fixed;
+    inset: 0 0 0 auto;
+    width: 460px;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-background);
+    color: var(--color-foreground);
+    box-shadow: -4px 0 24px rgb(0 0 0 / 0.12);
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overscroll-behavior: contain;
+  }
+
+  .order-swatches__drawer.is-active {
+    transform: translateX(0);
+  }
+
+  .order-swatches__drawer:focus {
+    outline: none;
+  }
+
+  .order-swatches__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--color-border, rgb(var(--color-foreground-rgb) / 0.12));
+  }
+
+  .order-swatches__title {
+    margin: 0;
+    font-family: var(--font-primary--family);
+    font-size: 1.5rem;
+    font-weight: 500;
+    line-height: 1.1;
+  }
+
+  .order-swatches__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin-right: -8px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+  }
+
+  .order-swatches__close:hover {
+    background: rgb(var(--color-foreground-rgb) / 0.06);
+  }
+
+  .order-swatches__close:focus-visible {
+    outline: var(--focus-outline-width, 2px) solid var(--color-foreground);
+    outline-offset: 2px;
+  }
+
+  .order-swatches__intro {
+    margin: 0;
+    padding: 16px 24px 0;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: rgb(var(--color-foreground-rgb) / 0.7);
+  }
+
+  .order-swatches__content {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 20px 24px;
+  }
+
+  .order-swatches__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  /* ----------------------------------------------------------------------- cards */
+  .order-swatches__card {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    background: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .order-swatches__thumb {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border: 1px solid var(--color-border, rgb(var(--color-foreground-rgb) / 0.12));
+    border-radius: var(--style-border-radius-inputs, 0);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .order-swatches__thumb img,
+  .order-swatches__thumb-color {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .order-swatches__check {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--color-background);
+    border: 1px solid var(--color-border, rgb(var(--color-foreground-rgb) / 0.18));
+    color: var(--color-foreground);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  }
+
+  .order-swatches__check::before {
+    content: '+';
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .order-swatches__card:hover .order-swatches__thumb {
+    border-color: var(--color-foreground);
+  }
+
+  .order-swatches__card:focus-visible {
+    outline: none;
+  }
+
+  .order-swatches__card:focus-visible .order-swatches__thumb {
+    outline: var(--focus-outline-width, 2px) solid var(--color-foreground);
+    outline-offset: 2px;
+  }
+
+  .order-swatches__card.is-selected .order-swatches__thumb {
+    border-color: var(--color-foreground);
+    box-shadow: 0 0 0 1px var(--color-foreground);
+  }
+
+  .order-swatches__card.is-selected .order-swatches__check {
+    background: var(--color-foreground);
+    color: var(--color-background);
+    border-color: var(--color-foreground);
+  }
+
+  .order-swatches__card.is-selected .order-swatches__check::before {
+    content: '✓';
+    font-size: 14px;
+  }
+
+  .order-swatches__card-name {
+    margin-top: 8px;
+    font-size: 0.8125rem;
+    line-height: 1.3;
+    text-transform: capitalize;
+    color: var(--color-foreground);
+  }
+
+  /* ------------------------------------------------------------------- message */
+  .order-swatches__message {
+    margin: 0;
+    padding: 0 24px 12px;
+    font-size: 0.8125rem;
+    color: var(--color-error, #b3261e);
+  }
+
+  .order-swatches__message[hidden] {
+    display: none;
+  }
+
+  /* ---------------------------------------------------------- selection preview */
+  .order-swatches__selection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 24px;
+    border-top: 1px solid var(--color-border, rgb(var(--color-foreground-rgb) / 0.12));
+  }
+
+  .order-swatches__selection-label {
+    font-size: 0.8125rem;
+    font-style: italic;
+    color: rgb(var(--color-foreground-rgb) / 0.65);
+  }
+
+  .order-swatches__preview {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .order-swatches__slot {
+    width: 44px;
+    height: 44px;
+    border: 1px dashed var(--color-border, rgb(var(--color-foreground-rgb) / 0.3));
+    border-radius: var(--style-border-radius-inputs, 0);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgb(var(--color-foreground-rgb) / 0.03);
+  }
+
+  .order-swatches__slot.is-filled {
+    border-style: solid;
+    border-color: var(--color-border, rgb(var(--color-foreground-rgb) / 0.18));
+  }
+
+  .order-swatches__slot img,
+  .order-swatches__slot-color {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* -------------------------------------------------------------------- footer */
+  .order-swatches__footer {
+    padding: 16px 24px 22px;
+    border-top: 1px solid var(--color-border, rgb(var(--color-foreground-rgb) / 0.12));
+  }
+
+  .order-swatches__price-note {
+    margin: 0 0 12px;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+    text-align: center;
+    color: rgb(var(--color-foreground-rgb) / 0.65);
+  }
+
+  .order-swatches__submit {
+    width: 100%;
+    min-height: 52px;
+    padding: 14px;
+    background: var(--color-foreground);
+    color: var(--color-background);
+    border: 1px solid var(--color-foreground);
+    border-radius: var(--style-border-radius-inputs, 0);
+    font-family: var(--font-body--family);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+
+  .order-swatches__submit:hover {
+    opacity: 0.88;
+  }
+
+  .order-swatches__submit:focus-visible {
+    outline: var(--focus-outline-width, 2px) solid var(--color-foreground);
+    outline-offset: 2px;
+  }
+
+  .order-swatches__submit.is-loading {
+    opacity: 0.6;
+    cursor: progress;
+  }
+
+  .order-swatches__fabrics-link {
+    display: block;
+    margin-top: 12px;
+    text-align: center;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    color: rgb(var(--color-foreground-rgb) / 0.75);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .order-swatches__fabrics-link:hover {
+    color: var(--color-foreground);
+  }
+
+  /* ----------------------------------------------------- hover fabric popover */
+  .order-swatches__popover {
+    inset: auto;
+    margin: 0;
+    position: fixed;
+    width: 480px;
+    max-width: calc(100vw - 16px);
+    padding: 0;
+    border: 1px solid #d9d5cf;
+    border-radius: 0;
+    background: #f4f4f3; /* Light warm-grey Arhaus-like background */
+    color: #1b1b1b;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+  }
+
+  /* Fallback for browsers without the Popover API (polyfill provides :popover-open) */
+  .order-swatches__popover:not(:popover-open):not([data-open]) {
+    display: none;
+  }
+  .order-swatches__popover[data-open] {
+    display: flex;
+  }
+
+  .order-swatches__popover-close {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    z-index: 10;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #1b1b1b;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+  }
+
+  .order-swatches__popover-close:hover {
+    opacity: 1;
+  }
+
+  .order-swatches__popover-inner {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .order-swatches__popover-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: #ffffff;
+    border: 1px solid #e3ded6;
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+
+  .order-swatches__popover-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .order-swatches__popover-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .order-swatches__popover-name {
+    margin: 0;
+    font-family: var(--font-heading--family, 'Cormorant Garamond', serif);
+    font-size: 1.375rem;
+    font-weight: 400;
+    line-height: 1.2;
+    color: #1b1b1b;
+    letter-spacing: 0.01em;
+  }
+
+  .order-swatches__popover-code {
+    margin: 6px 0 0;
+    font-family: var(--font-body--family, 'Jost', sans-serif);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #a8a39b;
+    font-weight: 500;
+  }
+
+  /* Tags / Pills */
+  .order-swatches__popover-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+    margin-bottom: 24px;
+  }
+
+  .order-swatches__popover-tag {
+    font-family: var(--font-body--family, 'Jost', sans-serif);
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    background: #ffffff;
+    border: 1px solid #d9d5cf;
+    color: #4a4641;
+    border-radius: 12px;
+  }
+
+  /* Detail rows (INFO, CARE, CONTENT) */
+  .order-swatches__popover-details {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 24px;
+    border-top: 1px solid #e3ded6;
+    margin-bottom: 24px;
+  }
+
+  .order-swatches__popover-detail-row {
+    display: grid;
+    grid-template-columns: 85px 1fr;
+    gap: 16px;
+    align-items: start;
+    line-height: 1.6;
+    font-size: 0.725rem;
+  }
+
+  .order-swatches__popover-detail-label {
+    font-family: var(--font-body--family, 'Jost', sans-serif);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: #1b1b1b;
+  }
+
+  .order-swatches__popover-detail-value {
+    font-family: var(--font-body--family, 'Jost', sans-serif);
+    color: #4a4641;
+    font-weight: 400;
+  }
+
+  .order-swatches__popover-add {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 24px;
+    background: #1e3d2f;
+    color: #ffffff;
+    border: none;
+    border-radius: 0;
+    font-family: var(--font-body--family, 'Jost', sans-serif);
+    font-size: 0.725rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .order-swatches__popover-add:hover {
+    background: #152b21;
+  }
+
+  .order-swatches__popover-add.is-loading {
+    opacity: 0.6;
+    cursor: progress;
+  }
+
+  /* -------------------------------------------------------------------- mobile */
+  @media screen and (max-width: 749px) {
+    .order-swatches__trigger {
+      width: 100%;
+    }
+
+    .order-swatches__drawer {
+      inset: auto 0 0 0;
+      width: 100%;
+      height: auto;
+      max-height: 92vh;
+      transform: translateY(100%);
+      box-shadow: 0 -4px 24px rgb(0 0 0 / 0.18);
+      border-top-left-radius: 14px;
+      border-top-right-radius: 14px;
+    }
+
+    .order-swatches__drawer.is-active {
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .order-swatches__drawer,
+    .order-swatches__drawer::backdrop {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Order Swatches",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Adds an \"Order Swatches\" button + drawer. Shows automatically on products whose colour/fabric option has the minimum number of native swatches set below."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Order Swatches"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Drawer heading",
+      "default": "Order Swatches"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Drawer intro text",
+      "default": "Order fabric swatches to see and feel the colours at home before you decide."
+    },
+    {
+      "type": "range",
+      "id": "max_swatches",
+      "label": "Maximum swatches per order",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "min_swatches",
+      "label": "Only show when option has at least",
+      "info": "Hides the button on products with fewer swatches than this.",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Sample product"
+    },
+    {
+      "type": "product",
+      "id": "sample_product",
+      "label": "Sample product",
+      "info": "The product added to cart for each swatch (e.g. a $5 \"Sample Swatch\"). If empty, the variant ID below is used."
+    },
+    {
+      "type": "text",
+      "id": "sample_variant_id",
+      "label": "Sample variant ID (fallback)",
+      "default": "43130775732312"
+    },
+    {
+      "type": "text",
+      "id": "price_note",
+      "label": "Price note (used if no sample product is selected)",
+      "default": "Samples are $5 each, applied at checkout."
+    },
+    {
+      "type": "header",
+      "content": "Fabrics page link"
+    },
+    {
+      "type": "text",
+      "id": "fabrics_link_label",
+      "label": "Fabrics link label",
+      "default": "See all fabrics & care"
+    },
+    {
+      "type": "text",
+      "id": "fabrics_url",
+      "label": "Fabrics page URL",
+      "info": "Shown as a link in the drawer. Leave blank to hide.",
+      "default": "/pages/swatch-page"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "Left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "Right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Order Swatches",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

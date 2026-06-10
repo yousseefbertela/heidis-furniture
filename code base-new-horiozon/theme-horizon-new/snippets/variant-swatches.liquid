@@ -86,7 +86,7 @@
   data-product-url="{{ product_resource.url }}"
   ref="swatchesVariantPicker"
 >
-  <form>
+  <form autocomplete="off">
     {% comment %}
       Find the first product option that has swatches.
       Then render individual swatches with information on the most relevant variant image to be used in:
@@ -154,6 +154,7 @@
               >
                 <input
                   type="radio"
+                  autocomplete="off"
                   name="{{ product_option.name | escape }}-{{ product_resource.id }}-swatch"
                   value="{{ product_option_value | escape }}"
                   aria-label="{{ product_option_value.name }}"
@@ -173,6 +174,30 @@
                   variant_image: featured_media,
                 %}
                 {% render 'strikethrough-variant', product_option: product_option_value %}
+
+                <div class="product-card__swatch-tooltip">
+                  {%- if product_option_value.swatch.image -%}
+                    <img 
+                      src="{{ product_option_value.swatch.image | image_url: width: 120, height: 120, crop: 'center' }}"
+                      alt="{{ product_option_value.name }}"
+                      class="product-card__swatch-tooltip-image"
+                      loading="lazy"
+                    >
+                  {%- elsif product_option_value.swatch.color -%}
+                    <span 
+                      class="product-card__swatch-tooltip-color" 
+                      style="background-color: {{ product_option_value.swatch.color }};"
+                    ></span>
+                  {%- elsif featured_media -%}
+                    <img 
+                      src="{{ featured_media | image_url: width: 120, height: 120, crop: 'center' }}"
+                      alt="{{ product_option_value.name }}"
+                      class="product-card__swatch-tooltip-image"
+                      loading="lazy"
+                    >
+                  {%- endif -%}
+                  <span class="product-card__swatch-tooltip-name">{{ product_option_value.name }}</span>
+                </div>
               </label>
             </li>
           {%- endfor -%}

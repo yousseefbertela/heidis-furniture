@@ -1,0 +1,250 @@
+<div class="section-background"></div>
+<div class="section page-width-normal">
+  <div class="spacing-style section-content-wrapper" style="{% render 'spacing-style', settings: section.settings %}">
+    <section class="swatch-page">
+      <div class="swatch-page-content">
+        <h2 class="swatch-page-title">{{ page.title | default: 'Order Swatches' }}</h2>
+
+{% comment %}[ignoring loop detection]{% endcomment %}
+        <div class="swatches-grid">
+          {%- assign swatch_collection = collections['upholstery-swatches'] -%}
+          {%- if swatch_collection and swatch_collection.products.size > 0 -%}
+            {%- for product in swatch_collection.products -%}
+              {%- assign swatch_handle = product.title | handle -%}
+              {%- assign matched_color = shop.metaobjects['shopify--color-pattern'].values | where: "handle", swatch_handle | first -%}
+              {%- assign color_info = shop.metaobjects.color_info.values | where: "color", matched_color.id | first -%}
+
+              <div class="swatch-item" data-swatch-id="{{ product.id }}">
+                <div class="swatch-image">
+                  {%- if product.featured_image -%}
+                    <img src="{{ product.featured_image | image_url: width: 300 }}" alt="{{ product.title | escape }}" loading="lazy" width="300" height="260">
+                  {%- else -%}
+                    {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                  {%- endif -%}
+                  <button
+                    class="add-swatch-button"
+                    data-swatch-id="{{ product.id }}"
+                    data-option-value="{{ product.title | escape }}"
+                  >
+                    +
+                  </button>
+                </div>
+
+                <div class="swatch-details">
+                  <h4>{{ product.title }}</h4>
+                  <div class="swatch-info" data-swatch-code="{{ color_info.color_code | default: product.variants.first.sku | default: product.title }}">
+                    <div><strong>Pattern:</strong> {{ color_info.pattern | default: 'Plain/Solid' }}</div>
+                    <div><strong>Cleaning Code:</strong> {{ color_info.cleaning_code | default: 'N/A' }}</div>
+                    <div><strong>Fabric Content:</strong> {{ color_info.fabric_content | default: 'N/A' }}</div>
+                  </div>
+                </div>
+              </div>
+            {%- endfor -%}
+          {%- else -%}
+            {%- assign fallback_titles = "11168-58|FEDRAL BLUE|GREY|LIGHT GREY|MEDIT RRANEAN|MINERAL|PUTTY|VR300-52|VR310-22|VR316-88" | split: "|" -%}
+            {%- assign fallback_images = "11168-58.png|fedral-blue.png|grey.png|light-grey.png|medit-rranean.png|mineral.png|putty_b43e94e8-7436-4233-a7df-9d94fc83421d.png|VR300-52.jpg|vr310-22.png|vr316-88.png" | split: "|" -%}
+            {%- assign fallback_codes = "11168-58|VR310-52|VR303-10|ST101-10|VR309-69|ST102-87|VR316-75|VR300-52/T|VR310-22/Q|VR316-88/Q" | split: "|" -%}
+            {%- assign fallback_patterns = "RS|Plain/Solid|Plain/Solid|Plain/Solid|Plain/Solid|Plain/Solid|Plain/Solid|Plain/Solid|Plain/Solid|Plain/Solid" | split: "|" -%}
+            {%- assign fallback_cleanings = "S|W/S|W|W|W/S|W|W/S|W|W/S|W/S" | split: "|" -%}
+            {%- assign fallback_contents = "55% LINEN, 45% RAYON|100% OLETIN|100% OLEFIN|100% POLYPROPYLENE|100% OLEFIN|100% POLYPROPYLENE|77% OLEFIN 23% UV POLYESTER|99% Olefin, 1% Polyester|100% OLEFIN|77% Olefin, 23% UV Polyester" | split: "|" -%}
+
+            {%- for title in fallback_titles -%}
+              {%- assign idx = forloop.index0 -%}
+              {%- assign image_name = fallback_images[idx] -%}
+              {%- assign code = fallback_codes[idx] -%}
+              {%- assign pattern = fallback_patterns[idx] -%}
+              {%- assign cleaning = fallback_cleanings[idx] -%}
+              {%- assign content = fallback_contents[idx] -%}
+
+              <div class="swatch-item" data-swatch-id="fallback-{{ idx }}">
+                <div class="swatch-image">
+                  <img src="{{ image_name | file_img_url: '300x' }}" alt="{{ title | escape }}" loading="lazy" width="300" height="260">
+                  <button
+                    class="add-swatch-button"
+                    data-swatch-id="fallback-{{ idx }}"
+                    data-option-value="{{ title | escape }}"
+                  >
+                    +
+                  </button>
+                </div>
+
+                <div class="swatch-details">
+                  <h4>{{ title }}</h4>
+                  <div class="swatch-info" data-swatch-code="{{ code }}">
+                    <div><strong>Pattern:</strong> {{ pattern }}</div>
+                    <div><strong>Cleaning Code:</strong> {{ cleaning }}</div>
+                    <div><strong>Fabric Content:</strong> {{ content }}</div>
+                  </div>
+                </div>
+              </div>
+            {%- endfor -%}
+          {%- endif -%}
+        </div>
+
+        <div class="swatch-selection-bar">
+          <span class="swatch-selection-label">Select up to 5</span>
+          <div class="swatch-selection-preview">
+            <div class="preview-slot" data-slot="1"></div>
+            <div class="preview-slot" data-slot="2"></div>
+            <div class="preview-slot" data-slot="3"></div>
+            <div class="preview-slot" data-slot="4"></div>
+            <div class="preview-slot" data-slot="5"></div>
+          </div>
+        </div>
+
+        <div class="swatch-page-footer">
+          <button type="button" class="order-swatches-submit" id="order-swatches-submit">ORDER SWATCHES</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const selectedSwatches = new Map();
+    const addSwatchButtons = document.querySelectorAll('.add-swatch-button');
+    const swatchItems = document.querySelectorAll('.swatch-item');
+    const orderButton = document.getElementById('order-swatches-submit');
+    const MAX_SWATCHES = 5;
+    const previewSlots = document.querySelectorAll('.preview-slot');
+
+    function updatePreview() {
+      // Clear all slots
+      previewSlots.forEach((slot) => (slot.innerHTML = ''));
+
+      // Fill slots with selected swatches
+      let i = 0;
+      selectedSwatches.forEach((optionValue) => {
+        if (i < previewSlots.length) {
+          const button = document.querySelector(`.add-swatch-button[data-option-value="${optionValue}"]`);
+          if (!button) return;
+          const img = button.closest('.swatch-item').querySelector('img').cloneNode(true);
+          img.style.objectFit = 'cover';
+          previewSlots[i].appendChild(img);
+          i++;
+        }
+      });
+    }
+
+    function toggleSwatch(optionValue, button) {
+      if (selectedSwatches.has(optionValue)) {
+        // Unselect swatch
+        selectedSwatches.delete(optionValue);
+        button.textContent = '+';
+        button.classList.remove('selected');
+      } else {
+        // Enforce max limit
+        if (selectedSwatches.size >= MAX_SWATCHES) {
+          alert(`You can only select up to ${MAX_SWATCHES} swatches.`);
+          return;
+        }
+        selectedSwatches.set(optionValue, optionValue);
+        button.textContent = '✓';
+        button.classList.add('selected');
+      }
+      updatePreview();
+
+      // Update order button text
+      orderButton.textContent =
+        selectedSwatches.size > 0
+          ? `ORDER ${selectedSwatches.size} SWATCH${selectedSwatches.size > 1 ? 'ES' : ''}`
+          : 'ORDER SWATCHES';
+    }
+
+    // Click handler for buttons
+    addSwatchButtons.forEach((button) => {
+      button.addEventListener('click', function (e) {
+        e.stopPropagation(); // prevent triggering parent click
+        toggleSwatch(this.dataset.optionValue, this);
+      });
+    });
+
+    // Click handler for entire swatch-item
+    swatchItems.forEach((item) => {
+      item.addEventListener('click', function () {
+        const button = this.querySelector('.add-swatch-button');
+        if (!button) return;
+        toggleSwatch(button.dataset.optionValue, button);
+      });
+    });
+
+    // Handle order submission
+    orderButton.addEventListener('click', function () {
+      if (selectedSwatches.size === 0) {
+        alert('Please select at least one swatch to order.');
+        return;
+      }
+
+      const items = Array.from(selectedSwatches.values()).map((optionValue) => {
+        // Find the swatch item to get its code
+        const button = document.querySelector(`.add-swatch-button[data-option-value="${optionValue}"]`);
+        const swatchItem = button.closest('.swatch-item');
+        const swatchCode = swatchItem.querySelector('.swatch-info')?.dataset.swatchCode || 'N/A';
+
+        return {
+          id: 43130775732312,
+          quantity: 1,
+          properties: {
+            Swatch: optionValue,
+            Code: swatchCode,
+          },
+        };
+      });
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log('Added to cart:', data);
+          window.location.href = '/checkout';
+        })
+        .catch((err) => {
+          console.error('Error adding swatches:', err);
+          alert('Something went wrong. Please try again.');
+        });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Swatch Page",
+  "class": "section-wrapper",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40
+    }
+  ]
+}
+{% endschema %}

@@ -40,6 +40,22 @@ body {
   line-height: 1.05 !important;
 }
 
+@media screen and (max-width: 749px) {
+  .header-logo {
+    font-size: clamp(12px, 3.5vw, 15px) !important;
+    letter-spacing: 0.08em !important;
+    max-width: calc(100vw - 180px) !important; /* leaves 90px on each side for icons */
+    text-align: center !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+  .header-logo__image {
+    max-width: 100% !important;
+    object-fit: contain !important;
+  }
+}
+
 /* ---- 4. Product cards: Arhaus text style — matches the LL draft exactly -----
    Serif, REGULAR weight (400, not 500), title + price both 16px / 1rem.
    The LL draft uses Cormorant 400 for both the title and the price; our price

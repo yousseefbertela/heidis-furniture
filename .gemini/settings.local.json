@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__75f816d9-753a-49c4-bdce-0cac07c60f38__get-shop-info",
+      "mcp__75f816d9-753a-49c4-bdce-0cac07c60f38__graphql_query",
+      "Bash(python -c ' *)"
+    ]
+  }
+}

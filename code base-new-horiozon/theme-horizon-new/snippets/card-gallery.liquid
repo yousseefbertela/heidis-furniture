@@ -52,7 +52,8 @@
     when 'square'
       assign ratio = '1'
     when 'adapt'
-      assign ratio = product.featured_media.preview_image.aspect_ratio | default: '1'
+      assign first_image = product.selected_variant.featured_media | default: product.media.first
+      assign ratio = first_image.preview_image.aspect_ratio | default: '1'
   endcase
 
   if block_settings.image_ratio == 'adapt' and block_settings.constrain_to_viewport
@@ -88,11 +89,10 @@
       assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src'
       assign generic_media_size = product.media.size | minus: variant_images.size
 
-      # Sort media so product.featured_media.preview_image comes first as that is the most relevant image to display
-      # product.featured_media updates based on search context and filters applied
-
-      assign other_media = product.media | reject: 'src', product.featured_media
-      assign media_list_to_show = product.featured_media | concat: other_media
+      # Sort media so the selected variant's featured media (if any) or the default first media comes first
+      assign first_image = product.selected_variant.featured_media | default: product.media.first
+      assign other_media = product.media | reject: 'src', first_image
+      assign media_list_to_show = first_image | concat: other_media
 
       if product.media.size > 2 and generic_media_size > 0
         assign show_arrows = true

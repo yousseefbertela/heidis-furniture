@@ -107,6 +107,35 @@
     "
   >
     {{ children }}
+    
+    {%- liquid
+      assign product_has_swatches = false
+      for product_option in product.options_with_values
+        assign swatch_count = product_option.values | map: 'swatch' | compact | size
+        if swatch_count > 0
+          assign product_has_swatches = true
+          break
+        endif
+      endfor
+    -%}
+    {%- if product_has_swatches -%}
+      <product-swatches
+        data-product-id="{{ product.id }}"
+        data-product-url="{{ product.url }}"
+        style="
+          --overflow-list-alignment: flex-start;
+          --overflow-list-alignment-mobile: flex-start;
+          --product-swatches-alignment: start;
+          --product-swatches-alignment-mobile: start;
+          --product-swatches-padding-block-start: 6px;
+          --product-swatches-padding-block-end: 0px;
+          --product-swatches-padding-inline-start: 0px;
+          --product-swatches-padding-inline-end: 0px;
+        "
+      >
+        {% render 'variant-swatches', product_resource: product %}
+      </product-swatches>
+    {%- endif -%}
   </div>
 </product-card>
 

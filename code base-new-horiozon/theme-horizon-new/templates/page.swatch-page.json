@@ -1,0 +1,15 @@
+{
+  "sections": {
+    "main": {
+      "type": "swatch-page",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "padding-block-start": 40,
+        "padding-block-end": 40
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
