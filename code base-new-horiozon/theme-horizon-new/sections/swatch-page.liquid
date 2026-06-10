@@ -100,6 +100,220 @@
   </div>
 </div>
 
+{% stylesheet %}
+  .swatch-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .swatch-page-title {
+    font-family: var(--font-heading--family, "Cormorant Garamond", serif);
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 400;
+    text-align: center;
+    color: #1b1b1b;
+    margin-bottom: 32px;
+    letter-spacing: 0.02em;
+    text-transform: capitalize;
+  }
+
+  .swatches-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .swatches-grid {
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 24px;
+    }
+  }
+
+  .swatch-item {
+    background: #fff;
+    border: 1px solid #e3ded6;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.25s ease;
+    position: relative;
+  }
+
+  .swatch-item:hover {
+    border-color: #1e3d2f;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+
+  .swatch-item.selected {
+    border-color: #1e3d2f;
+    box-shadow: 0 0 0 2px #1e3d2f;
+  }
+
+  .swatch-image {
+    position: relative;
+    aspect-ratio: 1.15;
+    overflow: hidden;
+    background: #f5f4f0;
+  }
+
+  .swatch-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .swatch-item:hover .swatch-image img {
+    transform: scale(1.04);
+  }
+
+  .add-swatch-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid #d9d5cf;
+    font-size: 20px;
+    line-height: 1;
+    color: #1e3d2f;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    font-family: var(--font-body--family, "Jost", sans-serif);
+    font-weight: 400;
+    z-index: 2;
+  }
+
+  .add-swatch-button:hover {
+    background: #1e3d2f;
+    color: #fff;
+    border-color: #1e3d2f;
+  }
+
+  .add-swatch-button.selected {
+    background: #1e3d2f;
+    color: #fff;
+    border-color: #1e3d2f;
+    font-size: 14px;
+  }
+
+  .swatch-details {
+    padding: 12px 14px;
+  }
+
+  .swatch-details h4 {
+    font-family: var(--font-body--family, "Jost", sans-serif);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #1b1b1b;
+    margin: 0 0 6px;
+  }
+
+  .swatch-info {
+    font-family: var(--font-body--family, "Jost", sans-serif);
+    font-size: 11px;
+    line-height: 1.5;
+    color: #4a4641;
+  }
+
+  .swatch-info div {
+    margin-bottom: 2px;
+  }
+
+  .swatch-info strong {
+    font-weight: 600;
+    color: #1b1b1b;
+  }
+
+  /* ---- Selection bar (sticky bottom) ---- */
+  .swatch-selection-bar {
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    border-top: 1px solid #e3ded6;
+    padding: 16px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    z-index: 5;
+    margin-top: 12px;
+  }
+
+  .swatch-selection-label {
+    font-family: var(--font-body--family, "Jost", sans-serif);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #4a4641;
+  }
+
+  .swatch-selection-preview {
+    display: flex;
+    gap: 8px;
+  }
+
+  .preview-slot {
+    width: 40px;
+    height: 40px;
+    border: 1px dashed #d9d5cf;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #fafaf8;
+    transition: border-color 0.2s ease;
+  }
+
+  .preview-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ---- Footer / order button ---- */
+  .swatch-page-footer {
+    text-align: center;
+    padding: 24px 0 40px;
+  }
+
+  .order-swatches-submit {
+    display: inline-block;
+    width: 100%;
+    max-width: 400px;
+    padding: 14px 32px;
+    background: #1e3d2f;
+    color: #fff;
+    border: none;
+    border-radius: 0;
+    font-family: var(--font-body--family, "Jost", sans-serif);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease;
+  }
+
+  .order-swatches-submit:hover {
+    background: #163028;
+  }
+
+  .order-swatches-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+{% endstylesheet %}
+
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const selectedSwatches = new Map();

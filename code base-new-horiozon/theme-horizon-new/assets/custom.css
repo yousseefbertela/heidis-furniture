@@ -603,16 +603,17 @@ body {
     opacity: 1 !important;
     content-visibility: visible !important;
   }
-  /* on hover: fade image 1 out, image 2 in — only when a real 2nd image exists */
+  /* on hover: fade image 1 out, show the active variant/second image —
+     Uses ~ (general sibling) so swatch-triggered previewVariant works
+     (JS unhides a specific variant slide which may not be slide 2). */
   .product-card:hover
     .card-gallery
-    slideshow-slide:first-child:has(+ slideshow-slide:not([hidden])) {
+    slideshow-slide:first-child:has(~ slideshow-slide:not([hidden])) {
     opacity: 0 !important;
   }
   .product-card:hover
     .card-gallery
-    slideshow-slide:first-child:not([hidden])
-    + slideshow-slide:not([hidden]) {
+    slideshow-slide:not(:first-child):not([hidden]) {
     opacity: 1 !important;
     z-index: 2 !important;
     content-visibility: visible !important;
@@ -652,4 +653,116 @@ body {
 .product-card quick-add-component,
 .product-card .quick-add__button {
   display: none !important;
+}
+
+/* ==========================================================================
+   10. Product card swatches — Arhaus-style small chips + hover tooltip
+   Scoped to .product-card so PDP swatches (section 8) are unaffected.
+   ========================================================================== */
+
+/* Swatch chips on the card: compact 28px squares */
+.product-card .variant-option--swatches .swatch {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  border-radius: 3px !important;
+  border: 1px solid #d9d5cf !important;
+  cursor: pointer !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+  overflow: hidden !important;
+}
+.product-card .variant-option--swatches .swatch img,
+.product-card .variant-option--swatches .swatch .swatch__image {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+/* Hover glow on swatch */
+.product-card .variant-option--swatches .variant-option__button-label:hover .swatch {
+  border-color: #1e3d2f !important;
+  box-shadow: 0 0 0 1px #1e3d2f !important;
+}
+
+/* Selected (checked) swatch — dark ring */
+.product-card .variant-option--swatches .variant-option__button-label:has(input:checked) .swatch {
+  border-color: #1e3d2f !important;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 3px #1e3d2f !important;
+}
+
+/* Swatch option row: tighter layout */
+.product-card .variant-option--swatches {
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.product-card .variant-option--swatches .variant-option__list,
+.product-card swatches-variant-picker-component overflow-list::part(list) {
+  gap: 6px !important;
+}
+
+/* Hide the legend/label on product cards (not needed like PDP) */
+.product-card .variant-option__legend {
+  display: none !important;
+}
+
+/* ---- Hover tooltip: fabric name + close-up image ---- */
+.product-card .variant-option__button-label {
+  position: relative !important;
+}
+.product-card__swatch-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  background: #fff;
+  border: 1px solid #d9d5cf;
+  border-radius: 4px;
+  padding: 6px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  white-space: nowrap;
+  pointer-events: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 80px;
+}
+.product-card .variant-option__button-label:hover .product-card__swatch-tooltip {
+  display: flex;
+}
+.product-card__swatch-tooltip-image {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 3px;
+  border: 1px solid #e3ded6;
+}
+.product-card__swatch-tooltip-color {
+  display: block;
+  width: 64px;
+  height: 64px;
+  border-radius: 3px;
+  border: 1px solid #e3ded6;
+}
+.product-card__swatch-tooltip-name {
+  font-family: var(--font-body--family);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #1b1b1b;
+  text-align: center;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* "+N" overflow count styling */
+.product-card .hidden-swatches__count {
+  font-family: var(--font-body--family) !important;
+  font-size: 11px !important;
+  color: #4a4641 !important;
 }
