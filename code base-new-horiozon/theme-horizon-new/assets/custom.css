@@ -52,10 +52,20 @@ body {
   .header__columns,
   #header-component[data-menu-style='drawer'] .header__columns {
     --header-template-columns: max-content max-content minmax(0, 1fr) max-content max-content !important;
+    position: relative !important; /* anchor for the absolutely-centred logo */
   }
+  /* TRUE-centred logo: the grid can't centre it because the sides are unequal
+     (2 icons left vs 5 icons right), so the logo is lifted out of the grid and
+     pinned to the exact middle of the header bar. max-width keeps it clear of
+     both icon groups on the narrowest phones, so overlap stays impossible. */
   .header-logo {
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    height: auto !important;
     min-width: 0 !important;
-    max-width: 100% !important;
+    max-width: calc(100vw - 260px) !important; /* 2x the widest icon group */
     font-size: clamp(12px, 3.5vw, 15px) !important; /* text-fallback logos */
     letter-spacing: 0.08em !important;
     white-space: nowrap !important;
@@ -69,21 +79,20 @@ body {
   }
   .header-logo__image {
     width: auto !important;          /* drop the fixed inline px width      */
-    max-width: 100% !important;      /* never wider than the centre column  */
+    max-width: 100% !important;      /* never wider than the free middle    */
     height: var(--header-logo-image-height-mobile, 36px) !important;
     object-fit: contain !important;
   }
   /* Keep ALL 5 action icons (stores, account, delivery, wishlist, cart) but
-     shrink them on mobile so together they fit without invading the logo:
-     each native slot is 44px wide -> 5 x 44 = 220px would crush the logo on a
-     375px phone. At 32px per icon the whole right group is ~160px, leaving the
-     centre column plenty of room. Desktop is untouched. */
+     compact: 24px slots / 16px art keeps the right group ~120px so the
+     centred logo still gets ~115px of clear space on a 375px phone.
+     Desktop is untouched. */
   header-actions {
     gap: 0 !important;
   }
   header-actions .header-actions__action {
-    min-width: 32px !important;
-    width: 32px !important;
+    min-width: 24px !important;
+    width: 24px !important;
     min-height: 44px !important; /* keep a tall tap target even though narrow */
     padding-inline: 0 !important;
     display: inline-flex !important;
@@ -91,12 +100,12 @@ body {
     justify-content: center !important;
   }
   header-actions shopify-account:not(:defined) {
-    min-width: 32px !important;
+    min-width: 24px !important;
   }
   header-actions .svg-wrapper svg,
   header-actions .account-button__icon {
-    width: 18px !important;
-    height: 18px !important;
+    width: 16px !important;
+    height: 16px !important;
   }
 }
 
@@ -728,6 +737,21 @@ body {
   display: block !important; /* previewed slide may carry [hidden] = display:none */
   opacity: 1 !important;
   z-index: 3 !important;
+  content-visibility: visible !important;
+}
+
+/* ---- Swatch CLICK → variant image becomes the card's default image ----
+   Set by the same JS (persistent, unlike the hover preview): after picking a
+   colour and moving the mouse away, the card keeps showing the chosen variant
+   instead of falling back to the product's main/featured image. */
+.card-gallery[data-swatch-selected]
+  slideshow-slide:not([hidden]):not(slideshow-slide:not([hidden]) ~ slideshow-slide):not(.is-swatch-selected):not(.is-swatch-preview) {
+  opacity: 0 !important;
+}
+.card-gallery slideshow-slide.is-swatch-selected {
+  display: block !important; /* selected slide may carry [hidden] = display:none */
+  opacity: 1 !important;
+  z-index: 2 !important;
   content-visibility: visible !important;
 }
 

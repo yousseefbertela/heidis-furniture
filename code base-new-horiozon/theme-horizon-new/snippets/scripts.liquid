@@ -346,5 +346,25 @@
     gallery.querySelectorAll('slideshow-slide').forEach(function(s){s.classList.remove('is-swatch-preview')});
     gallery.removeAttribute('data-swatch-active');
   });
+
+  // Swatch CLICK -> that variant image becomes the card's default image, so it
+  // persists after the mouse leaves (hover preview above is temporary only).
+  document.addEventListener('click',function(e){
+    var label=e.target&&e.target.closest?e.target.closest('product-card .variant-option__button-label'):null;
+    if(!label) return;
+    var card=label.closest('product-card');
+    if(!card) return;
+    var gallery=card.querySelector('.card-gallery');
+    if(!gallery) return;
+    gallery.querySelectorAll('slideshow-slide.is-swatch-selected').forEach(function(s){s.classList.remove('is-swatch-selected')});
+    var mediaId=label.getAttribute('data-media-id');
+    var target=mediaId?gallery.querySelector('slideshow-slide[slide-id="'+mediaId+'"]'):null;
+    if(target){
+      target.classList.add('is-swatch-selected');
+      gallery.setAttribute('data-swatch-selected','');
+    }else{
+      gallery.removeAttribute('data-swatch-selected');
+    }
+  });
 })();
 </script>
