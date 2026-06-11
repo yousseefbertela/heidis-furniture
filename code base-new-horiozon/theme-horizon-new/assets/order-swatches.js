@@ -397,10 +397,10 @@ class OrderSwatchesComponent extends Component {
 
   /* ----------------------------------------------------------- hover popover */
 
-  /** @returns {Record<string, {name:string, code:string, image:string, color:string}>} */
+  /** @returns {Record<string, {name:string, code:string, image:string, color:string, info:string, care:string, content:string, tags:string[]}>} */
   get fabricMap() {
     if (this.#fabricMap) return this.#fabricMap;
-    /** @type {Record<string, {name:string, code:string, image:string, color:string}>} */
+    /** @type {Record<string, {name:string, code:string, image:string, color:string, info:string, care:string, content:string, tags:string[]}>} */
     const map = {};
     for (const card of this.querySelectorAll('[data-swatch-card]')) {
       if (!(card instanceof HTMLElement)) continue;
@@ -411,70 +411,17 @@ class OrderSwatchesComponent extends Component {
         code: card.dataset.swatchCode || name,
         image: card.dataset.swatchImage || '',
         color: card.dataset.swatchColor || '',
+        info: (card.dataset.swatchInfo || '').trim(),
+        care: (card.dataset.swatchCare || '').trim(),
+        content: (card.dataset.swatchContent || '').trim(),
+        tags: (card.dataset.swatchTags || '')
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean),
       };
     }
     this.#fabricMap = map;
     return map;
-  }
-
-  /**
-   * Helper to clean up fabric/color names.
-   * e.g., "CBANKSCURRANT" -> "Banks Currant", "AIKEN ZINC" -> "Aiken Zinc"
-   * @param {string} rawName
-   * @returns {string}
-   */
-  #formatFabricName(rawName) {
-    if (!rawName) return '';
-    let name = rawName.trim();
-    
-    // Check for "C" prefix common in some imports (e.g. CBanksCurrant, CBeaconNatural)
-    if (/^[Cc][A-Z]/.test(name)) {
-      name = name.substring(1);
-    }
-    
-    // Add spaces before capital letters (camelCase / squished uppercase names)
-    name = name.replace(/([A-Z])/g, ' $1').trim();
-    
-    // Capitalize each word nicely
-    return name.split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ')
-      .replace(/\s+/g, ' ');
-  }
-
-  /**
-   * Helper to get fabric detail mapping based on fabric name.
-   * @param {string} fabricName
-   * @returns {{tags: string[], info: string, care: string, content: string}}
-   */
-  #getFabricDetails(fabricName) {
-    const name = fabricName.toLowerCase();
-    
-    if (name.includes('banks') || name.includes('currant')) {
-      return {
-        tags: ['Velvet', 'Performance'],
-        info: 'Soft and luxurious, velvets offer style and sophistication throughout the home. With a dense pile and soft luster, velvets saturate and enhance colors in both soft and bold applications.',
-        care: 'Spot-clean with water and water-based upholstery shampoo or foam cleaners only.',
-        content: '82% POLYESTER, 18% COTTON'
-      };
-    }
-    
-    if (name.includes('aiken') || name.includes('zinc')) {
-      return {
-        tags: ['Textured Weave', 'Performance', 'Crypton'],
-        info: 'Textured weave fabrics are rich, appealing, and offer an inviting, natural feel. These sumptuous fabrics also showcase patterns and colors beautifully.',
-        care: 'Spot-clean with water and water-based upholstery shampoo or foam cleaners only.',
-        content: '100% POLYESTER'
-      };
-    }
-    
-    // Default fallback details
-    return {
-      tags: ['Textured Weave', 'Performance'],
-      info: 'Premium upholstery fabric selected for its durability, comfort, and beautiful texture. Ideal for active households.',
-      care: 'Spot-clean with water and water-based upholstery shampoo or foam cleaners only.',
-      content: '100% POLYESTER'
-    };
   }
 
   /** @param {string} value @param {Element} anchor */
@@ -498,12 +445,11 @@ class OrderSwatchesComponent extends Component {
       }
     }
     
-    // Format the fabric name nicely
-    const formattedName = this.#formatFabricName(data.name);
+    // Name is the real option-value name — show it as-is.
     const nameEl = this.refs.popoverName;
-    if (nameEl instanceof HTMLElement) nameEl.textContent = formattedName;
-    
-    // SKU formatting
+    if (nameEl instanceof HTMLElement) nameEl.textContent = data.name;
+
+    // SKU / code
     const codeEl = this.refs.popoverCode;
     if (codeEl instanceof HTMLElement) {
       const displayCode = (data.code || '').toUpperCase().trim();
@@ -515,29 +461,40 @@ class OrderSwatchesComponent extends Component {
       }
     }
 
-    // Dynamic tags (pills)
-    const details = this.#getFabricDetails(formattedName);
+    // Tags (pills) — real data only; hide the container when there are none.
     const tagsEl = this.refs.popoverTags;
     if (tagsEl instanceof HTMLElement) {
       tagsEl.innerHTML = '';
-      details.tags.forEach(tag => {
+      data.tags.forEach((tag) => {
         const span = document.createElement('span');
         span.className = 'order-swatches__popover-tag';
         span.textContent = tag;
         tagsEl.appendChild(span);
       });
+      tagsEl.hidden = data.tags.length === 0;
     }
 
-    // Details texts (INFO, CARE, CONTENT)
-    if (this.refs.popoverInfoText instanceof HTMLElement) {
-      this.refs.popoverInfoText.textContent = details.info;
-    }
-    if (this.refs.popoverCareText instanceof HTMLElement) {
-      this.refs.popoverCareText.textContent = details.care;
-    }
-    if (this.refs.popoverContentText instanceof HTMLElement) {
-      this.refs.popoverContentText.textContent = details.content;
-    }
+    // Detail rows (INFO, CARE, CONTENT) — show only rows that have real data,
+    // and hide the whole block when none do. Never invents fabric facts.
+    let anyDetail = false;
+    /** @param {HTMLElement | undefined} el @param {string} text */
+    const setRow = (el, text) => {
+      if (!(el instanceof HTMLElement)) return;
+      const row = el.closest('.order-swatches__popover-detail-row');
+      if (text) {
+        el.textContent = text;
+        if (row instanceof HTMLElement) row.hidden = false;
+        anyDetail = true;
+      } else if (row instanceof HTMLElement) {
+        row.hidden = true;
+      }
+    };
+    setRow(this.refs.popoverInfoText, data.info);
+    setRow(this.refs.popoverCareText, data.care);
+    setRow(this.refs.popoverContentText, data.content);
+
+    const detailsEl = this.querySelector('.order-swatches__popover-details');
+    if (detailsEl instanceof HTMLElement) detailsEl.hidden = !anyDetail;
 
     if (!this.#popoverOpen) {
       try {

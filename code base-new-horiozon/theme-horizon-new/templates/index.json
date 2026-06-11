@@ -3,7 +3,7 @@
     "arhaus_home": {
       "type": "arhaus-home",
       "settings": {
-        "bg_color": "#E7E7E5",
+        "bg_color": "#FFFFFF",
         "text_color": "#232323",
         "accent_color": "#8C6E45",
         "muted_color": "#6F6A63"

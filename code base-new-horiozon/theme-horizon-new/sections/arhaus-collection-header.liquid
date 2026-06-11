@@ -331,15 +331,11 @@
           {%- endif -%}
         {%- endfor -%}
 
-        {%- if chip_count == 0 -%}
-          <button class="ahc-chip" type="button" disabled>Material <span class="ahc-caret">&#9662;</span></button>
-          <button class="ahc-chip" type="button" disabled>Size <span class="ahc-caret">&#9662;</span></button>
-          <button class="ahc-chip" type="button" disabled>Color <span class="ahc-caret">&#9662;</span></button>
+        {%- if collection.filters.size > 0 -%}
+          <button class="ahc-chip ahc-chip--more" type="button" data-ahc-more aria-expanded="false">
+            More Filters <span class="ahc-plus">+</span>
+          </button>
         {%- endif -%}
-
-        <button class="ahc-chip ahc-chip--more" type="button" data-ahc-more aria-expanded="false">
-          More Filters <span class="ahc-plus">+</span>
-        </button>
       </div>
 
       <div class="ahc-tools">
@@ -416,10 +412,13 @@
   var more = root.querySelector('[data-ahc-more]');
   if(more){
     more.addEventListener('click', function(){
-      var drawer = document.querySelector('[data-collection-filter-drawer], .filterPLP-trigger, .toolbar-filter');
-      if(drawer && typeof drawer.click === 'function'){ drawer.click(); return; }
-      var sidebar = document.querySelector('.sidebar-collection, .collection-sidebar');
-      if(sidebar) sidebar.scrollIntoView({behavior:'smooth', block:'start'});
+      // Horizon renders its filters in a drawer opened by controls bound to
+      // "#filters-drawer/showDialog". Click the native control so the full
+      // filter set opens (works on desktop + mobile).
+      var trigger = document.querySelector('[on\\:click="#filters-drawer/showDialog"]');
+      if(trigger){ trigger.click(); return; }
+      var drawer = document.getElementById('filters-drawer');
+      if(drawer && typeof drawer.showDialog === 'function'){ drawer.showDialog(); }
     });
   }
 })();

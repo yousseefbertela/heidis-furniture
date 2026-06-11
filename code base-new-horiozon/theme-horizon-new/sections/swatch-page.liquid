@@ -1,18 +1,32 @@
+{%- liquid
+  # Resolve the sample variant: prefer the picked product, fall back to the id setting.
+  assign sample_variant_id = ''
+  if section.settings.sample_product != blank
+    assign sample_variant_id = section.settings.sample_product.selected_or_first_available_variant.id
+  endif
+  if sample_variant_id == blank
+    assign sample_variant_id = section.settings.sample_variant_id
+  endif
+  assign max_swatches = section.settings.max_swatches | default: 5
+-%}
 <div class="section-background"></div>
 <div class="section page-width-normal">
   <div class="spacing-style section-content-wrapper" style="{% render 'spacing-style', settings: section.settings %}">
-    <section class="swatch-page">
+    <section
+      class="swatch-page"
+      data-sample-variant-id="{{ sample_variant_id }}"
+      data-max-swatches="{{ max_swatches }}"
+    >
       <div class="swatch-page-content">
         <h2 class="swatch-page-title">{{ page.title | default: 'Order Swatches' }}</h2>
 
-{% comment %}[ignoring loop detection]{% endcomment %}
         <div class="swatches-grid">
           {%- assign swatch_collection = collections['upholstery-swatches'] -%}
           {%- if swatch_collection and swatch_collection.products.size > 0 -%}
             {%- for product in swatch_collection.products -%}
               {%- assign swatch_handle = product.title | handle -%}
-              {%- assign matched_color = shop.metaobjects['shopify--color-pattern'].values | where: "handle", swatch_handle | first -%}
-              {%- assign color_info = shop.metaobjects.color_info.values | where: "color", matched_color.id | first -%}
+              {%- assign matched_color = metaobjects['shopify--color-pattern'].values | where: "handle", swatch_handle | first -%}
+              {%- assign color_info = metaobjects['color_info'].values | where: "color", matched_color.id | first -%}
 
               <div class="swatch-item" data-swatch-id="{{ product.id }}">
                 <div class="swatch-image">
@@ -25,6 +39,7 @@
                     class="add-swatch-button"
                     data-swatch-id="{{ product.id }}"
                     data-option-value="{{ product.title | escape }}"
+                    aria-label="Add {{ product.title | escape }} to your swatch order"
                   >
                     +
                   </button>
@@ -41,12 +56,12 @@
               </div>
             {%- endfor -%}
           {%- else -%}
-            {%- assign fallback_titles = "11168-58|FEDRAL BLUE|GREY|LIGHT GREY|MEDIT RRANEAN|MINERAL|PUTTY|VR300-52|VR310-22|VR316-88" | split: "|" -%}
+            {%- assign fallback_titles = "11168-58|FEDERAL BLUE|GREY|LIGHT GREY|MEDITERRANEAN|MINERAL|PUTTY|VR300-52|VR310-22|VR316-88" | split: "|" -%}
             {%- assign fallback_images = "11168-58.png|fedral-blue.png|grey.png|light-grey.png|medit-rranean.png|mineral.png|putty_b43e94e8-7436-4233-a7df-9d94fc83421d.png|VR300-52.jpg|vr310-22.png|vr316-88.png" | split: "|" -%}
             {%- assign fallback_codes = "11168-58|VR310-52|VR303-10|ST101-10|VR309-69|ST102-87|VR316-75|VR300-52/T|VR310-22/Q|VR316-88/Q" | split: "|" -%}
             {%- assign fallback_patterns = "RS|Plain/Solid|Plain/Solid|Plain/Solid|Plain/Solid|Plain/Solid|Plain/Solid|Plain/Solid|Plain/Solid|Plain/Solid" | split: "|" -%}
             {%- assign fallback_cleanings = "S|W/S|W|W|W/S|W|W/S|W|W/S|W/S" | split: "|" -%}
-            {%- assign fallback_contents = "55% LINEN, 45% RAYON|100% OLETIN|100% OLEFIN|100% POLYPROPYLENE|100% OLEFIN|100% POLYPROPYLENE|77% OLEFIN 23% UV POLYESTER|99% Olefin, 1% Polyester|100% OLEFIN|77% Olefin, 23% UV Polyester" | split: "|" -%}
+            {%- assign fallback_contents = "55% LINEN, 45% RAYON|100% OLEFIN|100% OLEFIN|100% POLYPROPYLENE|100% OLEFIN|100% POLYPROPYLENE|77% OLEFIN 23% UV POLYESTER|99% Olefin, 1% Polyester|100% OLEFIN|77% Olefin, 23% UV Polyester" | split: "|" -%}
 
             {%- for title in fallback_titles -%}
               {%- assign idx = forloop.index0 -%}
@@ -63,6 +78,7 @@
                     class="add-swatch-button"
                     data-swatch-id="fallback-{{ idx }}"
                     data-option-value="{{ title | escape }}"
+                    aria-label="Add {{ title | escape }} to your swatch order"
                   >
                     +
                   </button>
@@ -82,15 +98,15 @@
         </div>
 
         <div class="swatch-selection-bar">
-          <span class="swatch-selection-label">Select up to 5</span>
+          <span class="swatch-selection-label">Select up to {{ max_swatches }}</span>
           <div class="swatch-selection-preview">
-            <div class="preview-slot" data-slot="1"></div>
-            <div class="preview-slot" data-slot="2"></div>
-            <div class="preview-slot" data-slot="3"></div>
-            <div class="preview-slot" data-slot="4"></div>
-            <div class="preview-slot" data-slot="5"></div>
+            {%- for i in (1..max_swatches) -%}
+              <div class="preview-slot" data-slot="{{ i }}"></div>
+            {%- endfor -%}
           </div>
         </div>
+
+        <p class="swatch-page-message" id="swatch-page-message" role="status" aria-live="polite" hidden></p>
 
         <div class="swatch-page-footer">
           <button type="button" class="order-swatches-submit" id="order-swatches-submit">ORDER SWATCHES</button>
@@ -280,6 +296,19 @@
     object-fit: cover;
   }
 
+  /* ---- Inline message ---- */
+  .swatch-page-message {
+    margin: 12px 0 0;
+    text-align: center;
+    font-family: var(--font-body--family, "Jost", sans-serif);
+    font-size: 13px;
+    color: #b3261e;
+  }
+
+  .swatch-page-message[hidden] {
+    display: none;
+  }
+
   /* ---- Footer / order button ---- */
   .swatch-page-footer {
     text-align: center;
@@ -316,24 +345,55 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
+    const root = document.querySelector('.swatch-page');
+    if (!root) return;
+
+    const MAX_SWATCHES = parseInt(root.dataset.maxSwatches, 10) || 5;
+    const SAMPLE_VARIANT_ID = (root.dataset.sampleVariantId || '').trim();
+
     const selectedSwatches = new Map();
-    const addSwatchButtons = document.querySelectorAll('.add-swatch-button');
-    const swatchItems = document.querySelectorAll('.swatch-item');
+    const addSwatchButtons = root.querySelectorAll('.add-swatch-button');
+    const swatchItems = root.querySelectorAll('.swatch-item');
     const orderButton = document.getElementById('order-swatches-submit');
-    const MAX_SWATCHES = 5;
-    const previewSlots = document.querySelectorAll('.preview-slot');
+    const previewSlots = root.querySelectorAll('.preview-slot');
+    const messageEl = document.getElementById('swatch-page-message');
+
+    let messageTimer;
+    function flash(text) {
+      if (!messageEl) return;
+      messageEl.textContent = text;
+      messageEl.hidden = false;
+      clearTimeout(messageTimer);
+      messageTimer = setTimeout(function () {
+        messageEl.hidden = true;
+        messageEl.textContent = '';
+      }, 3500);
+    }
+
+    function clearMessage() {
+      if (!messageEl) return;
+      clearTimeout(messageTimer);
+      messageEl.hidden = true;
+      messageEl.textContent = '';
+    }
+
+    function cartUrl() {
+      return (window.Theme && Theme.routes && Theme.routes.cart_url) || '/cart';
+    }
 
     function updatePreview() {
-      // Clear all slots
-      previewSlots.forEach((slot) => (slot.innerHTML = ''));
+      previewSlots.forEach(function (slot) {
+        slot.innerHTML = '';
+      });
 
-      // Fill slots with selected swatches
       let i = 0;
-      selectedSwatches.forEach((optionValue) => {
+      selectedSwatches.forEach(function (optionValue) {
         if (i < previewSlots.length) {
-          const button = document.querySelector(`.add-swatch-button[data-option-value="${optionValue}"]`);
+          const button = root.querySelector('.add-swatch-button[data-option-value="' + optionValue + '"]');
           if (!button) return;
-          const img = button.closest('.swatch-item').querySelector('img').cloneNode(true);
+          const sourceImg = button.closest('.swatch-item').querySelector('img');
+          if (!sourceImg) return;
+          const img = sourceImg.cloneNode(true);
           img.style.objectFit = 'cover';
           previewSlots[i].appendChild(img);
           i++;
@@ -342,40 +402,39 @@
     }
 
     function toggleSwatch(optionValue, button) {
+      const item = button.closest('.swatch-item');
       if (selectedSwatches.has(optionValue)) {
-        // Unselect swatch
         selectedSwatches.delete(optionValue);
         button.textContent = '+';
         button.classList.remove('selected');
+        if (item) item.classList.remove('selected');
       } else {
-        // Enforce max limit
         if (selectedSwatches.size >= MAX_SWATCHES) {
-          alert(`You can only select up to ${MAX_SWATCHES} swatches.`);
+          flash('You can select up to ' + MAX_SWATCHES + ' swatches.');
           return;
         }
         selectedSwatches.set(optionValue, optionValue);
         button.textContent = '✓';
         button.classList.add('selected');
+        if (item) item.classList.add('selected');
+        clearMessage();
       }
       updatePreview();
 
-      // Update order button text
       orderButton.textContent =
         selectedSwatches.size > 0
-          ? `ORDER ${selectedSwatches.size} SWATCH${selectedSwatches.size > 1 ? 'ES' : ''}`
+          ? 'ORDER ' + selectedSwatches.size + ' SWATCH' + (selectedSwatches.size > 1 ? 'ES' : '')
           : 'ORDER SWATCHES';
     }
 
-    // Click handler for buttons
-    addSwatchButtons.forEach((button) => {
+    addSwatchButtons.forEach(function (button) {
       button.addEventListener('click', function (e) {
-        e.stopPropagation(); // prevent triggering parent click
+        e.stopPropagation();
         toggleSwatch(this.dataset.optionValue, this);
       });
     });
 
-    // Click handler for entire swatch-item
-    swatchItems.forEach((item) => {
+    swatchItems.forEach(function (item) {
       item.addEventListener('click', function () {
         const button = this.querySelector('.add-swatch-button');
         if (!button) return;
@@ -383,42 +442,57 @@
       });
     });
 
-    // Handle order submission
     orderButton.addEventListener('click', function () {
       if (selectedSwatches.size === 0) {
-        alert('Please select at least one swatch to order.');
+        flash('Please select at least one swatch to order.');
+        return;
+      }
+      if (!SAMPLE_VARIANT_ID) {
+        flash('Swatch ordering is unavailable right now.');
         return;
       }
 
-      const items = Array.from(selectedSwatches.values()).map((optionValue) => {
-        // Find the swatch item to get its code
-        const button = document.querySelector(`.add-swatch-button[data-option-value="${optionValue}"]`);
-        const swatchItem = button.closest('.swatch-item');
-        const swatchCode = swatchItem.querySelector('.swatch-info')?.dataset.swatchCode || 'N/A';
+      const items = Array.from(selectedSwatches.values()).map(function (optionValue) {
+        const button = root.querySelector('.add-swatch-button[data-option-value="' + optionValue + '"]');
+        const swatchItem = button ? button.closest('.swatch-item') : null;
+        const info = swatchItem ? swatchItem.querySelector('.swatch-info') : null;
+        const swatchCode = (info && info.dataset.swatchCode) || 'N/A';
 
         return {
-          id: 43130775732312,
+          id: Number(SAMPLE_VARIANT_ID),
           quantity: 1,
           properties: {
             Swatch: optionValue,
             Code: swatchCode,
+            _swatch_sample: 'true',
           },
         };
       });
 
+      orderButton.disabled = true;
+
       fetch('/cart/add.js', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items }),
+        body: JSON.stringify({ items: items }),
       })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log('Added to cart:', data);
-          window.location.href = '/checkout';
+        .then(function (res) {
+          return res.json();
         })
-        .catch((err) => {
-          console.error('Error adding swatches:', err);
-          alert('Something went wrong. Please try again.');
+        .then(function (data) {
+          orderButton.disabled = false;
+          if (data && data.status) {
+            // Shopify returns a non-zero `status` on error (e.g. sold out).
+            flash(data.description || data.message || 'Something went wrong. Please try again.');
+            return;
+          }
+          // Take the shopper to the cart to review — never straight to checkout.
+          window.location.href = cartUrl();
+        })
+        .catch(function (err) {
+          orderButton.disabled = false;
+          console.error('[swatch-page] add to cart failed', err);
+          flash('Something went wrong. Please try again.');
         });
     });
   });
@@ -434,6 +508,31 @@
       "id": "color_scheme",
       "label": "t:settings.color_scheme",
       "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Sample product"
+    },
+    {
+      "type": "product",
+      "id": "sample_product",
+      "label": "Sample product",
+      "info": "The product added to cart for each swatch (e.g. a $5 \"Sample Swatch\"). If empty, the variant ID below is used."
+    },
+    {
+      "type": "text",
+      "id": "sample_variant_id",
+      "label": "Sample variant ID (fallback)",
+      "default": "43130775732312"
+    },
+    {
+      "type": "range",
+      "id": "max_swatches",
+      "label": "Maximum swatches per order",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 5
     },
     {
       "type": "header",

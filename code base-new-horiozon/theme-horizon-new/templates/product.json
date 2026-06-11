@@ -296,7 +296,7 @@
               "type": "custom-liquid",
               "name": "Save to List",
               "settings": {
-                "custom_liquid": "<a class=\"ah-pdp-link ah-savelist\" href=\"#\"><span class=\"ah-pdp-ico\"><svg viewBox=\"0 0 24 24\" width=\"15\" height=\"15\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.4\" stroke-linejoin=\"round\"><path d=\"M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z\"/></svg></span>Save to List</a>"
+                "custom_liquid": "<button type=\"button\" class=\"ah-pdp-link ah-savelist\"><span class=\"ah-pdp-ico\"><svg viewBox=\"0 0 24 24\" width=\"15\" height=\"15\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.4\" stroke-linejoin=\"round\"><path d=\"M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z\"/></svg></span>Save to List</button>"
               },
               "blocks": {}
             },
@@ -316,7 +316,7 @@
               "type": "custom-liquid",
               "name": "Dimensions",
               "settings": {
-                "custom_liquid": "{%- assign p = closest.product | default: product -%}<div class=\"ah-dims\"><p class=\"ah-dims__label\">Dimensions</p><p class=\"ah-dims__value\">{{ p.metafields.custom.dimensions | default: 'See full dimensions for complete measurements.' }}</p><a class=\"ah-pdp-link\" href=\"#\">See full dimensions</a></div>"
+                "custom_liquid": "{%- assign p = closest.product | default: product -%}<div class=\"ah-dims\"><p class=\"ah-dims__label\">Dimensions</p><p class=\"ah-dims__value\">{{ p.metafields.custom.dimensions | default: 'See full dimensions for complete measurements.' }}</p></div>"
               },
               "blocks": {}
             },

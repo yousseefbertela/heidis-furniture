@@ -34,6 +34,11 @@
   assign max = block.settings.max_swatches | default: 5
   assign min_swatches = block.settings.min_swatches | default: 2
 
+  # Fabric spec data lives in the "color_info" metaobject, each entry linked to a
+  # colour's color-pattern metaobject. Fetch once; matched per swatch below by
+  # colour label so the hover popover shows real content / care / pattern / vendor.
+  assign color_info_values = metaobjects['color_info'].values
+
   # Resolve the sample variant: prefer the picked product, fall back to the id setting.
   assign sample_variant_id = ''
   if block.settings.sample_product != blank
@@ -109,6 +114,51 @@
               if value.swatch.color
                 assign card_color = value.swatch.color
               endif
+
+              # Match this colour to its color_info metaobject by colour label, then
+              # surface the real fabric spec. Anything missing stays blank so the
+              # popover hides that row — it never invents fabric facts.
+              assign ci = null
+              assign value_key = value.name | downcase | strip
+              for c in color_info_values
+                assign c_key = c.color.label | downcase | strip
+                if c_key == value_key
+                  assign ci = c
+                  break
+                endif
+              endfor
+
+              assign sw_content = ''
+              assign sw_care = ''
+              assign sw_info = ''
+              assign sw_tags = ''
+              if ci
+                assign sw_content = ci.fabric_content
+                # vendor + pattern become short pills (neither contains a comma).
+                if ci.vendor != blank and ci.pattern != blank
+                  assign sw_tags = ci.vendor | append: ',' | append: ci.pattern
+                elsif ci.vendor != blank
+                  assign sw_tags = ci.vendor
+                elsif ci.pattern != blank
+                  assign sw_tags = ci.pattern
+                endif
+                # Expand the cleaning code into a readable care line.
+                assign cc = ci.cleaning_code | upcase | strip
+                case cc
+                  when 'S'
+                    assign sw_care = 'Spot clean with a solvent-based cleaner only.'
+                  when 'W'
+                    assign sw_care = 'Spot clean with a water-based cleaner only.'
+                  when 'WS', 'SW'
+                    assign sw_care = 'Spot clean with a water- or solvent-based cleaner.'
+                  when 'X'
+                    assign sw_care = 'Vacuum or brush gently only — no liquid cleaners.'
+                  else
+                    if cc != blank
+                      assign sw_care = 'Cleaning code: ' | append: cc
+                    endif
+                endcase
+              endif
             -%}
             <button
               type="button"
@@ -118,6 +168,10 @@
               data-swatch-code="{{ code | escape }}"
               data-swatch-image="{{ card_image }}"
               data-swatch-color="{{ card_color }}"
+              data-swatch-info="{{ sw_info | escape }}"
+              data-swatch-care="{{ sw_care | escape }}"
+              data-swatch-content="{{ sw_content | escape }}"
+              data-swatch-tags="{{ sw_tags | escape }}"
               aria-pressed="false"
               on:click="/toggleSwatch"
             >

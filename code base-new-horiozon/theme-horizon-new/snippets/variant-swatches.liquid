@@ -123,6 +123,10 @@
                 resolving `product_option_value.variant.product` multiple times.
               endcomment
 
+              # Reset per option value so a match found for an earlier value can't
+              # leak its variant id onto a later value that has no own variant.
+              assign first_available_variant = nil
+
               assign featured_media = product_option_value.variant.featured_media
               assign child_product = nil
 
@@ -213,6 +217,9 @@
         {% endcapture %}
 
         {% render 'overflow-list', children: children, ref: 'overflowList' %}
+        {%- if swatch_count > 1 -%}
+          <span class="product-card__swatch-count">{{ swatch_count }} Options</span>
+        {%- endif -%}
       </fieldset>
     {%- endfor -%}
     <script type="application/json">

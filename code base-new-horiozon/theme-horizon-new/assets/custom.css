@@ -16,18 +16,18 @@
   --font-subheading--family: "Jost", "Helvetica Neue", Arial, sans-serif !important;
 }
 
-/* ---- 2. Background: light Nardo grey, site-wide (premium) ------------------
+/* ---- 2. Background: plain white, site-wide --------------------------------
    Override only the LIGHT color schemes. Dark schemes (e.g. footer band,
    hero overlay) are intentionally left alone. Easy to retune: one value. */
 body {
-  background-color: #e7e7e5;
+  background-color: #ffffff;
 }
 .color-scheme-1,
 .color-scheme-2,
 .color-scheme-3,
 .color-scheme-4 {
-  --color-background: #e7e7e5 !important;
-  --color-background-rgb: 231 231 229 !important;
+  --color-background: #ffffff !important;
+  --color-background-rgb: 255 255 255 !important;
 }
 
 /* ---- 3. Logo: larger, refined serif wordmark ------------------------------ */
@@ -41,18 +41,41 @@ body {
 }
 
 @media screen and (max-width: 749px) {
+  /* Mobile header overlap fix — two root causes, both must be handled:
+     (a) Horizon's mobile grid is `44px 44px 1fr 44px 44px` and ALL our extra
+         action icons (delivery, wishlist, cart) share ONE 44px slot, so they
+         overflow into the centre column over the logo. Side tracks must size
+         to their real content instead of a fixed 44px.
+     (b) The logo <img> gets a FIXED px width from theme settings (inline
+         --header-logo-image-width-mobile), so capping the link never shrank
+         it. The image itself must be allowed to scale down. */
+  .header__columns,
+  #header-component[data-menu-style='drawer'] .header__columns {
+    --header-template-columns: max-content max-content minmax(0, 1fr) max-content max-content !important;
+  }
   .header-logo {
-    font-size: clamp(12px, 3.5vw, 15px) !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    font-size: clamp(12px, 3.5vw, 15px) !important; /* text-fallback logos */
     letter-spacing: 0.08em !important;
-    max-width: calc(100vw - 180px) !important; /* leaves 90px on each side for icons */
-    text-align: center !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
     white-space: nowrap !important;
   }
-  .header-logo__image {
+  .header-logo__image-container--original,
+  .header-logo__image-container--inverse {
+    display: flex !important;
+    justify-content: center !important;
+    min-width: 0 !important;
     max-width: 100% !important;
+  }
+  .header-logo__image {
+    width: auto !important;          /* drop the fixed inline px width      */
+    max-width: 100% !important;      /* never wider than the centre column  */
+    height: var(--header-logo-image-height-mobile, 36px) !important;
     object-fit: contain !important;
+  }
+  /* Keep the action icons compact so they claim as little width as possible. */
+  header-actions {
+    gap: 0 !important;
   }
 }
 
@@ -675,13 +698,13 @@ body {
   content-visibility: visible !important;
 }
 
-/* Swatch chips on the card: compact 28px squares */
+/* Swatch chips on the card: compact Arhaus-style squares */
 .product-card .variant-option--swatches .swatch {
-  width: 28px !important;
-  height: 28px !important;
-  min-width: 28px !important;
-  min-height: 28px !important;
-  border-radius: 3px !important;
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  min-height: 22px !important;
+  border-radius: 2px !important;
   border: 1px solid #d9d5cf !important;
   cursor: pointer !important;
   transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
@@ -706,15 +729,32 @@ body {
   box-shadow: 0 0 0 2px #fff, 0 0 0 3px #1e3d2f !important;
 }
 
-/* Swatch option row: tighter layout */
+/* Swatch option row: Arhaus single line — up to 7 chips + "N Options" count,
+   all flush-left with the card title and price. */
 .product-card .variant-option--swatches {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
   border: 0 !important;
   padding: 0 !important;
   margin: 0 !important;
 }
+/* Kill the overflow-list focus inset so the first chip lines up exactly with
+   the title + price (which sit at the card content edge). */
+.product-card swatches-variant-picker-component {
+  --overflow-list-padding-inline: 0px 0px !important;
+}
+.product-card .variant-option--swatches overflow-list {
+  flex: 0 1 auto !important;
+  min-width: 0 !important;
+}
 .product-card .variant-option--swatches .variant-option__list,
 .product-card swatches-variant-picker-component overflow-list::part(list) {
-  gap: 6px !important;
+  gap: 5px !important;
+}
+/* Cap at 7 chips in the row; the count communicates the full total (Arhaus). */
+.product-card .variant-option--swatches .variant-option__swatch:nth-of-type(n + 8) {
+  display: none !important;
 }
 
 /* Hide the legend/label on product cards (not needed like PDP) */
@@ -775,9 +815,17 @@ body {
   text-overflow: ellipsis;
 }
 
-/* "+N" overflow count styling */
-.product-card .hidden-swatches__count {
-  font-family: var(--font-body--family) !important;
-  font-size: 11px !important;
-  color: #4a4641 !important;
+/* Arhaus "N Options" total — sits just right of the chips. We render the real
+   total ourselves, so hide Horizon's "+N" overflow indicator and its slot. */
+.product-card .hidden-swatches__count,
+.product-card .variant-option--swatches [slot="more"] {
+  display: none !important;
+}
+.product-card__swatch-count {
+  flex: 0 0 auto;
+  font-family: var(--font-body--family);
+  font-size: 12px;
+  letter-spacing: 0.01em;
+  color: #8a857e;
+  white-space: nowrap;
 }

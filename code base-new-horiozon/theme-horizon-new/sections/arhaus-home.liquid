@@ -24,9 +24,9 @@
   .ah-btn--light:hover{ background:#fff; color:var(--ink); border-color:#fff; }
   .ah-rv{ opacity:0; transform:translateY(34px); transition:opacity 1.1s ease,transform 1.1s ease; }
   .ah-rv.in{ opacity:1; transform:none; }
-  /* Bigger top-nav links, Arhaus-style */
-  .header-nav-plain .menu-lv-1__action,
-  .header-nav-plain .menu-lv-1__action .text{ font-size:15.5px !important; letter-spacing:.085em !important; }
+  /* Bigger top-nav links, Arhaus-style (Horizon header uses .menu-list__link) */
+  .menu-list__link,
+  .menu-list__link-title{ font-size:15.5px !important; letter-spacing:.085em !important; }
   /* HERO */
   .ah-hero{ position:relative; height:92vh; min-height:600px; background:#2b2722; overflow:hidden; }
   .ah-hero__img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
@@ -198,7 +198,7 @@
     { "type": "text", "id": "hero_btn_1", "label": "Button", "default": "Shop the collection" },
     { "type": "url", "id": "hero_link_1", "label": "Button link" },
     { "type": "header", "content": "Promo Banner" },
-    { "type": "text", "id": "hero_image_2_url", "label": "Image URL", "default": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/full-view-elegant-dining-setting-cardell-chair-fulfily-1.jpg?v=1775675144" },
+    { "type": "text", "id": "hero_image_2_url", "label": "Image URL", "default": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/modern-coastal-interior-dining-space-with-teak-table-fulfily-2.jpg?v=1778011164" },
     { "type": "text", "id": "promo_kicker", "label": "Kicker", "default": "New Season" },
     { "type": "text", "id": "hero_heading_2", "label": "Heading", "default": "The Autumn Collection" },
     { "type": "text", "id": "hero_btn_2", "label": "Button", "default": "Shop the collection" },
