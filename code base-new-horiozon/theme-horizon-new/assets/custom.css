@@ -73,9 +73,30 @@ body {
     height: var(--header-logo-image-height-mobile, 36px) !important;
     object-fit: contain !important;
   }
-  /* Keep the action icons compact so they claim as little width as possible. */
+  /* Keep ALL 5 action icons (stores, account, delivery, wishlist, cart) but
+     shrink them on mobile so together they fit without invading the logo:
+     each native slot is 44px wide -> 5 x 44 = 220px would crush the logo on a
+     375px phone. At 32px per icon the whole right group is ~160px, leaving the
+     centre column plenty of room. Desktop is untouched. */
   header-actions {
     gap: 0 !important;
+  }
+  header-actions .header-actions__action {
+    min-width: 32px !important;
+    width: 32px !important;
+    min-height: 44px !important; /* keep a tall tap target even though narrow */
+    padding-inline: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  header-actions shopify-account:not(:defined) {
+    min-width: 32px !important;
+  }
+  header-actions .svg-wrapper svg,
+  header-actions .account-button__icon {
+    width: 18px !important;
+    height: 18px !important;
   }
 }
 
@@ -190,11 +211,11 @@ body {
   }
 }
 
-/* ---- 7. Mega menu: grey panel (our brand grey) --------------------------- */
+/* ---- 7. Mega menu: white panel (matches the all-white site background) ---- */
 .header__underlay-open,
 .header__underlay-closed,
 #header-component {
-  --color-submenu: #e7e7e5 !important;
+  --color-submenu: #ffffff !important;
 }
 
 /* ==========================================================================
@@ -596,16 +617,26 @@ body {
   will-change: transform;
   backface-visibility: hidden;
 }
-.product-card:hover .card-gallery .product-media__image {
+/* Hover effects trigger on the IMAGE only (.card-gallery), not the whole card —
+   hovering title/price/swatches below the photo must not swap or zoom it. */
+.card-gallery:hover .product-media__image {
   transform: scale(1.05) !important;
   transition: transform 2s cubic-bezier(0, 0, 0.44, 1.18) !important; /* slow zoom-IN */
 }
 
 /* -- desktop: turn the horizontal slide into an opacity cross-fade --
-   Driven purely off .product-card:hover (NOT [aria-hidden]). Horizon marks
+   Driven off .card-gallery:hover (NOT [aria-hidden]). Horizon marks
    slides visible via an IntersectionObserver; once we stack them there is no
    scroll, so every slide intersects and all would read aria-hidden=false.
-   :hover is reliable. :has() guards single-image products from blanking. */
+   :hover is reliable. :has() guards single-image products from blanking.
+
+   IMPORTANT: the "default visible" layer is the FIRST NON-HIDDEN slide, not
+   :first-child. When a swatch is clicked, Horizon's product-card.js hides
+   every variant slide except the selected one (slide.hidden = true) — that
+   can include slide 1, and [hidden] slides are display:none. Keying off
+   :first-child made the whole card go blank/white after a swatch click.
+   "First non-hidden" = a non-hidden slide NOT preceded by another non-hidden
+   slide: slideshow-slide:not([hidden]):not(slideshow-slide:not([hidden]) ~ *) */
 @media screen and (min-width: 750px) {
   .card-gallery slideshow-slides {
     display: block !important;
@@ -621,22 +652,21 @@ body {
     opacity: 0 !important;
     transition: opacity 0.5s ease !important;
   }
-  /* image 1 is the default visible layer */
-  .card-gallery slideshow-slide:first-child {
+  /* the first non-hidden slide is the default visible layer */
+  .card-gallery
+    slideshow-slide:not([hidden]):not(slideshow-slide:not([hidden]) ~ slideshow-slide) {
     opacity: 1 !important;
     content-visibility: visible !important;
   }
-  /* on hover: fade image 1 out, show the active variant/second image —
-     Uses ~ (general sibling) so swatch-triggered previewVariant works
-     (JS unhides a specific variant slide which may not be slide 2). */
-  .product-card:hover
-    .card-gallery
-    slideshow-slide:first-child:has(~ slideshow-slide:not([hidden])) {
+  /* on image hover: fade the default layer out (only if another visible slide
+     exists, so single-image products never blank) ... */
+  .card-gallery:hover
+    slideshow-slide:not([hidden]):not(slideshow-slide:not([hidden]) ~ slideshow-slide):has(~ slideshow-slide:not([hidden])) {
     opacity: 0 !important;
   }
-  .product-card:hover
-    .card-gallery
-    slideshow-slide:not(:first-child):not([hidden]) {
+  /* ...and show the next visible slide(s) on top */
+  .card-gallery:hover
+    slideshow-slide:not([hidden]):is(slideshow-slide:not([hidden]) ~ slideshow-slide) {
     opacity: 1 !important;
     z-index: 2 !important;
     content-visibility: visible !important;
@@ -688,11 +718,14 @@ body {
    Scoped to .product-card so PDP swatches (section 8) are unaffected.
    ========================================================================== */
 
-/* ---- Swatch hover → specific variant image preview (JS-driven) ---- */
-.card-gallery[data-swatch-active] slideshow-slide:first-child {
+/* ---- Swatch hover → specific variant image preview (JS-driven) ----
+   Same "first non-hidden slide" logic as the card cross-fade above. */
+.card-gallery[data-swatch-active]
+  slideshow-slide:not([hidden]):not(slideshow-slide:not([hidden]) ~ slideshow-slide):not(.is-swatch-preview) {
   opacity: 0 !important;
 }
 .card-gallery slideshow-slide.is-swatch-preview {
+  display: block !important; /* previewed slide may carry [hidden] = display:none */
   opacity: 1 !important;
   z-index: 3 !important;
   content-visibility: visible !important;

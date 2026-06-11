@@ -63,12 +63,10 @@
   {% endif %}
   {{- block.shopify_attributes -}}
 >
-  {%- comment -%} Hedi's: store-locator icon (Arhaus-style). Only shown if the page exists, so it never 404s. {%- endcomment -%}
-  {%- if pages.stores != blank -%}
-    <a href="{{ pages.stores.url }}" class="header-actions__action" aria-label="Stores">
-      <span class="svg-wrapper" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M12 21s-6.5-5.4-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.6 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.3"/></svg></span>
-    </a>
-  {%- endif -%}
+  {%- comment -%} Hedi's: store-locator icon (Arhaus-style). svg-wrapper box keeps even spacing with native actions. {%- endcomment -%}
+  <a href="{{ pages.stores.url | default: '/pages/stores' }}" class="header-actions__action" aria-label="Stores">
+    <span class="svg-wrapper" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M12 21s-6.5-5.4-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.6 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.3"/></svg></span>
+  </a>
 
   {% if shop.customer_accounts_enabled %}
     {% liquid
@@ -120,12 +118,13 @@
     </div>
   {% endif %}
 
-  {%- comment -%} Hedi's: delivery icon (Arhaus-style). Only shown if the page exists, so it never 404s. Wishlist icon removed until a wishlist backend exists. {%- endcomment -%}
-  {%- if pages['delivery-shipping'] != blank -%}
-    <a href="{{ pages['delivery-shipping'].url }}" class="header-actions__action" aria-label="Delivery">
-      <span class="svg-wrapper" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M1.5 5.5h12v9h-12zM13.5 8.5h4l3 3v3h-7z"/><circle cx="6" cy="17" r="1.6"/><circle cx="17.5" cy="17" r="1.6"/></svg></span>
-    </a>
-  {%- endif -%}
+  {%- comment -%} Hedi's: delivery + wishlist icons (Arhaus-style). svg-wrapper box keeps even spacing with native actions. {%- endcomment -%}
+  <a href="{{ pages['delivery-shipping'].url | default: '/pages/delivery-shipping' }}" class="header-actions__action" aria-label="Delivery">
+    <span class="svg-wrapper" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M1.5 5.5h12v9h-12zM13.5 8.5h4l3 3v3h-7z"/><circle cx="6" cy="17" r="1.6"/><circle cx="17.5" cy="17" r="1.6"/></svg></span>
+  </a>
+  <a href="#" class="header-actions__action" aria-label="Wishlist">
+    <span class="svg-wrapper" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></svg></span>
+  </a>
 
   {% if settings.cart_type == 'drawer' and template.name != 'cart' %}
     <script
