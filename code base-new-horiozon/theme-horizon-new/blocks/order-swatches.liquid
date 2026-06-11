@@ -115,35 +115,31 @@
                 assign card_color = value.swatch.color
               endif
 
-              # Match this colour to its color_info metaobject by colour label, then
-              # surface the real fabric spec. Anything missing stays blank so the
-              # popover hides that row — it never invents fabric facts.
+              # Match this colour to its color-pattern + color_info metaobjects by
+              # handle — the same proven join the swatch page uses. Then surface the
+              # real fabric spec (pattern / care / content / vendor). Anything missing
+              # stays blank so the popover hides that row — it never invents facts.
+              assign value_handle = value.name | handle
+              assign matched_color = metaobjects['shopify--color-pattern'].values | where: 'handle', value_handle | first
               assign ci = null
-              assign value_key = value.name | downcase | strip
-              for c in color_info_values
-                assign c_key = c.color.label | downcase | strip
-                if c_key == value_key
-                  assign ci = c
-                  break
-                endif
-              endfor
+              if matched_color
+                assign ci = color_info_values | where: 'color', matched_color.id | first
+              endif
 
               assign sw_content = ''
               assign sw_care = ''
               assign sw_info = ''
               assign sw_tags = ''
               if ci
-                assign sw_content = ci.fabric_content
-                # vendor + pattern become short pills (neither contains a comma).
-                if ci.vendor != blank and ci.pattern != blank
-                  assign sw_tags = ci.vendor | append: ',' | append: ci.pattern
-                elsif ci.vendor != blank
-                  assign sw_tags = ci.vendor
-                elsif ci.pattern != blank
-                  assign sw_tags = ci.pattern
+                assign sw_info = ci.pattern | strip
+                assign sw_content = ci.fabric_content | strip
+                # Vendor becomes a short pill.
+                if ci.vendor != blank
+                  assign sw_tags = ci.vendor | strip
                 endif
-                # Expand the cleaning code into a readable care line.
-                assign cc = ci.cleaning_code | upcase | strip
+                # Expand the cleaning code into a readable care line. Normalise first
+                # so "W/S", "WS", "SW", " W " all collapse to the same key.
+                assign cc = ci.cleaning_code | upcase | strip | remove: ' ' | remove: '/'
                 case cc
                   when 'S'
                     assign sw_care = 'Spot clean with a solvent-based cleaner only.'
@@ -153,9 +149,11 @@
                     assign sw_care = 'Spot clean with a water- or solvent-based cleaner.'
                   when 'X'
                     assign sw_care = 'Vacuum or brush gently only — no liquid cleaners.'
+                  when 'DRYCLEANING', 'DRYCLEAN', 'DC'
+                    assign sw_care = 'Professionally dry clean only.'
                   else
-                    if cc != blank
-                      assign sw_care = 'Cleaning code: ' | append: cc
+                    if ci.cleaning_code != blank
+                      assign sw_care = 'Cleaning code: ' | append: ci.cleaning_code | strip
                     endif
                 endcase
               endif
@@ -237,7 +235,7 @@
           
           <div class="order-swatches__popover-details">
             <div class="order-swatches__popover-detail-row">
-              <span class="order-swatches__popover-detail-label">INFO</span>
+              <span class="order-swatches__popover-detail-label">PATTERN</span>
               <span class="order-swatches__popover-detail-value" ref="popoverInfoText"></span>
             </div>
             <div class="order-swatches__popover-detail-row">
