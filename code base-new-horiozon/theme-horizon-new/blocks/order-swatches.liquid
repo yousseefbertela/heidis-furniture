@@ -115,16 +115,34 @@
                 assign card_color = value.swatch.color
               endif
 
-              # Match this colour to its color-pattern + color_info metaobjects by
-              # handle — the same proven join the swatch page uses. Then surface the
-              # real fabric spec (pattern / care / content / vendor). Anything missing
-              # stays blank so the popover hides that row — it never invents facts.
-              assign value_handle = value.name | handle
-              assign matched_color = metaobjects['shopify--color-pattern'].values | where: 'handle', value_handle | first
+              # Join this swatch to its color_info metaobject. Two independent paths
+              # so it stays robust: (1) the variant SKU ends with the color_info
+              # `code` (e.g. 2084-92/1529 ↔ 1529); (2) the resolved colour-pattern
+              # reference's label equals the option-value name. A `where` filter
+              # can't compare a resolved reference, so we iterate. Anything that
+              # matches nothing stays blank — the popover never invents facts.
+              assign value_key = value.name | downcase | strip
+              assign variant_sku = value.variant.sku | default: ''
               assign ci = null
-              if matched_color
-                assign ci = color_info_values | where: 'color', matched_color.id | first
-              endif
+              for c in color_info_values
+                assign matched = false
+                if c.code != blank and variant_sku != blank
+                  assign code_needle = '/' | append: c.code
+                  if variant_sku contains code_needle
+                    assign matched = true
+                  endif
+                endif
+                if matched == false
+                  assign c_label = c.color.label | downcase | strip
+                  if c_label != blank and c_label == value_key
+                    assign matched = true
+                  endif
+                endif
+                if matched
+                  assign ci = c
+                  break
+                endif
+              endfor
 
               assign sw_content = ''
               assign sw_care = ''
