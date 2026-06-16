@@ -179,6 +179,15 @@ body {
 .mega-menu__content .resource-card__title::before {
   content: "Shop ";
 }
+/* Second-level column headers (the parent link, e.g. "SEATING") sit a step
+   heavier than their third-level child links (e.g. "SOFAS"), like Arhaus.
+   Parent = .mega-menu__link--parent; children are plain .mega-menu__link. */
+.mega-menu__link--parent {
+  font-weight: 600 !important;
+}
+.mega-menu__link:not(.mega-menu__link--parent) {
+  font-weight: 400 !important;
+}
 
 /* ---- 6. Header: Arhaus look (dark green top bar, uppercase centered nav) --- */
 /* Dark forest-green announcement / top utility bar with white text. */
@@ -199,23 +208,30 @@ body {
   letter-spacing: 0.12em !important;
   font-weight: 400 !important;
 }
-/* "SEARCH" text label next to the left search icon (Arhaus-style). */
+/* "SEARCH" text label next to the left search icon (Arhaus-style).
+   The label is rendered as ::after INSIDE the search <button>
+   (.header-actions__action), and the icon + word share one flex `gap`,
+   so clicking anywhere on the search area — the word, the icon, or the
+   space between them — opens search (not just the icon). */
 .header__row--top .search-action:not(.search-action--hidden-on-menu) {
   display: inline-flex !important;
   align-items: center;
 }
-.header__row--top .search-action:not(.search-action--hidden-on-menu)::after {
+.header__row--top .search-action:not(.search-action--hidden-on-menu) .header-actions__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.header__row--top .search-action:not(.search-action--hidden-on-menu) .header-actions__action::after {
   content: "Search";
   font-family: var(--font-body--family);
   font-size: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  margin-inline-start: 8px;
   white-space: nowrap;
-  cursor: pointer;
 }
 @media screen and (max-width: 749px) {
-  .header__row--top .search-action:not(.search-action--hidden-on-menu)::after {
+  .header__row--top .search-action:not(.search-action--hidden-on-menu) .header-actions__action::after {
     display: none;
   }
 }
@@ -755,16 +771,16 @@ body {
   content-visibility: visible !important;
 }
 
-/* Swatch chips on the card: compact Arhaus-style squares */
+/* Swatch chips on the card: compact Arhaus-style sharp squares */
 .product-card .variant-option--swatches .swatch {
-  width: 22px !important;
-  height: 22px !important;
-  min-width: 22px !important;
-  min-height: 22px !important;
-  border-radius: 2px !important;
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  min-height: 20px !important;
+  border-radius: 0 !important;
   border: 1px solid #d9d5cf !important;
   cursor: pointer !important;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+  transition: border-color 0.15s ease !important;
   overflow: hidden !important;
 }
 .product-card .variant-option--swatches .swatch img,
@@ -774,16 +790,30 @@ body {
   object-fit: cover !important;
 }
 
-/* Hover glow on swatch */
+/* Hover — subtle border darken, no glow (clean) */
 .product-card .variant-option--swatches .variant-option__button-label:hover .swatch {
-  border-color: #1e3d2f !important;
-  box-shadow: 0 0 0 1px #1e3d2f !important;
+  border-color: #1b1b1b !important;
 }
 
-/* Selected (checked) swatch — dark ring */
+/* Room beneath every chip so the selected underline aligns the whole row */
+.product-card .variant-option--swatches .variant-option__button-label {
+  position: relative !important;
+  padding-block-end: 6px !important;
+}
+
+/* Selected (checked) swatch — thin underline beneath, Arhaus-style (no ring) */
 .product-card .variant-option--swatches .variant-option__button-label:has(input:checked) .swatch {
-  border-color: #1e3d2f !important;
-  box-shadow: 0 0 0 2px #fff, 0 0 0 3px #1e3d2f !important;
+  border-color: #1b1b1b !important;
+}
+.product-card .variant-option--swatches .variant-option__button-label:has(input:checked)::after {
+  content: "" !important;
+  position: absolute !important;
+  left: 50% !important;
+  bottom: 0 !important;
+  transform: translateX(-50%) !important;
+  width: 20px !important;
+  height: 1.5px !important;
+  background: #1b1b1b !important;
 }
 
 /* Swatch option row: Arhaus single line — up to 7 chips + "N Options" count,
