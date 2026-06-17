@@ -269,6 +269,14 @@
                   assign img = child.object.image
                 elsif child.object.products.first.featured_media.preview_image != blank
                   assign img = child.object.products.first.featured_media.preview_image
+                else
+                  # first product had no image — scan deeper for any product image
+                  for p in child.object.products limit: 10
+                    if p.featured_media.preview_image != blank
+                      assign img = p.featured_media.preview_image
+                      break
+                    endif
+                  endfor
                 endif
               endif
               if img == null and child.links != blank and child.links.size > 0
@@ -283,6 +291,14 @@
                     endif
                   endif
                 endfor
+              endif
+              # last resort: borrow a related image from the collection being viewed
+              if img == null
+                if collection.image != blank
+                  assign img = collection.image
+                elsif collection.products.first.featured_media.preview_image != blank
+                  assign img = collection.products.first.featured_media.preview_image
+                endif
               endif
               assign alt_text = child.title | escape
             -%}

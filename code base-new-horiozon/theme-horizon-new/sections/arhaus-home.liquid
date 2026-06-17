@@ -121,10 +121,34 @@
           {%- assign u = 'room_' | append: i | append: '_image_url' -%}
           {%- assign n = 'room_' | append: i | append: '_title' -%}
           {%- assign l = 'room_' | append: i | append: '_link' -%}
-          {%- assign img = section.settings[u] -%}
-          {%- if img != blank -%}
-          <a class="ah-cat" href="{{ section.settings[l] }}">
-            <div class="ah-cat__img"><img src="{{ img }}" alt="{{ section.settings[n] | escape }}" loading="lazy"></div>
+          {%- assign manual = section.settings[u] -%}
+          {%- assign linkurl = section.settings[l] -%}
+          {%- liquid
+            # Borrow the best real image from the collection this tile links to,
+            # so a tile is never blank/broken: collection image -> any product image.
+            assign handle = linkurl | split: '/collections/' | last | split: '/' | first | split: '?' | first
+            assign coll = collections[handle]
+            assign fallback = null
+            if coll.image != blank
+              assign fallback = coll.image
+            else
+              for p in coll.products limit: 8
+                if p.featured_media.preview_image != blank
+                  assign fallback = p.featured_media.preview_image
+                  break
+                endif
+              endfor
+            endif
+          -%}
+          {%- if manual != blank or fallback -%}
+          <a class="ah-cat" href="{{ linkurl }}">
+            <div class="ah-cat__img">
+              {%- if manual != blank -%}
+                <img src="{{ manual }}" alt="{{ section.settings[n] | escape }}" loading="lazy"{% if fallback %} onerror="this.onerror=null;this.src='{{ fallback | image_url: width: 880 }}'"{% endif %}>
+              {%- else -%}
+                {{ fallback | image_url: width: 880 | image_tag: loading: 'lazy', alt: section.settings[n] }}
+              {%- endif -%}
+            </div>
             <span class="ah-cat__label">{{ section.settings[n] }}</span>
           </a>
           {%- endif -%}
