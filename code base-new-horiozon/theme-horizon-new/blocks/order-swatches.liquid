@@ -281,29 +281,33 @@
     width: 100%;
   }
 
-  /* -------------------------------------------------------------- trigger button */
+  /* ------------------------------------------------- trigger (Arhaus text link) */
+  /* Matches the PDP's .ah-pdp-link style: small box icon + underlined text,
+     not a boxed button. */
   .order-swatches__trigger {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
     gap: 8px;
-    min-height: 46px;
-    padding: 10px 22px;
+    min-height: 0;
+    margin: 2px 0 0;
+    padding: 0;
     background: transparent;
-    color: var(--color-foreground);
-    border: 1px solid var(--color-border, rgb(var(--color-foreground-rgb) / 0.25));
-    border-radius: var(--style-border-radius-inputs, 0);
+    color: #4a4641;
+    border: none;
+    border-radius: 0;
     font-family: var(--font-body--family);
-    font-size: 0.8125rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    text-decoration: underline;
+    text-underline-offset: 3px;
     cursor: pointer;
-    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    transition: color 0.2s ease;
   }
 
   .order-swatches__trigger:hover {
-    background: rgb(var(--color-foreground-rgb) / 0.04);
-    border-color: var(--color-foreground);
+    background: transparent;
+    color: #1b1b1b;
   }
 
   .order-swatches__trigger:focus-visible {
@@ -314,6 +318,21 @@
   .order-swatches__trigger-icon {
     display: inline-flex;
     align-items: center;
+  }
+
+  .order-swatches__trigger-icon svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  /* Underline only the text, never the icon. */
+  .order-swatches__trigger-text {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .order-swatches__trigger {
+    text-decoration: none;
   }
 
   /* -------------------------------------------------------------------- backdrop */
@@ -810,7 +829,7 @@
   /* -------------------------------------------------------------------- mobile */
   @media screen and (max-width: 749px) {
     .order-swatches__trigger {
-      width: 100%;
+      width: auto;
     }
 
     .order-swatches__drawer {

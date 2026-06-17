@@ -246,15 +246,11 @@
               },
               "blocks": {}
             },
-            "inventory": {
-              "type": "product-inventory",
+            "lead_time": {
+              "type": "custom-liquid",
+              "name": "Lead time / stock",
               "settings": {
-                "inventory_threshold": 10,
-                "show_inventory_quantity": false,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
+                "custom_liquid": "{%- assign p = closest.product | default: product -%}{%- assign v = p.selected_or_first_available_variant -%}{%- assign lead = v.metafields.levlocal.lead_time.value | plus: 0 -%}{%- if v.available == false -%}<p class=\"ah-leadtime ah-leadtime--oos\">Out of Stock</p>{%- elsif lead == 0 -%}<p class=\"ah-leadtime\">In Stock</p>{%- else -%}<p class=\"ah-leadtime\">Custom: Ready to Ship in {{ lead }} Weeks</p>{%- endif -%}"
               },
               "blocks": {}
             },
@@ -446,7 +442,7 @@
             "variant_picker",
             "order_swatches",
             "divider_2",
-            "inventory",
+            "lead_time",
             "buy_buttons",
             "save_list",
             "divider_3",

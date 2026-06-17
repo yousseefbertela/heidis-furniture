@@ -433,6 +433,29 @@ body {
 }
 .product-information .product-inventory__icon { display: none !important; }
 
+/* Lead-time / stock status (custom-liquid block) — takes the same right-of-QTY
+   position the native inventory block used. The custom-liquid wrapper <div> is
+   collapsed with display:contents so .ah-leadtime becomes the flex child and can
+   right-align + pull the buy-buttons up to share the QTY line (Arhaus). */
+.product-information .product-details div:has(> .ah-leadtime) {
+  display: contents;
+}
+.product-information .ah-leadtime {
+  margin: 24px 2px -52px 0;
+  align-self: flex-end;
+  text-align: right;
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-body--family);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: #4a4641;
+  line-height: 1;
+}
+.product-information .ah-leadtime--oos {
+  color: #8c2a2a;
+}
+
 /* Collapse back-to-back dividers (e.g. when a product has no variant picker). */
 .product-information .product-details .divider + .divider { display: none !important; }
 
@@ -837,7 +860,7 @@ body {
 }
 .product-card .variant-option--swatches .variant-option__list,
 .product-card swatches-variant-picker-component overflow-list::part(list) {
-  gap: 5px !important;
+  gap: 2px !important;
 }
 /* Cap at 7 chips in the row; the count communicates the full total (Arhaus). */
 .product-card .variant-option--swatches .variant-option__swatch:nth-of-type(n + 8) {
