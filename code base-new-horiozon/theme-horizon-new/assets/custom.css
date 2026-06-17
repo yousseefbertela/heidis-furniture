@@ -107,6 +107,27 @@ body {
     width: 16px !important;
     height: 16px !important;
   }
+  /* Cart count badge: the desktop bubble is 20px and offset for a large icon, so on
+     the shrunken 16px mobile cart icon it overran the icon and looked clipped/ugly.
+     Shrink it to a tidy corner badge and drop the donut-mask cut-out (it misaligns
+     at 16px). Vars feed both the bubble position and the (now-removed) mask. */
+  .header-actions__cart-icon {
+    --cart-bubble-size: 13px !important;
+    --cart-bubble-top: 6px !important;
+    --cart-bubble-right: 0px !important;
+  }
+  .header-actions__cart-icon .cart-bubble {
+    width: var(--cart-bubble-size) !important;
+    height: var(--cart-bubble-size) !important;
+    --cart-padding: 0 !important; /* keep the digit centred in the small circle */
+  }
+  .header-actions__cart-icon .cart-bubble__text {
+    font-size: 9px !important;
+  }
+  .header-actions__cart-icon--has-cart svg {
+    -webkit-mask: none !important;
+    mask: none !important;
+  }
 }
 
 /* ---- 4. Product cards: reference text style — matches the LL draft exactly -----
@@ -484,6 +505,22 @@ body {
 }
 .product-information .ah-leadtime--oos {
   color: #8c2a2a;
+}
+/* Mobile: the desktop "float beside the QTY row" hack (height:0 + translateY(34px),
+   above) has no horizontal QTY row to sit beside once QTY + ADD TO BAG stack into a
+   single column, so the out-of-flow line dropped onto the button. On phones, render
+   it as a normal in-flow line above the stepper. margin:0 lets the column's own flex
+   gap own the spacing (a margin here would double it). */
+@media screen and (max-width: 749px) {
+  .product-information .ah-leadtime {
+    height: auto !important;
+    transform: none !important;
+    margin: 0 !important;
+    text-align: left !important;
+    white-space: normal !important;
+    align-self: stretch !important;
+    pointer-events: auto !important;
+  }
 }
 
 /* Collapse back-to-back dividers (e.g. when a product has no variant picker). */
