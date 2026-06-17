@@ -201,11 +201,18 @@
   }
   .ahc-panel__list::-webkit-scrollbar{ width:6px; }
   .ahc-panel__list::-webkit-scrollbar-thumb{ background:var(--ahc-line); border-radius:3px; }
-  .ahc-panel__list a{ font-size:13px; color:var(--ahc-ink); padding:7px 2px; display:block; white-space:normal; line-height:1.35; }
-  .ahc-panel__list a:hover{ text-decoration:underline; text-underline-offset:3px; }
-  .ahc-panel__list a.is-active{ font-weight:500; }
-  .ahc-panel__list a.is-active::before{ content:"\2713\00a0"; color:var(--ahc-accent); }
   .ahc-chip-wrap{ position:relative; }
+
+  /* Filter option = custom checkbox + label (multi-select; shows what's selected) */
+  .ahc-opt{ display:flex; align-items:flex-start; gap:10px; cursor:pointer; padding:6px 2px; font-size:13px; line-height:1.35; color:var(--ahc-ink); }
+  .ahc-opt__cb{ position:absolute; opacity:0; width:1px; height:1px; margin:0; }
+  .ahc-opt__box{ flex:0 0 auto; width:16px; height:16px; margin-top:1px; border:1px solid var(--ahc-ink); border-radius:3px; background:#fff; position:relative; transition:background .15s ease,border-color .15s ease; }
+  .ahc-opt:hover .ahc-opt__box{ border-color:var(--ahc-accent); }
+  .ahc-opt__cb:checked + .ahc-opt__box{ background:var(--ahc-ink); border-color:var(--ahc-ink); }
+  .ahc-opt__cb:checked + .ahc-opt__box::after{ content:""; position:absolute; left:5px; top:2px; width:4px; height:8px; border:solid #fff; border-width:0 2px 2px 0; transform:rotate(45deg); }
+  .ahc-opt__cb:focus-visible + .ahc-opt__box{ outline:2px solid var(--ahc-accent); outline-offset:2px; }
+  .ahc-opt__label{ flex:1 1 auto; }
+  .ahc-opt.is-active .ahc-opt__label{ font-weight:500; }
 
   /* "More Filters" slide-in drawer (all filters) */
   .ahc-drawer[hidden]{ display:none; }
@@ -226,11 +233,8 @@
   .ahc-drawer__group{ padding:16px 0; border-bottom:1px solid var(--ahc-line); }
   .ahc-drawer__gtitle{ font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ahc-muted); margin:0 0 10px; }
   .ahc-drawer__list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
-  .ahc-drawer__list a{ font-size:13.5px; color:var(--ahc-ink); display:flex; justify-content:space-between; gap:12px; padding:7px 0; line-height:1.35; }
-  .ahc-drawer__list a:hover{ text-decoration:underline; text-underline-offset:3px; }
-  .ahc-drawer__list a.is-active{ font-weight:500; }
-  .ahc-drawer__list a.is-active::before{ content:"\2713"; color:var(--ahc-accent); margin-right:6px; }
-  .ahc-drawer__count{ color:var(--ahc-muted); font-size:12px; flex:0 0 auto; }
+  .ahc-drawer__list .ahc-opt{ font-size:13.5px; padding:7px 0; }
+  .ahc-drawer__count{ color:var(--ahc-muted); font-size:12px; flex:0 0 auto; margin-left:auto; padding-left:10px; }
   .ahc-drawer__foot{ border-top:1px solid var(--ahc-line); padding:16px 24px; }
   .ahc-drawer__clear{ font-size:13px; letter-spacing:.02em; color:var(--ahc-ink); text-decoration:underline; text-underline-offset:3px; }
   body.ahc-drawer-open{ overflow:hidden; }
@@ -382,7 +386,13 @@
                         assign vurl = v.url_to_remove
                       endif
                     -%}
-                    <li><a href="{{ vurl }}" role="menuitem" class="{% if v.active %}is-active{% endif %}">{{ v.label }}</a></li>
+                    <li>
+                      <label class="ahc-opt{% if v.active %} is-active{% endif %}">
+                        <input type="checkbox" class="ahc-opt__cb" data-ahc-url="{{ vurl }}"{% if v.active %} checked{% endif %}>
+                        <span class="ahc-opt__box" aria-hidden="true"></span>
+                        <span class="ahc-opt__label">{{ v.label }}</span>
+                      </label>
+                    </li>
                   {%- endfor -%}
                 </ul>
               </div>
@@ -433,7 +443,14 @@
                         assign vurl = v.url_to_remove
                       endif
                     -%}
-                    <li><a href="{{ vurl }}" class="{% if v.active %}is-active{% endif %}">{{ v.label }}<span class="ahc-drawer__count">{{ v.count }}</span></a></li>
+                    <li>
+                      <label class="ahc-opt{% if v.active %} is-active{% endif %}">
+                        <input type="checkbox" class="ahc-opt__cb" data-ahc-url="{{ vurl }}"{% if v.active %} checked{% endif %}>
+                        <span class="ahc-opt__box" aria-hidden="true"></span>
+                        <span class="ahc-opt__label">{{ v.label }}</span>
+                        <span class="ahc-drawer__count">{{ v.count }}</span>
+                      </label>
+                    </li>
                   {%- endfor -%}
                 </ul>
               </div>
@@ -492,6 +509,16 @@
   document.addEventListener('click', function(e){
     if(!root.contains(e.target)) closeAllChips(null);
     else if(!e.target.closest('[data-ahc-chip]') && !e.target.closest('.ahc-panel')) closeAllChips(null);
+  });
+
+  // Filter checkboxes — toggling navigates to the add/remove URL. Shopify's
+  // url_to_add / url_to_remove already include the other active filters, so each
+  // toggle accumulates (true multi-select), and active values render pre-checked.
+  root.querySelectorAll('.ahc-opt__cb[data-ahc-url]').forEach(function(cb){
+    cb.addEventListener('change', function(){
+      var url = cb.getAttribute('data-ahc-url');
+      if(url){ window.location.href = url; }
+    });
   });
 
   var sort = root.querySelector('[data-ahc-sort]');
