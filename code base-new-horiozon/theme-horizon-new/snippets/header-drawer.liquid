@@ -317,6 +317,13 @@
                               assign render_link_image = true
                             endif
                           endif
+                          # Hedi's mobile mega-menu: featured products to pair one-per-group
+                          # (matches the desktop featured_products mega-menu source).
+                          assign ahmm_products = '' | split: ''
+                          if link.type == 'collection_link'
+                            assign ahmm_products = link.object.products
+                          endif
+                          assign ahmm_group_index = 0
                         %}
                         <ul
                           class="menu-drawer__menu menu-drawer__menu--childlist{% if render_link_image and link.levels == 1 %} menu-drawer__menu--grid{% endif %}"
@@ -493,35 +500,22 @@
                                       </li>
                                     {%- endfor -%}
                                   </ul>
+                                  {%- comment -%} Hedi's: featured product image paired with this group {%- endcomment -%}
+                                  {%- assign ahmm_prod = ahmm_products[ahmm_group_index] -%}
+                                  {%- assign ahmm_group_index = ahmm_group_index | plus: 1 -%}
+                                  {%- if ahmm_prod != blank and ahmm_prod.featured_media.preview_image -%}
+                                    <a class="ah-mm-grp-img" href="{{ ahmm_prod.url }}">
+                                      <span class="ah-mm-grp-img__media">
+                                        {{ ahmm_prod.featured_media.preview_image | image_url: width: 320 | image_tag: loading: 'lazy', widths: '160, 240, 320', sizes: '38vw', alt: ahmm_prod.title | escape }}
+                                      </span>
+                                      <span class="ah-mm-grp-img__label">{{ ahmm_prod.title }}</span>
+                                    </a>
+                                  {%- endif -%}
                                 {%- endif -%}
                               {%- endif -%}
                             </li>
                           {%- endfor -%}
                         </ul>
-                        {%- comment -%}
-                          Hedi's mobile mega-menu: featured images on the right, matching the desktop
-                          featured_products mega-menu (2-3 products from this category's collection).
-                        {%- endcomment -%}
-                        {%- liquid
-                          assign ahmm_collection = null
-                          if link.type == 'collection_link'
-                            assign ahmm_collection = link.object
-                          endif
-                        -%}
-                        {%- if ahmm_collection.products_count > 0 -%}
-                          <div class="ah-mm-featured">
-                            {%- for product in ahmm_collection.products limit: 3 -%}
-                              {%- if product.featured_media.preview_image -%}
-                                <a class="ah-mm-card" href="{{ product.url }}">
-                                  <span class="ah-mm-card__media">
-                                    {{ product.featured_media.preview_image | image_url: width: 360 | image_tag: loading: 'lazy', widths: '180, 270, 360', sizes: '40vw', alt: product.title | escape }}
-                                  </span>
-                                  <span class="ah-mm-card__label">{{ product.title }}</span>
-                                </a>
-                              {%- endif -%}
-                            {%- endfor -%}
-                          </div>
-                        {%- endif -%}
                         {% liquid
                           if eager_loading
                             if block_settings.menu_style == 'featured_collections'
