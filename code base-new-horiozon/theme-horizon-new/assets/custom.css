@@ -190,6 +190,26 @@ body {
 .mega-menu__grid:has(.mega-menu__list > .mega-menu__column:nth-of-type(3)) .mega-menu__content-list--products .mega-menu__content-list-item:nth-of-type(n + 3) {
   display: none !important;
 }
+/* ...and pull the featured images LEFT to fill the space the link groups leave,
+   so the row reads full instead of leaving a gap in the middle. The link list
+   spans only its own group columns; the featured area fills from there to the
+   right edge. (Desktop mega-menu grid only.) */
+@media screen and (min-width: 990px) {
+  /* exactly 2 link groups (e.g. Dining): links span 2, images fill cols 3-6 */
+  .mega-menu__grid:has(.mega-menu__list > .mega-menu__column:nth-of-type(2)):not(:has(.mega-menu__list > .mega-menu__column:nth-of-type(3))) .mega-menu__list {
+    grid-column: span 2 !important;
+  }
+  .mega-menu__grid:has(.mega-menu__list > .mega-menu__column:nth-of-type(2)):not(:has(.mega-menu__list > .mega-menu__column:nth-of-type(3))) .mega-menu__content {
+    grid-column: 3 / -1 !important;
+  }
+  /* exactly 1 link group: links span 1, images fill cols 2-6 */
+  .mega-menu__grid:has(.mega-menu__list > .mega-menu__column:nth-of-type(1)):not(:has(.mega-menu__list > .mega-menu__column:nth-of-type(2))) .mega-menu__list {
+    grid-column: span 1 !important;
+  }
+  .mega-menu__grid:has(.mega-menu__list > .mega-menu__column:nth-of-type(1)):not(:has(.mega-menu__list > .mega-menu__column:nth-of-type(2))) .mega-menu__content {
+    grid-column: 2 / -1 !important;
+  }
+}
 /* No prices in the menu (reference shows none). */
 .mega-menu .resource-card [class*="price"],
 .mega-menu .resource-card__price,
