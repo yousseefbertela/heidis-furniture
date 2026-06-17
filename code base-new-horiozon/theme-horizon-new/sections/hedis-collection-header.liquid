@@ -285,7 +285,7 @@
 <div id="ahc-{{ section.id }}">
   <div class="{% if section.settings.container == '1170' %}container-1170{% elsif section.settings.container == '1770' %}container-1770{% elsif section.settings.container == 'fullwidth' %}container-full{% else %}container{% endif %}">
     <nav class="ahc-crumb" aria-label="Breadcrumb">
-      <a href="{{ routes.root_url }}">Home</a>
+      <a href="{{ routes.root_url }}">{{ section.settings.breadcrumb_home | default: 'Home' }}</a>
       <span class="sep">/</span>
       <span aria-current="page">{{ collection.title }}</span>
     </nav>
@@ -364,12 +364,15 @@
     {%- liquid
       assign sort_current = collection.sort_by | default: collection.default_sort_by
       assign sort_options = collection.sort_options
+      assign chip_count = section.settings.chip_count | default: 4
+      assign values_per_chip = section.settings.values_per_chip | default: 14
     -%}
 
     <div class="ahc-toolbar" id="ahc-toolbar-{{ section.id }}">
+      {%- if section.settings.show_filters -%}
       <div class="ahc-chips" role="group" aria-label="Refine">
-        {%- assign chip_count = 0 -%}
-        {%- for filter in collection.filters limit: 4 -%}
+        {%- assign chip_rendered = 0 -%}
+        {%- for filter in collection.filters limit: chip_count -%}
           {%- if filter.values.size > 0 -%}
             <div class="ahc-chip-wrap">
               <button class="ahc-chip" type="button" aria-expanded="false" data-ahc-chip>
@@ -379,7 +382,7 @@
               <div class="ahc-panel" role="menu">
                 <p class="ahc-panel__title">{{ filter.label }}</p>
                 <ul class="ahc-panel__list">
-                  {%- for v in filter.values limit: 14 -%}
+                  {%- for v in filter.values limit: values_per_chip -%}
                     {%- liquid
                       assign vurl = v.url_to_add
                       if v.active
@@ -397,27 +400,30 @@
                 </ul>
               </div>
             </div>
-            {%- assign chip_count = chip_count | plus: 1 -%}
+            {%- assign chip_rendered = chip_rendered | plus: 1 -%}
           {%- endif -%}
         {%- endfor -%}
 
         {%- if collection.filters.size > 0 -%}
           <button class="ahc-chip ahc-chip--more" type="button" data-ahc-more aria-expanded="false">
-            More Filters <span class="ahc-plus">+</span>
+            {{ section.settings.more_filters_label | default: 'More Filters' }} <span class="ahc-plus">+</span>
           </button>
         {%- endif -%}
       </div>
+      {%- endif -%}
 
       <div class="ahc-tools">
-        <span class="ahc-count">{{ collection.products_count | default: collection.all_products_count }} Items</span>
+        <span class="ahc-count">{{ collection.products_count | default: collection.all_products_count }} {{ section.settings.items_label | default: 'Items' }}</span>
+        {%- if section.settings.show_sort -%}
         <div class="ahc-sort">
-          <label class="ahc-sort__label" for="ahc-sort-{{ section.id }}">Sort by</label>
+          <label class="ahc-sort__label" for="ahc-sort-{{ section.id }}">{{ section.settings.sort_label | default: 'Sort by' }}</label>
           <select class="ahc-sort__select" id="ahc-sort-{{ section.id }}" data-ahc-sort>
             {%- for option in sort_options -%}
               <option value="{{ option.value }}" {% if option.value == sort_current %}selected{% endif %}>{{ option.name }}</option>
             {%- endfor -%}
           </select>
         </div>
+        {%- endif -%}
       </div>
     </div>
   </div>
@@ -427,7 +433,7 @@
       <div class="ahc-drawer__overlay" data-ahc-drawer-close></div>
       <aside class="ahc-drawer__panel" role="dialog" aria-modal="true" aria-label="All filters">
         <div class="ahc-drawer__head">
-          <span class="ahc-drawer__title">All Filters</span>
+          <span class="ahc-drawer__title">{{ section.settings.drawer_title | default: 'All Filters' }}</span>
           <button class="ahc-drawer__close" type="button" data-ahc-drawer-close aria-label="Close">&times;</button>
         </div>
         <div class="ahc-drawer__body">
@@ -458,7 +464,7 @@
           {%- endfor -%}
         </div>
         <div class="ahc-drawer__foot">
-          <a class="ahc-drawer__clear" href="{{ collection.url }}">Clear all</a>
+          <a class="ahc-drawer__clear" href="{{ collection.url }}">{{ section.settings.clear_label | default: 'Clear all' }}</a>
         </div>
       </aside>
     </div>
@@ -576,6 +582,17 @@
     ] },
     { "type": "checkbox", "id": "show_arrows", "label": "Show carousel arrows", "default": true },
     { "type": "checkbox", "id": "show_description", "label": "Show description under title", "default": false },
+    { "type": "header", "content": "Toolbar & filters" },
+    { "type": "text", "id": "breadcrumb_home", "label": "Breadcrumb \"Home\" label", "default": "Home" },
+    { "type": "checkbox", "id": "show_filters", "label": "Show filter chips", "default": true },
+    { "type": "range", "id": "chip_count", "label": "Number of filter chips", "min": 1, "max": 6, "step": 1, "default": 4 },
+    { "type": "range", "id": "values_per_chip", "label": "Values shown per chip", "min": 5, "max": 30, "step": 1, "default": 14 },
+    { "type": "text", "id": "more_filters_label", "label": "\"More Filters\" button label", "default": "More Filters" },
+    { "type": "text", "id": "drawer_title", "label": "All-filters drawer title", "default": "All Filters" },
+    { "type": "text", "id": "clear_label", "label": "\"Clear all\" label", "default": "Clear all" },
+    { "type": "checkbox", "id": "show_sort", "label": "Show sort dropdown", "default": true },
+    { "type": "text", "id": "sort_label", "label": "\"Sort by\" label", "default": "Sort by" },
+    { "type": "text", "id": "items_label", "label": "\"Items\" word", "default": "Items" },
     { "type": "header", "content": "Palette" },
     { "type": "color", "id": "bg_color", "label": "Background", "default": "#FFFFFF" },
     { "type": "color", "id": "text_color", "label": "Title / text", "default": "#23201B" },

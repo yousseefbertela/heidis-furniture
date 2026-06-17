@@ -18,10 +18,10 @@
       data-max-swatches="{{ max_swatches }}"
     >
       <div class="swatch-page-content">
-        <h2 class="swatch-page-title">{{ page.title | default: 'Order Swatches' }}</h2>
+        <h2 class="swatch-page-title">{{ section.settings.heading | default: page.title | default: 'Order Swatches' }}</h2>
 
         <div class="swatches-grid">
-          {%- assign swatch_collection = collections['upholstery-swatches'] -%}
+          {%- assign swatch_collection = collections[section.settings.swatch_collection_handle | default: 'upholstery-swatches'] -%}
           {%- if swatch_collection and swatch_collection.products.size > 0 -%}
             {%- for product in swatch_collection.products -%}
               {%- assign swatch_handle = product.title | handle -%}
@@ -48,9 +48,9 @@
                 <div class="swatch-details">
                   <h4>{{ product.title }}</h4>
                   <div class="swatch-info" data-swatch-code="{{ color_info.color_code | default: product.variants.first.sku | default: product.title }}">
-                    <div><strong>Pattern:</strong> {{ color_info.pattern | default: 'Plain/Solid' }}</div>
-                    <div><strong>Cleaning Code:</strong> {{ color_info.cleaning_code | default: 'N/A' }}</div>
-                    <div><strong>Fabric Content:</strong> {{ color_info.fabric_content | default: 'N/A' }}</div>
+                    <div><strong>{{ section.settings.label_pattern | default: 'Pattern:' }}</strong> {{ color_info.pattern | default: 'Plain/Solid' }}</div>
+                    <div><strong>{{ section.settings.label_cleaning | default: 'Cleaning Code:' }}</strong> {{ color_info.cleaning_code | default: 'N/A' }}</div>
+                    <div><strong>{{ section.settings.label_content | default: 'Fabric Content:' }}</strong> {{ color_info.fabric_content | default: 'N/A' }}</div>
                   </div>
                 </div>
               </div>
@@ -87,9 +87,9 @@
                 <div class="swatch-details">
                   <h4>{{ title }}</h4>
                   <div class="swatch-info" data-swatch-code="{{ code }}">
-                    <div><strong>Pattern:</strong> {{ pattern }}</div>
-                    <div><strong>Cleaning Code:</strong> {{ cleaning }}</div>
-                    <div><strong>Fabric Content:</strong> {{ content }}</div>
+                    <div><strong>{{ section.settings.label_pattern | default: 'Pattern:' }}</strong> {{ pattern }}</div>
+                    <div><strong>{{ section.settings.label_cleaning | default: 'Cleaning Code:' }}</strong> {{ cleaning }}</div>
+                    <div><strong>{{ section.settings.label_content | default: 'Fabric Content:' }}</strong> {{ content }}</div>
                   </div>
                 </div>
               </div>
@@ -98,7 +98,7 @@
         </div>
 
         <div class="swatch-selection-bar">
-          <span class="swatch-selection-label">Select up to {{ max_swatches }}</span>
+          <span class="swatch-selection-label">{{ section.settings.select_label | default: 'Select up to' }} {{ max_swatches }}</span>
           <div class="swatch-selection-preview">
             {%- for i in (1..max_swatches) -%}
               <div class="preview-slot" data-slot="{{ i }}"></div>
@@ -109,7 +109,7 @@
         <p class="swatch-page-message" id="swatch-page-message" role="status" aria-live="polite" hidden></p>
 
         <div class="swatch-page-footer">
-          <button type="button" class="order-swatches-submit" id="order-swatches-submit">ORDER SWATCHES</button>
+          <button type="button" class="order-swatches-submit" id="order-swatches-submit" data-order-label="{{ section.settings.order_label | default: 'ORDER SWATCHES' }}">{{ section.settings.order_label | default: 'ORDER SWATCHES' }}</button>
         </div>
       </div>
     </section>
@@ -424,7 +424,7 @@
       orderButton.textContent =
         selectedSwatches.size > 0
           ? 'ORDER ' + selectedSwatches.size + ' SWATCH' + (selectedSwatches.size > 1 ? 'ES' : '')
-          : 'ORDER SWATCHES';
+          : (orderButton.dataset.orderLabel || 'ORDER SWATCHES');
     }
 
     addSwatchButtons.forEach(function (button) {
@@ -508,6 +508,54 @@
       "id": "color_scheme",
       "label": "t:settings.color_scheme",
       "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Text & labels"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Leave blank to use the page title.",
+      "default": ""
+    },
+    {
+      "type": "text",
+      "id": "swatch_collection_handle",
+      "label": "Swatch collection (handle)",
+      "info": "The collection the swatches are pulled from.",
+      "default": "upholstery-swatches"
+    },
+    {
+      "type": "text",
+      "id": "select_label",
+      "label": "Selection bar label",
+      "default": "Select up to"
+    },
+    {
+      "type": "text",
+      "id": "order_label",
+      "label": "Order button label",
+      "default": "ORDER SWATCHES"
+    },
+    {
+      "type": "text",
+      "id": "label_pattern",
+      "label": "\"Pattern\" label",
+      "default": "Pattern:"
+    },
+    {
+      "type": "text",
+      "id": "label_cleaning",
+      "label": "\"Cleaning Code\" label",
+      "default": "Cleaning Code:"
+    },
+    {
+      "type": "text",
+      "id": "label_content",
+      "label": "\"Fabric Content\" label",
+      "default": "Fabric Content:"
     },
     {
       "type": "header",
