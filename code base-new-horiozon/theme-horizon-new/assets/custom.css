@@ -111,10 +111,15 @@ body {
      the shrunken 16px mobile cart icon it overran the icon and looked clipped/ugly.
      Shrink it to a tidy corner badge and drop the donut-mask cut-out (it misaligns
      at 16px). Vars feed both the bubble position and the (now-removed) mask. */
+  /* Right-edge clearance so the cart count badge is never clipped at the
+     viewport edge (header columns only carry ~2px right padding). */
+  header-actions {
+    padding-inline-end: 6px !important;
+  }
   .header-actions__cart-icon {
-    --cart-bubble-size: 13px !important;
-    --cart-bubble-top: 6px !important;
-    --cart-bubble-right: 0px !important;
+    --cart-bubble-size: 14px !important;
+    --cart-bubble-top: 5px !important;
+    --cart-bubble-right: 1px !important;
   }
   .header-actions__cart-icon .cart-bubble {
     width: var(--cart-bubble-size) !important;

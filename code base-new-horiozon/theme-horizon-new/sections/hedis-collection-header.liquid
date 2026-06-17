@@ -275,17 +275,15 @@
   @media (max-width:600px){
     .ahc-cat{ width:64vw; }
     .ahc-title{ font-size:clamp(30px,9vw,42px); }
-    .ahc-chips{ overflow-x:auto; flex-wrap:nowrap; padding-bottom:4px; scrollbar-width:none; }
-    .ahc-chips::-webkit-scrollbar{ display:none; }
+    /* Chips wrap onto as many rows as needed; "More Filters" drops to its own
+       full-width line UNDERNEATH them so it never covers the last chip. */
+    .ahc-chips{ flex-wrap:wrap; gap:8px; overflow:visible; padding-bottom:0; }
     .ahc-chip{ flex:0 0 auto; padding:9px 14px; font-size:12px; }
-    /* The inline dropdown panel can't escape the horizontal-scroll chip strip on
-       phones (overflow-x:auto forces overflow-y to clip), so it was invisible.
-       Hide it here; chip taps open the full-screen drawer instead (see JS). */
+    /* Inline dropdown panels are hidden on phones; tapping a chip opens the
+       full-screen drawer instead (see JS). */
     .ahc-panel{ display:none !important; }
-    /* Pin "More Filters" to the right edge of the scrolling strip so it stays
-       visible instead of scrolling off-screen / getting cut off. */
-    .ahc-chip--more{ position:sticky; right:0; z-index:2; margin-left:6px;
-      box-shadow:-10px 0 10px -6px rgba(20,18,15,.14); }
+    /* "More Filters" on its own full-width line, centered, beneath the chips. */
+    .ahc-chip--more{ flex:0 0 100%; margin-left:0; margin-top:2px; justify-content:center; }
     .product-grid.product-grid--grid{ grid-template-columns:repeat(2,minmax(0,1fr)) !important; column-gap:8px !important; row-gap:18px !important; }
   }
 </style>
