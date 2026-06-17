@@ -112,24 +112,27 @@
         </div>
       </div>
 
-      {%- comment -%} Editable link columns — driven by section settings (defaults live in schema, so always editable + never wiped by the editor). {%- endcomment -%}
+      {%- comment -%} Editable link columns — one compact textarea per column ("Text | /url" per line). Section settings = always editable, never wiped by the editor. {%- endcomment -%}
       {%- for c in (1..3) -%}
         {%- assign ch = 'col' | append: c | append: '_heading' -%}
+        {%- assign cl = 'col' | append: c | append: '_links' -%}
         {%- assign heading = section.settings[ch] -%}
-        {%- comment -%} Build the link list first so we can skip empty columns. {%- endcomment -%}
-        {%- capture col_links -%}
-          {%- for i in (1..8) -%}
-            {%- assign lk = 'col' | append: c | append: '_l' | append: i | append: '_label' -%}
-            {%- assign uk = 'col' | append: c | append: '_l' | append: i | append: '_url' -%}
-            {%- if section.settings[lk] != blank -%}
-              <li><a href="{{ section.settings[uk] | default: '#' }}">{{ section.settings[lk] }}</a></li>
-            {%- endif -%}
-          {%- endfor -%}
-        {%- endcapture -%}
-        {%- if heading != blank or col_links != blank -%}
+        {%- assign raw = section.settings[cl] -%}
+        {%- if heading != blank or raw != blank -%}
           <div class="af-col">
             {%- if heading != blank -%}<h4>{{ heading }}</h4>{%- endif -%}
-            <ul>{{ col_links }}</ul>
+            <ul>
+              {%- assign rows = raw | newline_to_br | split: '<br />' -%}
+              {%- for row in rows -%}
+                {%- assign trimmed = row | strip -%}
+                {%- if trimmed != blank -%}
+                  {%- assign parts = trimmed | split: '|' -%}
+                  {%- assign label = parts[0] | strip -%}
+                  {%- assign url = parts[1] | strip -%}
+                  <li><a href="{{ url | default: '#' }}">{{ label }}</a></li>
+                {%- endif -%}
+              {%- endfor -%}
+            </ul>
           </div>
         {%- endif -%}
       {%- endfor -%}
@@ -189,38 +192,14 @@
     { "type": "text", "id": "instagram_url", "label": "Instagram URL", "default": "https://www.instagram.com/" },
     { "type": "text", "id": "pinterest_url", "label": "Pinterest URL", "default": "https://www.pinterest.com/" },
 
-    { "type": "header", "content": "Column 1" },
-    { "type": "text", "id": "col1_heading", "label": "Heading", "default": "Shop" },
-    { "type": "text", "id": "col1_l1_label", "label": "Link 1 text", "default": "Living" }, { "type": "text", "id": "col1_l1_url", "label": "Link 1 URL", "default": "/collections/living" },
-    { "type": "text", "id": "col1_l2_label", "label": "Link 2 text", "default": "Dining" }, { "type": "text", "id": "col1_l2_url", "label": "Link 2 URL", "default": "/collections/dining" },
-    { "type": "text", "id": "col1_l3_label", "label": "Link 3 text", "default": "Bedroom" }, { "type": "text", "id": "col1_l3_url", "label": "Link 3 URL", "default": "/collections/bedroom" },
-    { "type": "text", "id": "col1_l4_label", "label": "Link 4 text", "default": "Outdoor" }, { "type": "text", "id": "col1_l4_url", "label": "Link 4 URL", "default": "/collections/outdoor" },
-    { "type": "text", "id": "col1_l5_label", "label": "Link 5 text", "default": "Lighting" }, { "type": "text", "id": "col1_l5_url", "label": "Link 5 URL", "default": "/collections/lighting" },
-    { "type": "text", "id": "col1_l6_label", "label": "Link 6 text", "default": "Decor" }, { "type": "text", "id": "col1_l6_url", "label": "Link 6 URL", "default": "/collections/decor" },
-    { "type": "text", "id": "col1_l7_label", "label": "Link 7 text", "default": "Rugs" }, { "type": "text", "id": "col1_l7_url", "label": "Link 7 URL", "default": "/collections/rugs" },
-    { "type": "text", "id": "col1_l8_label", "label": "Link 8 text", "default": "Office" }, { "type": "text", "id": "col1_l8_url", "label": "Link 8 URL", "default": "/collections/office" },
-
-    { "type": "header", "content": "Column 2" },
-    { "type": "text", "id": "col2_heading", "label": "Heading", "default": "Further Info" },
-    { "type": "text", "id": "col2_l1_label", "label": "Link 1 text", "default": "Home" }, { "type": "text", "id": "col2_l1_url", "label": "Link 1 URL", "default": "/" },
-    { "type": "text", "id": "col2_l2_label", "label": "Link 2 text", "default": "About Hedis" }, { "type": "text", "id": "col2_l2_url", "label": "Link 2 URL", "default": "/pages/about-us" },
-    { "type": "text", "id": "col2_l3_label", "label": "Link 3 text", "default": "Trade Program" }, { "type": "text", "id": "col2_l3_url", "label": "Link 3 URL", "default": "/pages/trade-program" },
-    { "type": "text", "id": "col2_l4_label", "label": "Link 4 text", "default": "Contact Us" }, { "type": "text", "id": "col2_l4_url", "label": "Link 4 URL", "default": "/pages/contact" },
-    { "type": "text", "id": "col2_l5_label", "label": "Link 5 text", "default": "Blog" }, { "type": "text", "id": "col2_l5_url", "label": "Link 5 URL", "default": "/blogs/news" },
-    { "type": "text", "id": "col2_l6_label", "label": "Link 6 text", "default": "Sitemap" }, { "type": "text", "id": "col2_l6_url", "label": "Link 6 URL", "default": "/pages/sitemap" },
-    { "type": "text", "id": "col2_l7_label", "label": "Link 7 text" }, { "type": "text", "id": "col2_l7_url", "label": "Link 7 URL" },
-    { "type": "text", "id": "col2_l8_label", "label": "Link 8 text" }, { "type": "text", "id": "col2_l8_url", "label": "Link 8 URL" },
-
-    { "type": "header", "content": "Column 3" },
-    { "type": "text", "id": "col3_heading", "label": "Heading", "default": "Customer Service" },
-    { "type": "text", "id": "col3_l1_label", "label": "Link 1 text", "default": "FAQs" }, { "type": "text", "id": "col3_l1_url", "label": "Link 1 URL", "default": "/pages/faqs" },
-    { "type": "text", "id": "col3_l2_label", "label": "Link 2 text", "default": "Returns & Exchanges" }, { "type": "text", "id": "col3_l2_url", "label": "Link 2 URL", "default": "/pages/returns-exchanges" },
-    { "type": "text", "id": "col3_l3_label", "label": "Link 3 text", "default": "Limited Warranty" }, { "type": "text", "id": "col3_l3_url", "label": "Link 3 URL", "default": "/pages/limited-warranty" },
-    { "type": "text", "id": "col3_l4_label", "label": "Link 4 text", "default": "Delivery & Shipping" }, { "type": "text", "id": "col3_l4_url", "label": "Link 4 URL", "default": "/pages/delivery-shipping" },
-    { "type": "text", "id": "col3_l5_label", "label": "Link 5 text", "default": "Terms Of Service" }, { "type": "text", "id": "col3_l5_url", "label": "Link 5 URL", "default": "/policies/terms-of-service" },
-    { "type": "text", "id": "col3_l6_label", "label": "Link 6 text", "default": "Contact Information" }, { "type": "text", "id": "col3_l6_url", "label": "Link 6 URL", "default": "/pages/contact" },
-    { "type": "text", "id": "col3_l7_label", "label": "Link 7 text", "default": "Privacy Policy" }, { "type": "text", "id": "col3_l7_url", "label": "Link 7 URL", "default": "/policies/privacy-policy" },
-    { "type": "text", "id": "col3_l8_label", "label": "Link 8 text", "default": "Refund Policy" }, { "type": "text", "id": "col3_l8_url", "label": "Link 8 URL", "default": "/policies/refund-policy" }
+    { "type": "header", "content": "Link columns" },
+    { "type": "paragraph", "content": "Each column = one link per line, written as  Text | /url" },
+    { "type": "text", "id": "col1_heading", "label": "Column 1 heading", "default": "Shop" },
+    { "type": "textarea", "id": "col1_links", "label": "Column 1 links", "default": "Living | /collections/living\nDining | /collections/dining\nBedroom | /collections/bedroom\nOutdoor | /collections/outdoor\nLighting | /collections/lighting\nDecor | /collections/decor\nRugs | /collections/rugs\nOffice | /collections/office" },
+    { "type": "text", "id": "col2_heading", "label": "Column 2 heading", "default": "Further Info" },
+    { "type": "textarea", "id": "col2_links", "label": "Column 2 links", "default": "Home | /\nAbout Hedis | /pages/about-us\nTrade Program | /pages/trade-program\nContact Us | /pages/contact\nBlog | /blogs/news\nSitemap | /pages/sitemap" },
+    { "type": "text", "id": "col3_heading", "label": "Column 3 heading", "default": "Customer Service" },
+    { "type": "textarea", "id": "col3_links", "label": "Column 3 links", "default": "FAQs | /pages/faqs\nReturns & Exchanges | /pages/returns-exchanges\nLimited Warranty | /pages/limited-warranty\nDelivery & Shipping | /pages/delivery-shipping\nTerms Of Service | /policies/terms-of-service\nContact Information | /pages/contact\nPrivacy Policy | /policies/privacy-policy\nRefund Policy | /policies/refund-policy" }
   ],
   "presets": [ { "name": "Footer" } ]
 }
