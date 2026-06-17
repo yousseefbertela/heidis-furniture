@@ -21,7 +21,8 @@
         <h2 class="swatch-page-title">{{ section.settings.heading | default: page.title | default: 'Order Swatches' }}</h2>
 
         <div class="swatches-grid">
-          {%- assign swatch_collection = collections[section.settings.swatch_collection_handle | default: 'upholstery-swatches'] -%}
+          {%- assign swatch_handle_key = section.settings.swatch_collection_handle | default: 'upholstery-swatches' -%}
+          {%- assign swatch_collection = collections[swatch_handle_key] -%}
           {%- if swatch_collection and swatch_collection.products.size > 0 -%}
             {%- for product in swatch_collection.products -%}
               {%- assign swatch_handle = product.title | handle -%}
