@@ -186,16 +186,54 @@
   .ahc-sort__select:hover{ border-bottom-color:var(--ahc-ink); }
 
   .ahc-panel{
-    position:absolute; left:0; margin-top:10px; min-width:240px;
-    background:#fff; border:1px solid var(--ahc-line); padding:18px 18px 16px;
+    position:absolute; left:0; margin-top:10px; width:300px; max-width:92vw;
+    background:#fff; border:1px solid var(--ahc-line); padding:18px 10px 14px 18px;
     box-shadow:0 18px 36px -16px rgba(20,18,15,.18); z-index:5; display:none;
   }
   .ahc-chip[aria-expanded="true"] + .ahc-panel{ display:block; }
-  .ahc-panel__title{ font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ahc-muted); margin:0 0 12px; }
-  .ahc-panel__list{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 18px; }
-  .ahc-panel__list a{ font-size:13px; color:var(--ahc-ink); padding:5px 0; display:block; }
+  .ahc-panel__title{ font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ahc-muted); margin:0 0 10px; }
+  /* Single-column, scrollable value list (reference look) */
+  .ahc-panel__list{
+    list-style:none; margin:0; padding:0 8px 0 0;
+    display:flex; flex-direction:column; gap:1px;
+    max-height:300px; overflow-y:auto; overscroll-behavior:contain;
+    scrollbar-width:thin; scrollbar-color:var(--ahc-line) transparent;
+  }
+  .ahc-panel__list::-webkit-scrollbar{ width:6px; }
+  .ahc-panel__list::-webkit-scrollbar-thumb{ background:var(--ahc-line); border-radius:3px; }
+  .ahc-panel__list a{ font-size:13px; color:var(--ahc-ink); padding:7px 2px; display:block; white-space:normal; line-height:1.35; }
   .ahc-panel__list a:hover{ text-decoration:underline; text-underline-offset:3px; }
+  .ahc-panel__list a.is-active{ font-weight:500; }
+  .ahc-panel__list a.is-active::before{ content:"\2713\00a0"; color:var(--ahc-accent); }
   .ahc-chip-wrap{ position:relative; }
+
+  /* "More Filters" slide-in drawer (all filters) */
+  .ahc-drawer[hidden]{ display:none; }
+  .ahc-drawer{ position:fixed; inset:0; z-index:60; }
+  .ahc-drawer__overlay{ position:absolute; inset:0; background:rgba(20,18,15,.34); opacity:0; transition:opacity .25s ease; }
+  .ahc-drawer.is-open .ahc-drawer__overlay{ opacity:1; }
+  .ahc-drawer__panel{
+    position:absolute; top:0; right:0; height:100%; width:380px; max-width:90vw;
+    background:#fff; box-shadow:-18px 0 40px -20px rgba(20,18,15,.4);
+    display:flex; flex-direction:column; transform:translateX(100%);
+    transition:transform .3s cubic-bezier(.2,.6,.2,1);
+  }
+  .ahc-drawer.is-open .ahc-drawer__panel{ transform:translateX(0); }
+  .ahc-drawer__head{ display:flex; align-items:center; justify-content:space-between; padding:20px 24px; border-bottom:1px solid var(--ahc-line); }
+  .ahc-drawer__title{ font-family:"Cormorant Garamond",Georgia,serif; font-size:24px; font-weight:400; letter-spacing:.02em; }
+  .ahc-drawer__close{ appearance:none; background:transparent; border:0; font-size:26px; line-height:1; cursor:pointer; color:var(--ahc-ink); padding:0 4px; }
+  .ahc-drawer__body{ flex:1 1 auto; overflow-y:auto; padding:8px 24px 16px; }
+  .ahc-drawer__group{ padding:16px 0; border-bottom:1px solid var(--ahc-line); }
+  .ahc-drawer__gtitle{ font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ahc-muted); margin:0 0 10px; }
+  .ahc-drawer__list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+  .ahc-drawer__list a{ font-size:13.5px; color:var(--ahc-ink); display:flex; justify-content:space-between; gap:12px; padding:7px 0; line-height:1.35; }
+  .ahc-drawer__list a:hover{ text-decoration:underline; text-underline-offset:3px; }
+  .ahc-drawer__list a.is-active{ font-weight:500; }
+  .ahc-drawer__list a.is-active::before{ content:"\2713"; color:var(--ahc-accent); margin-right:6px; }
+  .ahc-drawer__count{ color:var(--ahc-muted); font-size:12px; flex:0 0 auto; }
+  .ahc-drawer__foot{ border-top:1px solid var(--ahc-line); padding:16px 24px; }
+  .ahc-drawer__clear{ font-size:13px; letter-spacing:.02em; color:var(--ahc-ink); text-decoration:underline; text-underline-offset:3px; }
+  body.ahc-drawer-open{ overflow:hidden; }
 
   /* ---- Horizon collection grid → reference look --------------------------------
      Products render in the native `main-collection` section below this header.
@@ -338,7 +376,13 @@
                 <p class="ahc-panel__title">{{ filter.label }}</p>
                 <ul class="ahc-panel__list">
                   {%- for v in filter.values limit: 14 -%}
-                    <li><a href="{{ v.url }}" role="menuitem">{{ v.label }}</a></li>
+                    {%- liquid
+                      assign vurl = v.url_to_add
+                      if v.active
+                        assign vurl = v.url_to_remove
+                      endif
+                    -%}
+                    <li><a href="{{ vurl }}" role="menuitem" class="{% if v.active %}is-active{% endif %}">{{ v.label }}</a></li>
                   {%- endfor -%}
                 </ul>
               </div>
@@ -367,6 +411,41 @@
       </div>
     </div>
   </div>
+
+  {%- if collection.filters.size > 0 -%}
+    <div class="ahc-drawer" id="ahc-drawer-{{ section.id }}" hidden>
+      <div class="ahc-drawer__overlay" data-ahc-drawer-close></div>
+      <aside class="ahc-drawer__panel" role="dialog" aria-modal="true" aria-label="All filters">
+        <div class="ahc-drawer__head">
+          <span class="ahc-drawer__title">All Filters</span>
+          <button class="ahc-drawer__close" type="button" data-ahc-drawer-close aria-label="Close">&times;</button>
+        </div>
+        <div class="ahc-drawer__body">
+          {%- for filter in collection.filters -%}
+            {%- if filter.values.size > 0 -%}
+              <div class="ahc-drawer__group">
+                <p class="ahc-drawer__gtitle">{{ filter.label }}</p>
+                <ul class="ahc-drawer__list">
+                  {%- for v in filter.values -%}
+                    {%- liquid
+                      assign vurl = v.url_to_add
+                      if v.active
+                        assign vurl = v.url_to_remove
+                      endif
+                    -%}
+                    <li><a href="{{ vurl }}" class="{% if v.active %}is-active{% endif %}">{{ v.label }}<span class="ahc-drawer__count">{{ v.count }}</span></a></li>
+                  {%- endfor -%}
+                </ul>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+        <div class="ahc-drawer__foot">
+          <a class="ahc-drawer__clear" href="{{ collection.url }}">Clear all</a>
+        </div>
+      </aside>
+    </div>
+  {%- endif -%}
 </div>
 
 <script>
@@ -426,16 +505,26 @@
   }
 
   var more = root.querySelector('[data-ahc-more]');
-  if(more){
-    more.addEventListener('click', function(){
-      // Horizon renders its filters in a drawer opened by controls bound to
-      // "#filters-drawer/showDialog". Click the native control so the full
-      // filter set opens (works on desktop + mobile).
-      var trigger = document.querySelector('[on\\:click="#filters-drawer/showDialog"]');
-      if(trigger){ trigger.click(); return; }
-      var drawer = document.getElementById('filters-drawer');
-      if(drawer && typeof drawer.showDialog === 'function'){ drawer.showDialog(); }
-    });
+  var drawer = document.getElementById('ahc-drawer-{{ section.id }}');
+  function openDrawer(){
+    if(!drawer) return;
+    drawer.hidden = false;
+    void drawer.offsetWidth; /* reflow so the slide-in transition runs */
+    drawer.classList.add('is-open');
+    document.body.classList.add('ahc-drawer-open');
+    if(more) more.setAttribute('aria-expanded','true');
+  }
+  function closeDrawer(){
+    if(!drawer) return;
+    drawer.classList.remove('is-open');
+    document.body.classList.remove('ahc-drawer-open');
+    if(more) more.setAttribute('aria-expanded','false');
+    setTimeout(function(){ drawer.hidden = true; }, 320);
+  }
+  if(more && drawer){
+    more.addEventListener('click', function(e){ e.stopPropagation(); closeAllChips(null); openDrawer(); });
+    drawer.querySelectorAll('[data-ahc-drawer-close]').forEach(function(el){ el.addEventListener('click', closeDrawer); });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && drawer.classList.contains('is-open')) closeDrawer(); });
   }
 })();
 </script>
