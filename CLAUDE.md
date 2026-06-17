@@ -10,6 +10,34 @@
   addition here.
 - Prefer the smallest change: extend/configure existing theme sections over creating new files.
 
+## Deploying changes — how code reaches the Horizon draft (IMPORTANT)
+The store has the **Shopify MCP** connected + authorized (tools `mcp__<id>__graphql_query` /
+`graphql_mutation`). That is how we push. The Shopify **CLI is NOT authorized** for this store
+(`shopify theme push` / `shopify theme dev` fail with "not authorized") — don't use it. The reliable
+loop (settled 2026-06-17):
+1. **Edit locally** in `code base-new-horiozon/theme-horizon-new/`.
+2. **Commit + push to GitHub** — `git push origin main`; repo `yousseefbertela/heidis-furniture`,
+   **public**, commit straight to `main`.
+3. **Push to the Horizon draft via the MCP** — `graphql_mutation` → `themeFilesUpsert`, with
+   `themeId: "gid://shopify/OnlineStoreTheme/151554883672"` and, per file,
+   `body: { type: URL, value: "https://raw.githubusercontent.com/yousseefbertela/heidis-furniture/<SHA>/code%20base-new-horiozon/theme-horizon-new/<themepath>" }`.
+   Shopify fetches the exact committed bytes from the public raw URL → perfect fidelity, no
+   hand-transcription. `filename` is the theme-root-relative path (e.g. `sections/header.liquid`);
+   use `%20` for the spaces in the repo path.
+4. **Verify** — `themeFilesUpsert` returns an **empty `upsertedThemeFiles` array even on success**;
+   that is NOT a failure. Confirm with `theme(id){ files(filenames:[…]){ nodes{ checksumMd5 } } }`
+   and match each to `git show HEAD:<repopath> | md5sum` (or `curl -s <rawURL> | md5sum`).
+
+**Safety:** the MCP **auto-blocks writes to the live/MAIN theme** — `themeFilesUpsert` only works on
+unpublished themes, so it physically cannot touch live **golden**. Still always pass the draft id.
+
+**Editor-owned files — do NOT push local over these:** `config/settings_data.json`,
+`templates/*.json`, `sections/*-group.json`. The open theme editor owns + re-saves them, so for these
+**Shopify is the source of truth**; local copies are stale snapshots and are *expected* to differ.
+Pushing local over them wipes the user's editor config (theme settings, homepage/footer/header
+layout). For content that must persist + stay editable, use **section-setting defaults in the
+`.liquid` `{% schema %}`** (clobber-proof), not blocks.
+
 ## Store / theme facts
 - Store: **Hedi's Furniture** — `hedisfurniture.com` (Shopify plan, USD, EDT).
 - **Edited theme:** `LevLocal` — DRAFT / UNPUBLISHED — `gid://shopify/OnlineStoreTheme/141169786968`.
@@ -32,8 +60,8 @@
 
 ### Order Swatches (Horizon theme)
 - **Where:** `code base-new-horiozon/theme-horizon-new/` (the **Horizon** draft theme,
-  `gid://shopify/OnlineStoreTheme/151554883672`). The `shopify theme dev` server runs a
-  **Development** theme copy (`151555866712`) from these local files — golden is never touched.
+  `gid://shopify/OnlineStoreTheme/151554883672`). Changes reach this draft via the push flow above
+  (GitHub → Shopify MCP `themeFilesUpsert`); golden is never touched.
 - **What:** a "Order Swatches" feature = a trigger button + slide-in `<dialog>` drawer that lets
   a customer order up to N physical fabric/colour samples. Ported + improved from the live golden
   (Halo) custom feature.
