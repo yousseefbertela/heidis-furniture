@@ -116,27 +116,22 @@
         </div>
       </div>
 
-      {%- comment -%} Editable link columns — one compact textarea per column ("Text | /url" per line). Section settings = always editable, never wiped by the editor. {%- endcomment -%}
+      {%- comment -%} Link columns — pulled from navigation menus (Online Store › Navigation), exactly like the live golden theme. Edit a menu to change that column's links. {%- endcomment -%}
       {%- for c in (1..3) -%}
         {%- assign ch = 'col' | append: c | append: '_heading' -%}
-        {%- assign cl = 'col' | append: c | append: '_links' -%}
+        {%- assign cm = 'col' | append: c | append: '_menu' -%}
         {%- assign heading = section.settings[ch] -%}
-        {%- assign raw = section.settings[cl] -%}
-        {%- if heading != blank or raw != blank -%}
+        {%- assign col_menu = section.settings[cm] -%}
+        {%- if heading != blank or col_menu.links.size > 0 -%}
           <div class="af-col">
             {%- if heading != blank -%}<h4>{{ heading }}</h4>{%- endif -%}
-            <ul>
-              {%- assign rows = raw | newline_to_br | split: '<br />' -%}
-              {%- for row in rows -%}
-                {%- assign trimmed = row | strip -%}
-                {%- if trimmed != blank -%}
-                  {%- assign parts = trimmed | split: '|' -%}
-                  {%- assign label = parts[0] | strip -%}
-                  {%- assign url = parts[1] | strip -%}
-                  <li><a href="{{ url | default: '#' }}">{{ label }}</a></li>
-                {%- endif -%}
-              {%- endfor -%}
-            </ul>
+            {%- if col_menu.links.size > 0 -%}
+              <ul>
+                {%- for link in col_menu.links -%}
+                  <li><a href="{{ link.url }}"{% if link.current %} aria-current="page"{% endif %}>{{ link.title | escape }}</a></li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
           </div>
         {%- endif -%}
       {%- endfor -%}
@@ -199,13 +194,13 @@
     { "type": "text", "id": "pinterest_url", "label": "Pinterest URL", "default": "https://www.pinterest.com/" },
 
     { "type": "header", "content": "Link columns" },
-    { "type": "paragraph", "content": "Each column = one link per line, written as  Text | /url" },
+    { "type": "paragraph", "content": "Each column pulls its links from a navigation menu (Online Store › Navigation) — exactly like the live theme. Edit the menu to change that column's links; the heading below is the column title." },
     { "type": "text", "id": "col1_heading", "label": "Column 1 heading", "default": "Shop" },
-    { "type": "textarea", "id": "col1_links", "label": "Column 1 links", "default": "Living | /collections/living\nDining | /collections/dining\nBedroom | /collections/bedroom\nOutdoor | /collections/outdoor\nLighting | /collections/lighting\nDecor | /collections/decor\nRugs | /collections/rugs\nOffice | /collections/office" },
+    { "type": "link_list", "id": "col1_menu", "label": "Column 1 menu", "default": "shop" },
     { "type": "text", "id": "col2_heading", "label": "Column 2 heading", "default": "Further Info" },
-    { "type": "textarea", "id": "col2_links", "label": "Column 2 links", "default": "Home | /\nAbout Hedis | /pages/about-us\nTrade Program | /pages/trade-program\nContact Us | /pages/contact\nBlog | /blogs/news\nSitemap | /pages/sitemap" },
+    { "type": "link_list", "id": "col2_menu", "label": "Column 2 menu", "default": "our-company" },
     { "type": "text", "id": "col3_heading", "label": "Column 3 heading", "default": "Customer Service" },
-    { "type": "textarea", "id": "col3_links", "label": "Column 3 links", "default": "FAQs | /pages/faqs\nReturns & Exchanges | /pages/returns-exchanges\nLimited Warranty | /pages/limited-warranty\nDelivery & Shipping | /pages/delivery-shipping\nTerms Of Service | /policies/terms-of-service\nContact Information | /pages/contact\nPrivacy Policy | /policies/privacy-policy\nRefund Policy | /policies/refund-policy" }
+    { "type": "link_list", "id": "col3_menu", "label": "Column 3 menu", "default": "footer" }
   ],
   "presets": [ { "name": "Footer" } ]
 }
