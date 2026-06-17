@@ -114,11 +114,18 @@ body {
   /* Right-edge clearance so the cart count badge is never clipped at the
      viewport edge (header columns only carry ~2px right padding). */
   header-actions {
-    padding-inline-end: 6px !important;
+    padding-inline-end: 8px !important;
   }
+  /* The <cart-icon> renders as display:block / width:44px, so it overran its
+     24px button by ~10px and pushed the glyph + badge off the right edge.
+     Constrain it to the icon size and centre it inside the button. */
   .header-actions__cart-icon {
+    display: inline-flex !important;
+    justify-content: center !important;
+    width: 18px !important;
+    position: relative !important;
     --cart-bubble-size: 14px !important;
-    --cart-bubble-top: 5px !important;
+    --cart-bubble-top: 4px !important;
     --cart-bubble-right: 1px !important;
   }
   .header-actions__cart-icon .cart-bubble {

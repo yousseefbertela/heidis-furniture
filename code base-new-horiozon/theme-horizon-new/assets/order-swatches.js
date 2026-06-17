@@ -65,6 +65,9 @@ class OrderSwatchesComponent extends Component {
   /** @type {boolean} */
   #hoverEnabled = false;
 
+  /** @type {boolean} */
+  #infoModalOpen = false;
+
   /** @returns {number} */
   get max() {
     const value = Number(this.dataset.maxSwatches);
@@ -109,6 +112,10 @@ class OrderSwatchesComponent extends Component {
       return;
     }
 
+    // Desktop-only hover preview. On phones / narrow widths the info-button modal
+    // is used instead, so never open the popover on hover/focus there.
+    if (window.innerWidth < 750) return;
+
     // Only react to the main product variant picker's swatches.
     const label = target.closest('.variant-option__button-label--has-swatch');
     if (label && label.closest('variant-picker')) {
@@ -130,7 +137,30 @@ class OrderSwatchesComponent extends Component {
   };
 
   /** @type {() => void} */
-  #onVariantUpdate = () => this.#hidePopover();
+  #onVariantChange = () => {
+    this.#hidePopover();
+    this.#mountInfoButton();
+  };
+
+  /** @type {(event: Event) => void} */
+  #onInfoClick = (event) => {
+    event.preventDefault();
+    this.#openInfoModal();
+  };
+
+  /** @type {(event: Event) => void} */
+  #onModalOutside = (event) => {
+    const popover = this.refs.popover;
+    const target = event.target;
+    if (popover instanceof HTMLElement && target instanceof Node && !popover.contains(target)) {
+      this.#closeInfoModal();
+    }
+  };
+
+  /** @type {(event: KeyboardEvent) => void} */
+  #onModalKey = (event) => {
+    if (event.key === 'Escape') this.#closeInfoModal();
+  };
 
   connectedCallback() {
     super.connectedCallback();
@@ -140,13 +170,18 @@ class OrderSwatchesComponent extends Component {
       drawer.addEventListener('click', this.#onBackdropClick);
     }
 
+    // Mobile: an "info" button beside the selected fabric value opens a details
+    // modal (the hover popover is desktop-only). Re-mount when the variant picker
+    // re-renders on a colour change.
+    this.#mountInfoButton();
+    document.addEventListener('variant:update', this.#onVariantChange);
+
     // Hover-preview popover only on devices that actually hover (skip touch).
     this.#hoverEnabled = typeof window.matchMedia === 'function' && window.matchMedia('(hover: hover)').matches;
     if (this.#hoverEnabled) {
       document.addEventListener('pointerover', this.#onPointerOver);
       document.addEventListener('focusin', this.#onPointerOver);
       window.addEventListener('scroll', this.#onScrollHide, { passive: true });
-      document.addEventListener('variant:update', this.#onVariantUpdate);
     }
   }
 
@@ -157,11 +192,13 @@ class OrderSwatchesComponent extends Component {
       drawer.removeEventListener('cancel', this.#onCancel);
       drawer.removeEventListener('click', this.#onBackdropClick);
     }
+    document.removeEventListener('variant:update', this.#onVariantChange);
+    document.removeEventListener('click', this.#onModalOutside, true);
+    document.removeEventListener('keydown', this.#onModalKey);
     if (this.#hoverEnabled) {
       document.removeEventListener('pointerover', this.#onPointerOver);
       document.removeEventListener('focusin', this.#onPointerOver);
       window.removeEventListener('scroll', this.#onScrollHide);
-      document.removeEventListener('variant:update', this.#onVariantUpdate);
     }
     this.#unlockScroll();
   }
@@ -513,6 +550,10 @@ class OrderSwatchesComponent extends Component {
     const popover = this.refs.popover;
     if (!(popover instanceof HTMLElement)) return;
 
+    // Modal mode (mobile info button) is centred by CSS; skip the desktop
+    // gallery-overlay positioning.
+    if (this.#infoModalOpen) return;
+
     // Find the product media gallery — this is the left column container.
     const gallery = document.querySelector('media-gallery')
       || document.querySelector('.product-media-gallery')
@@ -590,7 +631,8 @@ class OrderSwatchesComponent extends Component {
       button.classList.remove('is-loading');
     }
     if (ok) {
-      this.#hidePopover();
+      if (this.#infoModalOpen) this.#closeInfoModal();
+      else this.#hidePopover();
       this.#openCart();
     }
   }
@@ -598,7 +640,69 @@ class OrderSwatchesComponent extends Component {
   /** Close the popover when the X button is clicked. @param {Event} [event] */
   hidePopoverClick(event) {
     event?.preventDefault();
+    if (this.#infoModalOpen) this.#closeInfoModal();
+    else this.#hidePopover();
+  }
+
+  /* -------------------------------------------------- mobile info modal */
+
+  /**
+   * Inject the "info" button beside the native variant-picker's selected swatch
+   * value. CSS hides it on desktop (where hover shows the popover instead).
+   */
+  #mountInfoButton() {
+    const valueEl =
+      document.querySelector('variant-picker .variant-option--swatches .variant-option__swatch-value') ||
+      document.querySelector('variant-picker .variant-option__swatch-value');
+    if (!(valueEl instanceof HTMLElement)) return;
+    // Drop any button left over from a previous render, then mount fresh.
+    document.querySelectorAll('.ah-swatch-info').forEach((b) => b.remove());
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'ah-swatch-info';
+    btn.setAttribute('aria-label', 'Fabric details');
+    btn.innerHTML =
+      '<svg viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="10" cy="10" r="8.2"></circle><line x1="10" y1="9" x2="10" y2="14"></line><circle cx="10" cy="6.2" r="0.7" fill="currentColor" stroke="none"></circle></svg>';
+    btn.addEventListener('click', this.#onInfoClick);
+    valueEl.appendChild(btn);
+  }
+
+  /** Open the fabric details as a centred modal for the currently selected swatch. */
+  #openInfoModal() {
+    const swatchOption =
+      document.querySelector('variant-picker .variant-option--swatches') ||
+      document.querySelector('variant-picker .variant-option');
+    let value = '';
+    const checked = swatchOption ? swatchOption.querySelector('input:checked') : null;
+    if (checked instanceof HTMLInputElement) {
+      value = checked.value || checked.getAttribute('aria-label') || '';
+    }
+    if (!value) {
+      const valueEl = document.querySelector('variant-picker .variant-option__swatch-value');
+      if (valueEl instanceof HTMLElement) value = (valueEl.textContent || '').trim();
+    }
+    if (!value) return;
+
+    const popover = this.refs.popover;
+    if (popover instanceof HTMLElement) popover.classList.add('order-swatches__popover--modal');
+    this.#infoModalOpen = true;
+    this.#lockScroll();
+    this.#showPopover(String(value), popover instanceof HTMLElement ? popover : this);
+    // Defer outside-click binding so the opening click doesn't immediately close it.
+    setTimeout(() => {
+      document.addEventListener('click', this.#onModalOutside, true);
+      document.addEventListener('keydown', this.#onModalKey);
+    }, 0);
+  }
+
+  #closeInfoModal() {
+    this.#infoModalOpen = false;
+    document.removeEventListener('click', this.#onModalOutside, true);
+    document.removeEventListener('keydown', this.#onModalKey);
+    const popover = this.refs.popover;
+    if (popover instanceof HTMLElement) popover.classList.remove('order-swatches__popover--modal');
     this.#hidePopover();
+    this.#unlockScroll();
   }
 
   #openCart() {

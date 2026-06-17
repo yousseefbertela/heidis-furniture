@@ -848,8 +848,56 @@
     cursor: progress;
   }
 
+  /* ----------------------------------------------- mobile fabric info button
+     Injected by order-swatches.js next to the selected swatch value. Hidden on
+     desktop (hover shows the popover there); shown on phones, where it opens the
+     fabric details as a centred modal. */
+  .ah-swatch-info {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    margin-inline-start: 7px;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    border: none;
+    background: transparent;
+    color: #8a857e;
+    cursor: pointer;
+    line-height: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .ah-swatch-info:hover {
+    color: #1b1b1b;
+  }
+  .ah-swatch-info svg {
+    display: block;
+  }
+
   /* -------------------------------------------------------------------- mobile */
   @media screen and (max-width: 749px) {
+    .ah-swatch-info {
+      display: inline-flex;
+    }
+
+    /* Info modal: centre the fabric popover card (instead of the desktop
+       gallery-overlay position) and dim the page behind it. */
+    .order-swatches__popover--modal {
+      position: fixed !important;
+      left: 50% !important;
+      top: 50% !important;
+      right: auto !important;
+      bottom: auto !important;
+      transform: translate(-50%, -50%) !important;
+      width: min(420px, 92vw) !important;
+      max-width: 92vw !important;
+      max-height: 86vh !important;
+    }
+    .order-swatches__popover--modal::backdrop {
+      background: rgb(20 18 15 / 0.5);
+    }
+
     .order-swatches__trigger {
       width: auto;
     }
