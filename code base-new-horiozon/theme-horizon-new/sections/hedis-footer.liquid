@@ -112,20 +112,24 @@
         </div>
       </div>
 
-      {%- comment -%} Editable link columns (blocks) {%- endcomment -%}
-      {%- for block in section.blocks -%}
-        {%- if block.type == 'link_column' -%}
-          <div class="af-col" {{ block.shopify_attributes }}>
-            {%- if block.settings.heading != blank -%}<h4>{{ block.settings.heading }}</h4>{%- endif -%}
-            <ul>
-              {%- for i in (1..8) -%}
-                {%- assign lab = 'l' | append: i | append: '_label' -%}
-                {%- assign url = 'l' | append: i | append: '_url' -%}
-                {%- if block.settings[lab] != blank -%}
-                  <li><a href="{{ block.settings[url] | default: '#' }}">{{ block.settings[lab] }}</a></li>
-                {%- endif -%}
-              {%- endfor -%}
-            </ul>
+      {%- comment -%} Editable link columns — driven by section settings (defaults live in schema, so always editable + never wiped by the editor). {%- endcomment -%}
+      {%- for c in (1..3) -%}
+        {%- assign ch = 'col' | append: c | append: '_heading' -%}
+        {%- assign heading = section.settings[ch] -%}
+        {%- comment -%} Build the link list first so we can skip empty columns. {%- endcomment -%}
+        {%- capture col_links -%}
+          {%- for i in (1..8) -%}
+            {%- assign lk = 'col' | append: c | append: '_l' | append: i | append: '_label' -%}
+            {%- assign uk = 'col' | append: c | append: '_l' | append: i | append: '_url' -%}
+            {%- if section.settings[lk] != blank -%}
+              <li><a href="{{ section.settings[uk] | default: '#' }}">{{ section.settings[lk] }}</a></li>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endcapture -%}
+        {%- if heading != blank or col_links != blank -%}
+          <div class="af-col">
+            {%- if heading != blank -%}<h4>{{ heading }}</h4>{%- endif -%}
+            <ul>{{ col_links }}</ul>
           </div>
         {%- endif -%}
       {%- endfor -%}
@@ -183,35 +187,41 @@
     { "type": "header", "content": "Social" },
     { "type": "text", "id": "facebook_url", "label": "Facebook URL", "default": "https://www.facebook.com/" },
     { "type": "text", "id": "instagram_url", "label": "Instagram URL", "default": "https://www.instagram.com/" },
-    { "type": "text", "id": "pinterest_url", "label": "Pinterest URL", "default": "https://www.pinterest.com/" }
+    { "type": "text", "id": "pinterest_url", "label": "Pinterest URL", "default": "https://www.pinterest.com/" },
+
+    { "type": "header", "content": "Column 1" },
+    { "type": "text", "id": "col1_heading", "label": "Heading", "default": "Shop" },
+    { "type": "text", "id": "col1_l1_label", "label": "Link 1 text", "default": "Living" }, { "type": "text", "id": "col1_l1_url", "label": "Link 1 URL", "default": "/collections/living" },
+    { "type": "text", "id": "col1_l2_label", "label": "Link 2 text", "default": "Dining" }, { "type": "text", "id": "col1_l2_url", "label": "Link 2 URL", "default": "/collections/dining" },
+    { "type": "text", "id": "col1_l3_label", "label": "Link 3 text", "default": "Bedroom" }, { "type": "text", "id": "col1_l3_url", "label": "Link 3 URL", "default": "/collections/bedroom" },
+    { "type": "text", "id": "col1_l4_label", "label": "Link 4 text", "default": "Outdoor" }, { "type": "text", "id": "col1_l4_url", "label": "Link 4 URL", "default": "/collections/outdoor" },
+    { "type": "text", "id": "col1_l5_label", "label": "Link 5 text", "default": "Lighting" }, { "type": "text", "id": "col1_l5_url", "label": "Link 5 URL", "default": "/collections/lighting" },
+    { "type": "text", "id": "col1_l6_label", "label": "Link 6 text", "default": "Decor" }, { "type": "text", "id": "col1_l6_url", "label": "Link 6 URL", "default": "/collections/decor" },
+    { "type": "text", "id": "col1_l7_label", "label": "Link 7 text", "default": "Rugs" }, { "type": "text", "id": "col1_l7_url", "label": "Link 7 URL", "default": "/collections/rugs" },
+    { "type": "text", "id": "col1_l8_label", "label": "Link 8 text", "default": "Office" }, { "type": "text", "id": "col1_l8_url", "label": "Link 8 URL", "default": "/collections/office" },
+
+    { "type": "header", "content": "Column 2" },
+    { "type": "text", "id": "col2_heading", "label": "Heading", "default": "Further Info" },
+    { "type": "text", "id": "col2_l1_label", "label": "Link 1 text", "default": "Home" }, { "type": "text", "id": "col2_l1_url", "label": "Link 1 URL", "default": "/" },
+    { "type": "text", "id": "col2_l2_label", "label": "Link 2 text", "default": "About Hedis" }, { "type": "text", "id": "col2_l2_url", "label": "Link 2 URL", "default": "/pages/about-us" },
+    { "type": "text", "id": "col2_l3_label", "label": "Link 3 text", "default": "Trade Program" }, { "type": "text", "id": "col2_l3_url", "label": "Link 3 URL", "default": "/pages/trade-program" },
+    { "type": "text", "id": "col2_l4_label", "label": "Link 4 text", "default": "Contact Us" }, { "type": "text", "id": "col2_l4_url", "label": "Link 4 URL", "default": "/pages/contact" },
+    { "type": "text", "id": "col2_l5_label", "label": "Link 5 text", "default": "Blog" }, { "type": "text", "id": "col2_l5_url", "label": "Link 5 URL", "default": "/blogs/news" },
+    { "type": "text", "id": "col2_l6_label", "label": "Link 6 text", "default": "Sitemap" }, { "type": "text", "id": "col2_l6_url", "label": "Link 6 URL", "default": "/pages/sitemap" },
+    { "type": "text", "id": "col2_l7_label", "label": "Link 7 text" }, { "type": "text", "id": "col2_l7_url", "label": "Link 7 URL" },
+    { "type": "text", "id": "col2_l8_label", "label": "Link 8 text" }, { "type": "text", "id": "col2_l8_url", "label": "Link 8 URL" },
+
+    { "type": "header", "content": "Column 3" },
+    { "type": "text", "id": "col3_heading", "label": "Heading", "default": "Customer Service" },
+    { "type": "text", "id": "col3_l1_label", "label": "Link 1 text", "default": "FAQs" }, { "type": "text", "id": "col3_l1_url", "label": "Link 1 URL", "default": "/pages/faqs" },
+    { "type": "text", "id": "col3_l2_label", "label": "Link 2 text", "default": "Returns & Exchanges" }, { "type": "text", "id": "col3_l2_url", "label": "Link 2 URL", "default": "/pages/returns-exchanges" },
+    { "type": "text", "id": "col3_l3_label", "label": "Link 3 text", "default": "Limited Warranty" }, { "type": "text", "id": "col3_l3_url", "label": "Link 3 URL", "default": "/pages/limited-warranty" },
+    { "type": "text", "id": "col3_l4_label", "label": "Link 4 text", "default": "Delivery & Shipping" }, { "type": "text", "id": "col3_l4_url", "label": "Link 4 URL", "default": "/pages/delivery-shipping" },
+    { "type": "text", "id": "col3_l5_label", "label": "Link 5 text", "default": "Terms Of Service" }, { "type": "text", "id": "col3_l5_url", "label": "Link 5 URL", "default": "/policies/terms-of-service" },
+    { "type": "text", "id": "col3_l6_label", "label": "Link 6 text", "default": "Contact Information" }, { "type": "text", "id": "col3_l6_url", "label": "Link 6 URL", "default": "/pages/contact" },
+    { "type": "text", "id": "col3_l7_label", "label": "Link 7 text", "default": "Privacy Policy" }, { "type": "text", "id": "col3_l7_url", "label": "Link 7 URL", "default": "/policies/privacy-policy" },
+    { "type": "text", "id": "col3_l8_label", "label": "Link 8 text", "default": "Refund Policy" }, { "type": "text", "id": "col3_l8_url", "label": "Link 8 URL", "default": "/policies/refund-policy" }
   ],
-  "blocks": [
-    {
-      "type": "link_column",
-      "name": "Link column",
-      "settings": [
-        { "type": "text", "id": "heading", "label": "Column heading" },
-        { "type": "text", "id": "l1_label", "label": "Link 1 text" }, { "type": "url", "id": "l1_url", "label": "Link 1 URL" },
-        { "type": "text", "id": "l2_label", "label": "Link 2 text" }, { "type": "url", "id": "l2_url", "label": "Link 2 URL" },
-        { "type": "text", "id": "l3_label", "label": "Link 3 text" }, { "type": "url", "id": "l3_url", "label": "Link 3 URL" },
-        { "type": "text", "id": "l4_label", "label": "Link 4 text" }, { "type": "url", "id": "l4_url", "label": "Link 4 URL" },
-        { "type": "text", "id": "l5_label", "label": "Link 5 text" }, { "type": "url", "id": "l5_url", "label": "Link 5 URL" },
-        { "type": "text", "id": "l6_label", "label": "Link 6 text" }, { "type": "url", "id": "l6_url", "label": "Link 6 URL" },
-        { "type": "text", "id": "l7_label", "label": "Link 7 text" }, { "type": "url", "id": "l7_url", "label": "Link 7 URL" },
-        { "type": "text", "id": "l8_label", "label": "Link 8 text" }, { "type": "url", "id": "l8_url", "label": "Link 8 URL" }
-      ]
-    }
-  ],
-  "max_blocks": 4,
-  "presets": [
-    {
-      "name": "Footer",
-      "blocks": [
-        { "type": "link_column", "settings": { "heading": "Shop", "l1_label": "Living", "l1_url": "shopify://collections/living", "l2_label": "Dining", "l2_url": "shopify://collections/dining", "l3_label": "Bedroom", "l3_url": "shopify://collections/bedroom", "l4_label": "Outdoor", "l4_url": "shopify://collections/outdoor", "l5_label": "Lighting", "l5_url": "shopify://collections/lighting", "l6_label": "Decor", "l6_url": "shopify://collections/decor", "l7_label": "Rugs", "l7_url": "shopify://collections/rugs", "l8_label": "Office", "l8_url": "shopify://collections/office" } },
-        { "type": "link_column", "settings": { "heading": "Further Info", "l1_label": "Home", "l1_url": "shopify://", "l2_label": "About Hedis", "l2_url": "shopify://pages/about-us", "l3_label": "Trade Program", "l3_url": "shopify://pages/trade-program", "l4_label": "Contact Us", "l4_url": "shopify://pages/contact", "l5_label": "Blog", "l5_url": "shopify://blogs/news", "l6_label": "Sitemap", "l6_url": "shopify://pages/sitemap" } },
-        { "type": "link_column", "settings": { "heading": "Customer Service", "l1_label": "FAQs", "l1_url": "shopify://pages/faqs", "l2_label": "Returns & Exchanges", "l2_url": "shopify://pages/returns-exchanges", "l3_label": "Limited Warranty", "l3_url": "shopify://pages/limited-warranty", "l4_label": "Delivery & Shipping", "l4_url": "shopify://pages/delivery-shipping", "l5_label": "Terms Of Service", "l5_url": "shopify://policies/terms-of-service", "l6_label": "Contact Information", "l6_url": "shopify://pages/contact", "l7_label": "Privacy Policy", "l7_url": "shopify://policies/privacy-policy", "l8_label": "Refund Policy", "l8_url": "shopify://policies/refund-policy" } }
-      ]
-    }
-  ]
+  "presets": [ { "name": "Footer" } ]
 }
 {% endschema %}
