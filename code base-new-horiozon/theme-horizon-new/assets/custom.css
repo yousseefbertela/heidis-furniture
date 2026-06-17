@@ -216,7 +216,8 @@ body {
    heavier than their third-level child links (e.g. "SOFAS"), like reference.
    Parent = .mega-menu__link--parent; children are plain .mega-menu__link. */
 .mega-menu__link--parent {
-  font-weight: 600 !important;
+  font-weight: 700 !important;
+  font-synthesis: weight; /* render a heavy weight even if the font file lacks 700 */
 }
 .mega-menu__link:not(.mega-menu__link--parent) {
   font-weight: 400 !important;
@@ -1131,6 +1132,14 @@ body {
   .menu-drawer__submenu .menu-drawer__menu-item--child,
   .menu-drawer__submenu .menu-drawer__menu-item--parent {
     font-size: 13px;
+  }
+  /* Group headers (SEATING, TABLES & STORAGE…) much heavier than their links. */
+  .menu-drawer__submenu .menu-drawer__menu-item--parent {
+    font-weight: 700 !important;
+    font-synthesis: weight;
+  }
+  .menu-drawer__submenu .menu-drawer__menu-item--child {
+    font-weight: 400 !important;
   }
   /* Featured images: right column, vertical stack. */
   .ah-mm-featured {
