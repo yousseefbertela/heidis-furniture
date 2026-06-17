@@ -176,11 +176,18 @@ body {
    subgrid already sits the category groups SIDE-BY-SIDE with the featured
    images on the right, exactly like reference. We only tune the featured area. */
 /* Two featured images filling their area; hide the 3rd onward. */
+/* Featured images adapt to the space the link groups leave:
+   - 2 or fewer link-group columns (e.g. Dining) -> room for 3 images.
+   - 3 or more link-group columns (e.g. Bedroom)  -> keep 2 images (leave as is).
+   `.mega-menu__column` = one link group; :has() counts them. */
 .mega-menu__content-list--products {
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   gap: clamp(16px, 1.6vw, 28px) !important;
 }
-.mega-menu__content-list--products .mega-menu__content-list-item:nth-of-type(n + 3) {
+.mega-menu__grid:has(.mega-menu__list > .mega-menu__column:nth-of-type(3)) .mega-menu__content-list--products {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+.mega-menu__grid:has(.mega-menu__list > .mega-menu__column:nth-of-type(3)) .mega-menu__content-list--products .mega-menu__content-list-item:nth-of-type(n + 3) {
   display: none !important;
 }
 /* No prices in the menu (reference shows none). */
