@@ -498,6 +498,30 @@
                             </li>
                           {%- endfor -%}
                         </ul>
+                        {%- comment -%}
+                          Hedi's mobile mega-menu: featured images on the right, matching the desktop
+                          featured_products mega-menu (2-3 products from this category's collection).
+                        {%- endcomment -%}
+                        {%- liquid
+                          assign ahmm_collection = null
+                          if link.type == 'collection_link'
+                            assign ahmm_collection = link.object
+                          endif
+                        -%}
+                        {%- if ahmm_collection.products_count > 0 -%}
+                          <div class="ah-mm-featured">
+                            {%- for product in ahmm_collection.products limit: 3 -%}
+                              {%- if product.featured_media.preview_image -%}
+                                <a class="ah-mm-card" href="{{ product.url }}">
+                                  <span class="ah-mm-card__media">
+                                    {{ product.featured_media.preview_image | image_url: width: 360 | image_tag: loading: 'lazy', widths: '180, 270, 360', sizes: '40vw', alt: product.title | escape }}
+                                  </span>
+                                  <span class="ah-mm-card__label">{{ product.title }}</span>
+                                </a>
+                              {%- endif -%}
+                            {%- endfor -%}
+                          </div>
+                        {%- endif -%}
                         {% liquid
                           if eager_loading
                             if block_settings.menu_style == 'featured_collections'
