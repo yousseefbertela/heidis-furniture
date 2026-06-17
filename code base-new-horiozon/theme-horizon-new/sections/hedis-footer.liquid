@@ -73,9 +73,13 @@
 
 <div id="af-{{ section.id }}">
   {%- if section.settings.show_map -%}
+    {%- assign map_pin = section.settings.map_coords | replace: ' ', '' -%}
+    {%- if section.settings.map_label != blank -%}
+      {%- assign map_pin = map_pin | append: ' (' | append: section.settings.map_label | append: ')' -%}
+    {%- endif -%}
     <div class="af-map">
       <iframe title="Store location map" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
-        src="https://maps.google.com/maps?q={{ section.settings.map_query | url_encode }}&z=11&output=embed"></iframe>
+        src="https://maps.google.com/maps?q={{ map_pin | url_encode }}&z={{ section.settings.map_zoom | default: 15 }}&output=embed"></iframe>
     </div>
   {%- endif -%}
 
@@ -174,7 +178,9 @@
     { "type": "color", "id": "link_hover_color", "label": "Link hover", "default": "#FFFFFF" },
     { "type": "header", "content": "Map" },
     { "type": "checkbox", "id": "show_map", "label": "Show map", "default": true },
-    { "type": "text", "id": "map_query", "label": "Map address (type any address to move the map)", "default": "199 Boylston St, Chestnut Hill, MA 02467" },
+    { "type": "text", "id": "map_coords", "label": "Coordinates (latitude, longitude)", "info": "In Google Maps, right-click your exact spot, then click the numbers at the top of the menu to copy them — paste here.", "default": "42.3219, -71.1665" },
+    { "type": "text", "id": "map_label", "label": "Pin label", "default": "Hedi's Furniture" },
+    { "type": "range", "id": "map_zoom", "min": 1, "max": 20, "step": 1, "unit": "x", "label": "Map zoom", "default": 15 },
     { "type": "header", "content": "Promo band" },
     { "type": "text", "id": "promo_1", "label": "Item 1", "default": "Free Shipping US Order $100" },
     { "type": "text", "id": "promo_2", "label": "Item 2", "default": "Free Returns*" },

@@ -63,9 +63,9 @@
   {% endif %}
   {{- block.shopify_attributes -}}
 >
-  {%- comment -%} Hedi's: store-locator icon. Show/hide + link via Theme settings → "Header icons". {%- endcomment -%}
-  {%- if settings.header_icon_stores -%}
-  <a href="{{ settings.header_stores_url | default: pages.stores.url | default: '/pages/stores' }}" class="header-actions__action" aria-label="Stores">
+  {%- comment -%} Hedi's: store-locator icon. Show/hide + link in the Header section → "Extra icons (Hedi's)". {%- endcomment -%}
+  {%- if section.settings.header_icon_stores -%}
+  <a href="{{ section.settings.header_stores_url | default: pages.stores.url | default: '/pages/stores' }}" class="header-actions__action" aria-label="Stores">
     <span class="svg-wrapper" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M12 21s-6.5-5.4-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.6 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.3"/></svg></span>
   </a>
   {%- endif -%}
@@ -120,13 +120,13 @@
     </div>
   {% endif %}
 
-  {%- comment -%} Hedi's: delivery + wishlist icons. Show/hide + link via Theme settings → "Header icons". {%- endcomment -%}
-  {%- if settings.header_icon_delivery -%}
-  <a href="{{ settings.header_delivery_url | default: pages['delivery-shipping'].url | default: '/pages/delivery-shipping' }}" class="header-actions__action" aria-label="Delivery">
+  {%- comment -%} Hedi's: delivery + wishlist icons. Show/hide + link in the Header section → "Extra icons (Hedi's)". {%- endcomment -%}
+  {%- if section.settings.header_icon_delivery -%}
+  <a href="{{ section.settings.header_delivery_url | default: pages['delivery-shipping'].url | default: '/pages/delivery-shipping' }}" class="header-actions__action" aria-label="Delivery">
     <span class="svg-wrapper" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M1.5 5.5h12v9h-12zM13.5 8.5h4l3 3v3h-7z"/><circle cx="6" cy="17" r="1.6"/><circle cx="17.5" cy="17" r="1.6"/></svg></span>
   </a>
   {%- endif -%}
-  {%- if settings.header_icon_wishlist -%}
+  {%- if section.settings.header_icon_wishlist -%}
   <a href="{{ pages.wishlist.url | default: '/pages/wishlist' }}" class="header-actions__action ah-wishlist-link" aria-label="Wishlist">
     <span class="svg-wrapper" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></svg></span>
     <span class="ah-wishlist-count" hidden>0</span>
