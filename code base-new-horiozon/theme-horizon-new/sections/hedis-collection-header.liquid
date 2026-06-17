@@ -1,5 +1,5 @@
 {%- comment -%}
-  Arhaus-style collection header + page restyle for Hedi's Furniture.
+  reference-style collection header + page restyle for Hedi's Furniture.
 {%- endcomment -%}
 
 {%- liquid
@@ -92,7 +92,7 @@
   #ahc-{{ section.id }} a{ color:inherit; text-decoration:none; }
   #ahc-{{ section.id }} img{ display:block; }
 
-  /* Arhaus-style insets: BIG margin on the hero (breadcrumb, title, carousel),
+  /* reference-style insets: BIG margin on the hero (breadcrumb, title, carousel),
      SMALL margin on the toolbar + product grid so products run nearly edge-to-edge. */
   #ahc-{{ section.id }} .container{
     max-width:none !important;
@@ -197,10 +197,10 @@
   .ahc-panel__list a:hover{ text-decoration:underline; text-underline-offset:3px; }
   .ahc-chip-wrap{ position:relative; }
 
-  /* ---- Horizon collection grid → Arhaus look --------------------------------
+  /* ---- Horizon collection grid → reference look --------------------------------
      Products render in the native `main-collection` section below this header.
      The serif UPPERCASE card title + serif price are restyled globally in
-     custom.css (section 4). Here we only set Arhaus's tight 3-up rhythm and
+     custom.css (section 4). Here we only set reference's tight 3-up rhythm and
      left alignment. */
   @media (min-width:990px){
     .product-grid.product-grid--grid{
@@ -442,7 +442,7 @@
 
 {% schema %}
 {
-  "name": "Arhaus Collection Header",
+  "name": "Collection Header",
   "tag": "section",
   "settings": [
     { "type": "paragraph", "content": "Shows a breadcrumb, the collection title, and a carousel of subcategories pulled automatically from the menu below." },
@@ -467,6 +467,6 @@
     { "type": "color", "id": "muted_color", "label": "Muted text", "default": "#8E7E68" },
     { "type": "color", "id": "line_color", "label": "Lines / borders", "default": "#E7E1D6" }
   ],
-  "presets": [ { "name": "Arhaus Collection Header" } ]
+  "presets": [ { "name": "Collection Header" } ]
 }
 {% endschema %}

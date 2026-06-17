@@ -1,10 +1,10 @@
 /* ==========================================================================
-   Hedi's Furniture — Arhaus-style global overrides (Horizon theme)
+   Hedi's Furniture — reference-style global overrides (Horizon theme)
    Single override file. Loaded AFTER base.css + color-schemes in theme.liquid,
    so these rules win. Never edit vendor base.css.
    ========================================================================== */
 
-/* ---- 1. Typography: Arhaus fonts site-wide --------------------------------
+/* ---- 1. Typography: reference fonts site-wide --------------------------------
    Headings = Cormorant Garamond (serif). Body / UI = Jost (sans).
    Horizon derives all type from these CSS variables, so this re-skins
    every native section, card, menu and the footer at once. */
@@ -109,7 +109,7 @@ body {
   }
 }
 
-/* ---- 4. Product cards: Arhaus text style — matches the LL draft exactly -----
+/* ---- 4. Product cards: reference text style — matches the LL draft exactly -----
    Serif, REGULAR weight (400, not 500), title + price both 16px / 1rem.
    The LL draft uses Cormorant 400 for both the title and the price; our price
    was also rendering at the theme's small 12px, so we pin it to 1rem here. */
@@ -138,10 +138,10 @@ body {
   color: #8c2a2a !important;
 }
 
-/* ---- 5. Mega menu: featured pair + Arhaus "SHOP …" titles -----------------
+/* ---- 5. Mega menu: featured pair + reference "SHOP …" titles -----------------
    Keep Horizon's native multi-column category layout untouched: its 6-col
    subgrid already sits the category groups SIDE-BY-SIDE with the featured
-   images on the right, exactly like Arhaus. We only tune the featured area. */
+   images on the right, exactly like reference. We only tune the featured area. */
 /* Two featured images filling their area; hide the 3rd onward. */
 .mega-menu__content-list--products {
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -150,13 +150,13 @@ body {
 .mega-menu__content-list--products .mega-menu__content-list-item:nth-of-type(n + 3) {
   display: none !important;
 }
-/* No prices in the menu (Arhaus shows none). */
+/* No prices in the menu (reference shows none). */
 .mega-menu .resource-card [class*="price"],
 .mega-menu .resource-card__price,
 .mega-menu .price {
   display: none !important;
 }
-/* Image titles: Arhaus "SHOP …" label — left-aligned, uppercase, tracked,
+/* Image titles: reference "SHOP …" label — left-aligned, uppercase, tracked,
    semibold, underlined. */
 .mega-menu__content .resource-card__content {
   align-items: flex-start !important;
@@ -180,7 +180,7 @@ body {
   content: "Shop ";
 }
 /* Second-level column headers (the parent link, e.g. "SEATING") sit a step
-   heavier than their third-level child links (e.g. "SOFAS"), like Arhaus.
+   heavier than their third-level child links (e.g. "SOFAS"), like reference.
    Parent = .mega-menu__link--parent; children are plain .mega-menu__link. */
 .mega-menu__link--parent {
   font-weight: 600 !important;
@@ -189,7 +189,7 @@ body {
   font-weight: 400 !important;
 }
 
-/* ---- 6. Header: Arhaus look (dark green top bar, uppercase centered nav) --- */
+/* ---- 6. Header: reference look (dark green top bar, uppercase centered nav) --- */
 /* Dark forest-green announcement / top utility bar with white text. */
 .announcement-bar {
   background-color: #1e3d2f !important;
@@ -203,12 +203,12 @@ body {
 .announcement-bar * {
   color: #ffffff !important;
 }
-/* Centered uppercase main nav, Arhaus tracking. */
+/* Centered uppercase main nav, reference tracking. */
 .header__row--bottom .menu-list__link {
   letter-spacing: 0.12em !important;
   font-weight: 400 !important;
 }
-/* "SEARCH" text label next to the left search icon (Arhaus-style).
+/* "SEARCH" text label next to the left search icon (reference-style).
    The label is rendered as ::after INSIDE the search <button>
    (.header-actions__action), and the icon + word share one flex `gap`,
    so clicking anywhere on the search area — the word, the icon, or the
@@ -244,11 +244,11 @@ body {
 }
 
 /* ==========================================================================
-   8. Product page (PDP) — match the Arhaus product page exactly.
+   8. Product page (PDP) — match the reference product page exactly.
    Scoped to .product-information so nothing else is affected.
    ========================================================================== */
 
-/* Details column: comfortable inset + hairline dividers (Arhaus). */
+/* Details column: comfortable inset + hairline dividers (reference). */
 .product-information .product-details {
   --color-border: #e3ded6;
   padding-inline: clamp(16px, 2vw, 38px) !important;
@@ -276,10 +276,14 @@ body {
   color: #1b1b1b !important;
 }
 
-/* SKU — tiny uppercase tracked light grey, with "SKU :" label (Arhaus). */
-.product-information product-sku-component {
+/* SKU — tiny uppercase tracked light grey, with "SKU :" label (reference).
+   Target the .sku span directly: the block's own color/size settings sit on the
+   span and would otherwise override the wrapper's inherited style. */
+.product-information product-sku-component,
+.product-information product-sku-component .sku,
+.product-information .sku {
   font-family: var(--font-body--family) !important;
-  font-size: 10px !important;
+  font-size: 11px !important;
   font-weight: 300 !important;
   letter-spacing: 0.12em !important;
   text-transform: uppercase !important;
@@ -305,7 +309,7 @@ body {
 .product-information .ah-pdp-ico { display: inline-flex; }
 .product-information .ah-collection-link { margin-top: 10px; }
 
-/* Option rows — label LEFT, values RIGHT (Arhaus two-column). */
+/* Option rows — label LEFT, values RIGHT (reference two-column). */
 .product-information .variant-option--buttons {
   display: block !important;
   position: relative !important;
@@ -345,13 +349,25 @@ body {
   flex-wrap: wrap !important;
   gap: 10px !important;
 }
-/* Swatch chips — small squares. */
+/* Swatch chips — small sharp squares (reference PDP). The label carries a 32px
+   theme radius + overflow:clip that was clipping the square into a circle, so
+   square off the label too. */
 .product-information .variant-option--swatches .swatch {
   width: 30px !important;
   height: 30px !important;
-  border-radius: 2px !important;
+  border-radius: 0 !important;
 }
-/* Size (text) pills → plain text, underline when selected (Arhaus). */
+.product-information .variant-option--swatches .variant-option__button-label {
+  border-radius: 0 !important;
+}
+/* Selected fabric swatch — square ring with a small gap (reference). Uses outline
+   (not box-shadow) because the label has overflow:clip which would clip a shadow;
+   outline draws outside the box and ignores clipping. */
+.product-information .variant-option--swatches .variant-option__button-label:has(input:checked) {
+  outline: 1.5px solid #1b1b1b !important;
+  outline-offset: 2px !important;
+}
+/* Size (text) pills → plain text, underline when selected (reference). */
 .product-information .variant-option--buttons:not(.variant-option--swatches) .variant-option__button-label {
   border: 0 !important;
   background: none !important;
@@ -386,10 +402,19 @@ body {
   cursor: pointer !important;
   outline: none !important;
 }
-/* Remove the rounded outline ring around text sizes (Arhaus = plain text). */
+/* Remove the rounded outline ring around text sizes (reference = plain text). */
 .product-information .variant-option--buttons:not(.variant-option--swatches) .variant-option__button-label::before {
   content: none !important;
   display: none !important;
+}
+
+/* "Order Swatches" trigger — align its left edge with where the swatch chips
+   begin (the variant-option values column starts at 92px), exactly like reference.
+   Sits just under the swatch row with a tight gap. */
+.product-information .order-swatches {
+  display: block !important;
+  margin-left: 92px !important;
+  margin-top: -2px !important;
 }
 
 /* ADD TO BAG — forest green, square, uppercase tracked (matches top bar). */
@@ -406,12 +431,12 @@ body {
   min-height: 52px !important;
 }
 .product-information .add-to-cart-button:hover { background: #162c22 !important; }
-/* Text-only button (Arhaus has no icon in the button). */
+/* Text-only button (reference has no icon in the button). */
 .product-information .add-to-cart-button svg,
 .product-information .add-to-cart-button .svg-wrapper {
   display: none !important;
 }
-/* Hide express-checkout to match the Arhaus single-button layout. */
+/* Hide express-checkout to match the reference single-button layout. */
 .product-information .accelerated-checkout-wrapper,
 .product-information shopify-accelerated-checkout,
 .product-information [class*="accelerated-checkout"] {
@@ -419,7 +444,7 @@ body {
 }
 
 /* Inventory + Save to List.
-   Stock status sits on the RIGHT end of the QTY row (Arhaus): the inventory
+   Stock status sits on the RIGHT end of the QTY row (reference): the inventory
    block is the sibling just above the buy-buttons, so we right-align it and
    pull the buy-buttons up under it so they share one line. */
 .product-information .product-inventory {
@@ -436,20 +461,25 @@ body {
 /* Lead-time / stock status (custom-liquid block) — takes the same right-of-QTY
    position the native inventory block used. The custom-liquid wrapper <div> is
    collapsed with display:contents so .ah-leadtime becomes the flex child and can
-   right-align + pull the buy-buttons up to share the QTY line (Arhaus). */
+   right-align + pull the buy-buttons up to share the QTY line (reference). */
 .product-information .product-details div:has(> .ah-leadtime) {
   display: contents;
 }
 .product-information .ah-leadtime {
-  margin: 24px 2px -52px 0;
+  margin: 24px 2px 0 0;
+  height: 0;                    /* zero flow height: buy-buttons aligns to its top */
+  overflow: visible;
+  transform: translateY(34px);  /* center the text inside the 44px QTY stepper below */
   align-self: flex-end;
   text-align: right;
+  white-space: nowrap;          /* never wrap to a 2nd line (caused the overlap) */
+  pointer-events: none;         /* can never block the ADD TO BAG button */
   position: relative;
   z-index: 2;
   font-family: var(--font-body--family);
   font-size: 13px;
   letter-spacing: 0.02em;
-  color: #4a4641;
+  color: #1b1b1b;
   line-height: 1;
 }
 .product-information .ah-leadtime--oos {
@@ -459,7 +489,7 @@ body {
 /* Collapse back-to-back dividers (e.g. when a product has no variant picker). */
 .product-information .product-details .divider + .divider { display: none !important; }
 
-/* "QTY :" label before the stepper (Arhaus); keep the stepper compact. */
+/* "QTY :" label before the stepper (reference); keep the stepper compact. */
 .product-information .quantity-selector-wrapper {
   display: flex !important;
   align-items: center !important;
@@ -476,10 +506,81 @@ body {
   white-space: nowrap;
 }
 .product-information .ah-savelist {
-  margin-top: 6px;
+  margin-top: 10px;
   justify-content: center;
   width: 100%;
+  border: none;          /* drop the default <button> outset border + grey bg */
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
 }
+/* Saved state — heart fills red (reference). */
+.ah-savelist .ah-heart { transition: fill 0.18s ease, stroke 0.18s ease; }
+.ah-savelist.is-saved .ah-heart { fill: #c0392b; stroke: #c0392b; }
+.ah-savelist.is-saved { color: #c0392b; }
+
+/* Header wishlist count badge. */
+.ah-wishlist-link { position: relative; }
+.ah-wishlist-link .ah-wishlist-count {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: #c0392b;
+  color: #fff;
+  font-family: var(--font-body--family);
+  font-size: 10px;
+  line-height: 16px;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Wishlist page grid. */
+.ah-wishlist-page { max-width: 1200px; margin: 0 auto; padding: 48px 20px 72px; }
+.ah-wishlist-page__title {
+  font-family: var(--font-primary--family);
+  font-size: 30px;
+  color: #1b1b1b;
+  margin: 0 0 28px;
+}
+#ah-wishlist-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px 22px;
+}
+@media screen and (max-width: 989px) { #ah-wishlist-grid { grid-template-columns: repeat(2, 1fr); } }
+.ah-wl-card { display: flex; flex-direction: column; }
+.ah-wl-card__media { display: block; background: #f3f1ed; aspect-ratio: 3 / 4; overflow: hidden; }
+.ah-wl-card__media img { width: 100%; height: 100%; object-fit: cover; }
+.ah-wl-card__title {
+  font-family: var(--font-primary--family);
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #1b1b1b;
+  text-decoration: none;
+  margin: 12px 0 4px;
+}
+.ah-wl-card__title:hover { text-decoration: underline; }
+.ah-wl-card__price { font-family: var(--font-body--family); font-size: 14px; color: #3a352f; }
+.ah-wl-card__remove {
+  align-self: flex-start;
+  margin-top: 8px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-family: var(--font-body--family);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: #8c2a2a;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.ah-wishlist-empty { font-family: var(--font-primary--family); font-size: 16px; color: #6b655d; }
 
 /* Dimensions block. */
 .product-information .ah-dims__label {
@@ -515,7 +616,7 @@ body {
 
 /* ---- 8b. PDP: white section + wider 70/30 media column + QTY stepper ---------- */
 
-/* Arhaus PDPs are pure white — override the global grey background */
+/* reference PDPs are pure white — override the global grey background */
 .product-information {
   background: #ffffff !important;
 }
@@ -523,20 +624,20 @@ body {
   background-color: #ffffff !important;
 }
 
-/* Widen media column to 70% (Arhaus ≈ 69-70%) instead of the default 2fr/1fr = 67% */
+/* Widen media column to 70% (reference ≈ 69-70%) instead of the default 2fr/1fr = 67% */
 @media screen and (min-width: 750px) {
   .product-information .product-information__grid.product-information--media-left {
     grid-template-columns: 70fr 30fr !important;
   }
 }
 
-/* QTY stepper: square corners, thin border, clean Arhaus style */
+/* QTY stepper: borderless, plain "−  1  +" (reference has no box around it) */
 .product-information quantity-selector-component.quantity-selector {
-  border: 1px solid #d9d5cf !important;
+  border: none !important;
   border-radius: 0 !important;
   height: 44px !important;
   background: transparent !important;
-  overflow: hidden !important;
+  overflow: visible !important;
 }
 .product-information .quantity-minus,
 .product-information .quantity-plus {
@@ -545,7 +646,7 @@ body {
   border: none !important;
   border-radius: 0 !important;
   font-size: 17px !important;
-  padding: 0 14px !important;
+  padding: 0 12px !important;
   line-height: 1 !important;
 }
 .product-information .quantity-selector-wrapper input {
@@ -553,7 +654,7 @@ body {
   font-size: 14px !important;
   color: #1b1b1b !important;
   text-align: center !important;
-  min-width: 36px !important;
+  min-width: 32px !important;
   background: transparent !important;
   border-radius: 0 !important;
 }
@@ -569,13 +670,25 @@ body {
   justify-content: center !important;
   align-items: center !important;
 }
+/* Stack QTY stepper above a full-width ADD TO BAG (reference). The theme lays them
+   side-by-side on wide viewports, which placed the button under the right-aligned
+   lead-time and caused the overlap. Forcing a column keeps QTY (left) + lead-time
+   (right) on one row, with the button full-width below. */
+.product-information .product-form-buttons {
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 14px !important;
+}
+.product-information .product-form-buttons .quantity-selector-wrapper {
+  align-self: flex-start !important;
+}
 
 /* ==========================================================================
-   8c. "You May Also Like" carousel — match Arhaus exactly.
+   8c. "You May Also Like" carousel — match reference exactly.
    Full-bleed cards + inset italic-serif heading + always-on circular arrow.
    ========================================================================== */
 
-/* White background — continuous with the white PDP above (Arhaus). */
+/* White background — continuous with the white PDP above (reference). */
 .product-recommendations {
   background: #ffffff !important;
 }
@@ -598,12 +711,12 @@ body {
   margin-bottom: 6px !important;
 }
 
-/* Bigger peek of the next card (Arhaus shows ~half of the 4th card). */
+/* Bigger peek of the next card (reference shows ~half of the 4th card). */
 .product-recommendations .resource-list__carousel {
   --peek-next-slide-size: clamp(48px, 13vw, 230px) !important;
 }
 
-/* Card titles — serif uppercase, tight (Arhaus). */
+/* Card titles — serif uppercase, tight (reference). */
 .product-recommendations .product-card [class*="product-title"],
 .product-recommendations .product-card .product-title {
   font-family: var(--font-primary--family) !important;
@@ -613,7 +726,7 @@ body {
   color: #1b1b1b !important;
   line-height: 1.25 !important;
 }
-/* Price — small Jost, muted (Arhaus "From $X"). */
+/* Price — small Jost, muted (reference "From $X"). */
 .product-recommendations .product-card .price,
 .product-recommendations .product-card [class*="price"] {
   font-family: var(--font-body--family) !important;
@@ -622,7 +735,7 @@ body {
   color: #4a4641 !important;
 }
 
-/* Circular next arrow: dark green, always visible on the right (Arhaus). */
+/* Circular next arrow: dark green, always visible on the right (reference). */
 .product-recommendations slideshow-arrows .slideshow-control {
   opacity: 1 !important;
 }
@@ -762,7 +875,7 @@ body {
 }
 
 /* ==========================================================================
-   10. Product card swatches — Arhaus-style small chips + hover tooltip
+   10. Product card swatches — reference-style small chips + hover tooltip
    Scoped to .product-card so PDP swatches (section 8) are unaffected.
    ========================================================================== */
 
@@ -794,7 +907,7 @@ body {
   content-visibility: visible !important;
 }
 
-/* Swatch chips on the card: compact Arhaus-style sharp squares */
+/* Swatch chips on the card: compact reference-style sharp squares */
 .product-card .variant-option--swatches .swatch {
   width: 20px !important;
   height: 20px !important;
@@ -818,13 +931,16 @@ body {
   border-color: #1b1b1b !important;
 }
 
-/* Room beneath every chip so the selected underline aligns the whole row */
+/* Room beneath every chip so the selected underline aligns the whole row.
+   border-radius:0 squares off the LABEL — the theme gives it a 32px radius +
+   overflow:clip, which was clipping the square swatch into a rounded arch. */
 .product-card .variant-option--swatches .variant-option__button-label {
   position: relative !important;
   padding-block-end: 6px !important;
+  border-radius: 0 !important;
 }
 
-/* Selected (checked) swatch — thin underline beneath, Arhaus-style (no ring) */
+/* Selected (checked) swatch — thin underline beneath, reference-style (no ring) */
 .product-card .variant-option--swatches .variant-option__button-label:has(input:checked) .swatch {
   border-color: #1b1b1b !important;
 }
@@ -839,7 +955,7 @@ body {
   background: #1b1b1b !important;
 }
 
-/* Swatch option row: Arhaus single line — up to 7 chips + "N Options" count,
+/* Swatch option row: reference single line — up to 7 chips + "N Options" count,
    all flush-left with the card title and price. */
 .product-card .variant-option--swatches {
   display: flex !important;
@@ -862,7 +978,7 @@ body {
 .product-card swatches-variant-picker-component overflow-list::part(list) {
   gap: 2px !important;
 }
-/* Cap at 7 chips in the row; the count communicates the full total (Arhaus). */
+/* Cap at 7 chips in the row; the count communicates the full total (reference). */
 .product-card .variant-option--swatches .variant-option__swatch:nth-of-type(n + 8) {
   display: none !important;
 }
@@ -925,7 +1041,7 @@ body {
   text-overflow: ellipsis;
 }
 
-/* Arhaus "N Options" total — sits just right of the chips. We render the real
+/* reference "N Options" total — sits just right of the chips. We render the real
    total ourselves, so hide Horizon's "+N" overflow indicator and its slot. */
 .product-card .hidden-swatches__count,
 .product-card .variant-option--swatches [slot="more"] {

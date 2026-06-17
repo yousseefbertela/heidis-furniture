@@ -1,4 +1,4 @@
-{%- comment -%} Arhaus-style top utility bar for Hedi's Furniture. Self-contained. {%- endcomment -%}
+{%- comment -%} reference-style top utility bar for Hedi's Furniture. Self-contained. {%- endcomment -%}
 <style>
   #atb-{{ section.id }}{ background:{{ section.settings.bg_color }}; color:#fff; font-family:"Jost","Helvetica Neue",Arial,sans-serif; }
   #atb-{{ section.id }} .atb-in{ display:flex; align-items:center; justify-content:space-between; gap:20px; padding:11px clamp(16px,3vw,40px); }
@@ -28,7 +28,7 @@
 </div>
 {% schema %}
 {
-  "name": "Arhaus Top Bar",
+  "name": "Top Bar",
   "settings": [
     { "type": "color", "id": "bg_color", "label": "Background", "default": "#1E3D2F" },
     { "type": "text", "id": "promo_text", "label": "Promo text", "default": "Save up to 25% off your order*" },
@@ -41,6 +41,6 @@
     { "type": "text", "id": "link_3_text", "label": "Link 3", "default": "Hedi's Business" },
     { "type": "url", "id": "link_3_url", "label": "Link 3 URL" }
   ],
-  "presets": [ { "name": "Arhaus Top Bar" } ]
+  "presets": [ { "name": "Top Bar" } ]
 }
 {% endschema %}

@@ -91,7 +91,21 @@
 
       # Sort media so the selected variant's featured media (if any) or the default first media comes first
       assign first_image = product.selected_variant.featured_media | default: product.media.first
-      assign other_media = product.media | reject: 'src', first_image
+      # Hedi's: prefer the detected lifestyle ("no white background") hero image on the card.
+      capture hedis_hero_file
+        render 'hedis-hero', product: product
+      endcapture
+      assign hedis_hero_file = hedis_hero_file | strip
+      if hedis_hero_file != blank
+        for hm in product.media
+          assign hm_src = hm.preview_image.src | default: hm.src
+          if hm_src contains hedis_hero_file
+            assign first_image = hm
+            break
+          endif
+        endfor
+      endif
+      assign other_media = product.media | reject: 'id', first_image.id
       assign media_list_to_show = first_image | concat: other_media
 
       if product.media.size > 2 and generic_media_size > 0

@@ -309,7 +309,7 @@
   };
 </script>
 
-{%- comment -%} Product card swatch hover → variant image preview (Arhaus style) {%- endcomment -%}
+{%- comment -%} Product card swatch hover → variant image preview (reference style) {%- endcomment -%}
 <script>
 (function(){
   if(typeof window.matchMedia==='function'&&!window.matchMedia('(hover:hover)').matches) return;
@@ -366,5 +366,85 @@
       gallery.removeAttribute('data-swatch-selected');
     }
   });
+})();
+</script>
+
+{%- comment -%} Hedi's: client-side Wishlist ("Save to List") — localStorage backed.
+   Toggles a filled red heart on the PDP button, keeps a live count badge on the
+   header heart, and renders the saved items on the /pages/wishlist page. {%- endcomment -%}
+<script>
+(function(){
+  var KEY='hedi:wishlist';
+  function read(){try{return JSON.parse(localStorage.getItem(KEY))||[]}catch(e){return []}}
+  function write(l){try{localStorage.setItem(KEY,JSON.stringify(l))}catch(e){}}
+  function has(l,h){return l.some(function(i){return i.handle===h})}
+  function remove(l,h){return l.filter(function(i){return i.handle!==h})}
+
+  function syncButtons(){
+    var list=read();
+    document.querySelectorAll('[data-wishlist-toggle]').forEach(function(b){
+      var saved=has(list,b.getAttribute('data-handle'));
+      b.classList.toggle('is-saved',saved);
+      b.setAttribute('aria-pressed',saved?'true':'false');
+      var lbl=b.querySelector('.ah-savelist__label');
+      if(lbl) lbl.textContent=saved?'Saved to List':'Save to List';
+    });
+  }
+  function syncCount(){
+    var n=read().length;
+    document.querySelectorAll('.ah-wishlist-count').forEach(function(c){
+      c.textContent=n;
+      if(n>0){c.removeAttribute('hidden')}else{c.setAttribute('hidden','')}
+    });
+  }
+  function renderPage(){
+    var grid=document.getElementById('ah-wishlist-grid');
+    if(!grid) return;
+    var list=read();
+    var empty=document.getElementById('ah-wishlist-empty');
+    if(empty) empty.style.display=list.length?'none':'';
+    grid.innerHTML=list.map(function(i){
+      return '<div class="ah-wl-card">'+
+        '<a class="ah-wl-card__media" href="'+i.url+'">'+(i.image?'<img src="'+i.image+'" alt="" loading="lazy">':'')+'</a>'+
+        '<a class="ah-wl-card__title" href="'+i.url+'">'+i.title+'</a>'+
+        '<div class="ah-wl-card__price">'+(i.price||'')+'</div>'+
+        '<button type="button" class="ah-wl-card__remove" data-wishlist-remove data-handle="'+i.handle+'">Remove</button>'+
+        '</div>';
+    }).join('');
+  }
+  function refresh(){syncButtons();syncCount();renderPage();}
+
+  document.addEventListener('click',function(e){
+    var t=e.target.closest&&e.target.closest('[data-wishlist-toggle]');
+    if(t){
+      e.preventDefault();
+      var h=t.getAttribute('data-handle');
+      if(!h) return;
+      var list=read();
+      if(has(list,h)){ list=remove(list,h); }
+      else { list.push({
+        handle:h,
+        id:t.getAttribute('data-id'),
+        title:t.getAttribute('data-title')||'',
+        url:t.getAttribute('data-url')||('/products/'+h),
+        image:t.getAttribute('data-image')||'',
+        price:t.getAttribute('data-price')||''
+      }); }
+      write(list); refresh();
+      return;
+    }
+    var r=e.target.closest&&e.target.closest('[data-wishlist-remove]');
+    if(r){
+      e.preventDefault();
+      write(remove(read(),r.getAttribute('data-handle')));
+      refresh();
+    }
+  });
+
+  // Keep tabs in sync + re-apply after Shopify section re-renders (variant change).
+  window.addEventListener('storage',function(e){if(e.key===KEY) refresh();});
+  document.addEventListener('shopify:section:load',refresh);
+  if(document.readyState!=='loading'){refresh();}
+  else{document.addEventListener('DOMContentLoaded',refresh);}
 })();
 </script>

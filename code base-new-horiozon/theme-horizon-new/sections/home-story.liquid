@@ -1,0 +1,86 @@
+{%- comment -%} Hedi's home — Story. Warm background image + value columns (blocks). {%- endcomment -%}
+{% render 'hedis-home-base' %}
+{%- liquid
+  assign img = section.settings.image
+  assign img_src = section.settings.image_url
+  if img != blank
+    assign img_src = img | image_url: width: 2400
+  endif
+-%}
+<div class="hh-home" id="hh-story-{{ section.id }}">
+  <section class="hh-story hh-rv">
+    {%- if img_src != blank -%}
+      <img class="hh-story__img" src="{{ img_src }}" alt="" loading="lazy">
+    {%- endif -%}
+    <div class="hh-story__scrim"></div>
+    <div class="hh-wrap hh-story__in">
+      <div class="hh-head">
+        {%- if section.settings.kicker != blank -%}<p class="hh-kick">{{ section.settings.kicker }}</p>{%- endif -%}
+        {%- if section.settings.heading != blank -%}<h2>{{ section.settings.heading }}</h2>{%- endif -%}
+      </div>
+      <div class="hh-cols hh-cols--{{ section.blocks.size }}">
+        {%- for block in section.blocks -%}
+          <div class="hh-col" {{ block.shopify_attributes }}>
+            <div class="hh-col__rule"></div>
+            {%- if block.settings.title != blank -%}<h3>{{ block.settings.title }}</h3>{%- endif -%}
+            {%- if block.settings.text != blank -%}<p>{{ block.settings.text }}</p>{%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+</div>
+
+{% stylesheet %}
+  .hh-story { position: relative; padding: 132px 0; overflow: hidden; }
+  .hh-story__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .hh-story__scrim { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(38,25,13,.72) 0%, rgba(38,25,13,.56) 100%); }
+  .hh-story__in { position: relative; z-index: 2; }
+  .hh-home .hh-story .hh-head h2 { color: #fff; }
+  .hh-story .hh-kick { color: #e7d6bc; }
+  .hh-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 54px; }
+  .hh-cols--1 { grid-template-columns: 1fr; max-width: 520px; margin: 0 auto; }
+  .hh-cols--2 { grid-template-columns: repeat(2, 1fr); }
+  .hh-cols--4 { grid-template-columns: repeat(4, 1fr); }
+  .hh-col { text-align: center; }
+  .hh-col__rule { width: 34px; height: 1px; background: #e7d6bc; margin: 0 auto 22px; }
+  .hh-home .hh-story .hh-col h3 { color: #fff; font-size: 25px; margin-bottom: 12px; }
+  .hh-story .hh-col p { color: rgba(255,255,255,.84); font-size: 14px; line-height: 1.8; margin: 0; }
+  @media (max-width: 1024px) { .hh-story { padding: 90px 0; } .hh-cols, .hh-cols--2, .hh-cols--4 { grid-template-columns: 1fr; gap: 40px; } }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Home — Story",
+  "tag": "section",
+  "settings": [
+    { "type": "header", "content": "Background image" },
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "text", "id": "image_url", "label": "Or image URL (fallback)", "default": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/rusticwormwoodoak.jpg?v=1776704700" },
+    { "type": "header", "content": "Heading" },
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Why Hedi's" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Crafted with intention" }
+  ],
+  "blocks": [
+    {
+      "type": "column",
+      "name": "Column",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title" },
+        { "type": "textarea", "id": "text", "label": "Text" }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "Home — Story",
+      "blocks": [
+        { "type": "column", "settings": { "title": "Artisan made", "text": "Skilled makers, time-honoured techniques and a refusal to cut corners." } },
+        { "type": "column", "settings": { "title": "Natural materials", "text": "Solid woods, natural fibres and full-grain leathers chosen to age beautifully." } },
+        { "type": "column", "settings": { "title": "Design help", "text": "Complimentary guidance to plan, style and furnish every room with ease." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

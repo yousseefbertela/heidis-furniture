@@ -101,8 +101,36 @@
     endif
   endif
 
+  # Hedi's: on initial load (no variant explicitly chosen via URL), lead with the
+  # detected lifestyle ("no white background") hero image. Once a variant is picked,
+  # respect that variant's image instead.
+  assign hedis_hero_media = null
+  if selected_product.selected_variant == blank
+    capture hedis_hero_file
+      render 'hedis-hero', product: selected_product
+    endcapture
+    assign hedis_hero_file = hedis_hero_file | strip
+    if hedis_hero_file != blank
+      for hm in selected_product.media
+        assign hm_src = hm.preview_image.src | default: hm.src
+        if hm_src contains hedis_hero_file
+          assign hedis_hero_media = hm
+          break
+        endif
+      endfor
+    endif
+  endif
+
   assign sorted_media = '' | split: ','
-  if selected_variant_media
+  if hedis_hero_media
+    assign sorted_media = sorted_media | concat: selected_product.media | where: 'id', hedis_hero_media.id
+    for media in selected_product.media
+      if media.id != hedis_hero_media.id
+        assign found_media = selected_product.media | where: 'id', media.id
+        assign sorted_media = sorted_media | concat: found_media
+      endif
+    endfor
+  elsif selected_variant_media
     assign sorted_media = sorted_media | concat: selected_product.media | where: 'id', selected_variant_media.id
 
     for media in selected_product.media

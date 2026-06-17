@@ -67,11 +67,9 @@
   >
     <button type="button" class="order-swatches__trigger" on:click="/open">
       <span class="order-swatches__trigger-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="7" height="7" rx="1.4"></rect>
-          <rect x="14" y="3" width="7" height="7" rx="1.4"></rect>
-          <rect x="3" y="14" width="7" height="7" rx="1.4"></rect>
-          <rect x="14" y="14" width="7" height="7" rx="1.4"></rect>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round">
+          <rect x="2.5" y="8.5" width="10" height="10" rx="2.2" transform="rotate(-20 7.5 13.5)"></rect>
+          <rect x="11" y="4.5" width="10" height="10" rx="2.2" transform="rotate(-20 16 9.5)"></rect>
         </svg>
       </span>
       <span class="order-swatches__trigger-text">{{ block.settings.button_label | default: 'Order Swatches' }}</span>
@@ -281,7 +279,7 @@
     width: 100%;
   }
 
-  /* ------------------------------------------------- trigger (Arhaus text link) */
+  /* ------------------------------------------------- trigger (reference text link) */
   /* Matches the PDP's .ah-pdp-link style: small box icon + underlined text,
      not a boxed button. */
   .order-swatches__trigger {
@@ -321,8 +319,8 @@
   }
 
   .order-swatches__trigger-icon svg {
-    width: 13px;
-    height: 13px;
+    width: 18px;
+    height: 18px;
   }
 
   /* Underline only the text, never the icon. */
@@ -484,10 +482,25 @@
     transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
   }
 
+  /* Plus drawn as two centered bars — no font-metric drift, perfectly centred */
+  .order-swatches__check::before,
+  .order-swatches__check::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background: currentColor;
+    border-radius: 1px;
+  }
   .order-swatches__check::before {
-    content: '+';
-    font-size: 18px;
-    line-height: 1;
+    width: 11px;
+    height: 1.6px;
+    transform: translate(-50%, -50%);
+  }
+  .order-swatches__check::after {
+    width: 1.6px;
+    height: 11px;
+    transform: translate(-50%, -50%);
   }
 
   .order-swatches__card:hover .order-swatches__thumb {
@@ -514,9 +527,18 @@
     border-color: var(--color-foreground);
   }
 
+  /* Selected: hide the vertical bar, turn the horizontal bar into a checkmark */
+  .order-swatches__card.is-selected .order-swatches__check::after {
+    display: none;
+  }
   .order-swatches__card.is-selected .order-swatches__check::before {
-    content: '✓';
-    font-size: 14px;
+    width: 5px;
+    height: 9px;
+    background: transparent;
+    border: solid currentColor;
+    border-width: 0 1.6px 1.6px 0;
+    border-radius: 0;
+    transform: translate(-50%, -60%) rotate(45deg);
   }
 
   .order-swatches__card-name {
@@ -657,7 +679,7 @@
     padding: 0;
     border: 1px solid #d9d5cf;
     border-radius: 0;
-    background: #f4f4f3; /* Light warm-grey Arhaus-like background */
+    background: #f4f4f3; /* Light warm-grey reference-like background */
     color: #1b1b1b;
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
     overflow-y: auto;

@@ -1,0 +1,58 @@
+{%- comment -%} Hedi's home — Editorial split. Image on one side, copy + button on the other. {%- endcomment -%}
+{% render 'hedis-home-base' %}
+{%- liquid
+  assign img = section.settings.image
+  assign img_src = section.settings.image_url
+  if img != blank
+    assign img_src = img | image_url: width: 1600
+  endif
+-%}
+<div class="hh-home" id="hh-edit-{{ section.id }}">
+  <section class="hh-split hh-rv {% if section.settings.media_position == 'right' %}hh-split--media-right{% endif %}">
+    <div class="hh-split__media">
+      {%- if img_src != blank -%}
+        <img src="{{ img_src }}" alt="{{ section.settings.heading | escape }}" loading="lazy">
+      {%- endif -%}
+    </div>
+    <div class="hh-split__body">
+      {%- if section.settings.kicker != blank -%}<p class="hh-kick">{{ section.settings.kicker }}</p>{%- endif -%}
+      {%- if section.settings.heading != blank -%}<h2>{{ section.settings.heading }}</h2>{%- endif -%}
+      {%- if section.settings.text != blank -%}<div class="hh-split__text">{{ section.settings.text }}</div>{%- endif -%}
+      {%- if section.settings.button_label != blank -%}<div><a class="hh-btn" href="{{ section.settings.button_link | default: '#' }}">{{ section.settings.button_label }}</a></div>{%- endif -%}
+    </div>
+  </section>
+</div>
+
+{% stylesheet %}
+  .hh-split { display: grid; grid-template-columns: 1fr 1fr; align-items: stretch; }
+  .hh-split--media-right .hh-split__media { order: 2; }
+  .hh-split__media { overflow: hidden; min-height: 62vh; }
+  .hh-split__media img { width: 100%; height: 100%; min-height: 62vh; object-fit: cover; }
+  .hh-split__body { display: flex; flex-direction: column; justify-content: center; padding: 8vw 7vw; }
+  .hh-split__body h2 { font-size: clamp(32px, 3.4vw, 52px); }
+  .hh-split__text { margin: 22px 0 0; color: var(--muted); font-size: 15px; line-height: 1.85; max-width: 42ch; }
+  .hh-split__text p { margin: 0 0 1em; }
+  .hh-split__text p:last-child { margin-bottom: 0; }
+  @media (max-width: 1024px) { .hh-split { grid-template-columns: 1fr; } .hh-split--media-right .hh-split__media { order: 0; } .hh-split__media, .hh-split__media img { min-height: 54vh; } }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Home — Editorial",
+  "tag": "section",
+  "settings": [
+    { "type": "header", "content": "Image" },
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "text", "id": "image_url", "label": "Or image URL (fallback)", "default": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/full-body-view-of-huxley-sofa-in-contemporary-open-plan-living-space-fulfily-2.jpg?v=1780164479" },
+    { "type": "select", "id": "media_position", "label": "Image position", "options": [ { "value": "left", "label": "Left" }, { "value": "right", "label": "Right" } ], "default": "left" },
+    { "type": "header", "content": "Text" },
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "The craft" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Made by hand, built to last" },
+    { "type": "richtext", "id": "text", "label": "Body", "default": "<p>Every piece is crafted from solid woods, natural fibres and full-grain leathers by makers who care about the details, so it only gets better with time.</p>" },
+    { "type": "header", "content": "Button" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Our story" },
+    { "type": "url", "id": "button_link", "label": "Button link" }
+  ],
+  "presets": [{ "name": "Home — Editorial" }]
+}
+{% endschema %}

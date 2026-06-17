@@ -8,6 +8,17 @@
     "theme_support_url": "https://support.shopify.com/"
   },
   {
+    "name": "Header icons (Hedi's)",
+    "settings": [
+      { "type": "paragraph", "content": "Show / hide and link the custom header utility icons. (Account and cart are managed by the theme and link to login / cart automatically.)" },
+      { "type": "checkbox", "id": "header_icon_stores", "label": "Show store-locator (pin) icon", "default": true },
+      { "type": "url", "id": "header_stores_url", "label": "Store-locator link" },
+      { "type": "checkbox", "id": "header_icon_delivery", "label": "Show delivery (truck) icon", "default": true },
+      { "type": "url", "id": "header_delivery_url", "label": "Delivery link" },
+      { "type": "checkbox", "id": "header_icon_wishlist", "label": "Show wishlist (heart) icon", "default": true }
+    ]
+  },
+  {
     "name": "t:names.logo_and_favicon",
     "settings": [
       {

@@ -2,8 +2,8 @@
   "type": "header",
   "name": "Header",
   "sections": {
-    "arhaus_topbar": {
-      "type": "arhaus-topbar",
+    "hedis_topbar": {
+      "type": "hedis-topbar",
       "settings": {}
     },
     "header_section": {
@@ -77,7 +77,7 @@
     }
   },
   "order": [
-    "arhaus_topbar",
+    "hedis_topbar",
     "header_section"
   ]
 }

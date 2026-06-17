@@ -9,7 +9,7 @@
  */{
   "sections": {
     "breadcrumb": {
-      "type": "arhaus-breadcrumb",
+      "type": "hedis-breadcrumb",
       "settings": {}
     },
     "main": {
@@ -227,6 +227,7 @@
                 "sample_variant_id": "43130775732312",
                 "price_note": "$5 per swatch — credited back on full order",
                 "fabrics_url": "/pages/swatch-page",
+                "fabrics_link_label": "See more fabrics",
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
@@ -234,23 +235,11 @@
               },
               "blocks": {}
             },
-            "divider_2": {
-              "type": "_divider",
-              "name": "t:names.divider",
-              "settings": {
-                "thickness": 1,
-                "corner_radius": "square",
-                "width_percent": 100,
-                "padding-block-start": 5,
-                "padding-block-end": 5
-              },
-              "blocks": {}
-            },
             "lead_time": {
               "type": "custom-liquid",
               "name": "Lead time / stock",
               "settings": {
-                "custom_liquid": "{%- assign p = closest.product | default: product -%}{%- assign v = p.selected_or_first_available_variant -%}{%- assign lead = v.metafields.levlocal.lead_time.value | plus: 0 -%}{%- if v.available == false -%}<p class=\"ah-leadtime ah-leadtime--oos\">Out of Stock</p>{%- elsif lead == 0 -%}<p class=\"ah-leadtime\">In Stock</p>{%- else -%}<p class=\"ah-leadtime\">Custom: Ready to Ship in {{ lead }} Weeks</p>{%- endif -%}"
+                "custom_liquid": "{%- assign p = closest.product | default: product -%}{%- assign v = p.selected_or_first_available_variant -%}{%- assign lead = v.metafields.levlocal.lead_time.value | plus: 0 -%}{%- if lead == 0 -%}{%- assign lead = p.metafields.custom.ready_to_deliver.value | split: ' ' | first | plus: 0 -%}{%- endif -%}{%- if v.available == false -%}<p class=\"ah-leadtime ah-leadtime--oos\">Out of Stock</p>{%- elsif lead == 0 -%}<p class=\"ah-leadtime\">In Stock</p>{%- else -%}<p class=\"ah-leadtime\">Custom: Ready to Ship in {{ lead }} Weeks</p>{%- endif -%}"
               },
               "blocks": {}
             },
@@ -292,7 +281,7 @@
               "type": "custom-liquid",
               "name": "Save to List",
               "settings": {
-                "custom_liquid": "<button type=\"button\" class=\"ah-pdp-link ah-savelist\"><span class=\"ah-pdp-ico\"><svg viewBox=\"0 0 24 24\" width=\"15\" height=\"15\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.4\" stroke-linejoin=\"round\"><path d=\"M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z\"/></svg></span>Save to List</button>"
+                "custom_liquid": "{%- assign p = closest.product | default: product -%}<button type=\"button\" class=\"ah-pdp-link ah-savelist\" data-wishlist-toggle data-handle=\"{{ p.handle }}\" data-id=\"{{ p.id }}\" data-title=\"{{ p.title | escape }}\" data-url=\"{{ p.url }}\" data-image=\"{{ p.featured_image | image_url: width: 300 }}\" data-price=\"{{ p.price | money }}\"><span class=\"ah-pdp-ico ah-savelist__ico\"><svg class=\"ah-heart\" viewBox=\"0 0 24 24\" width=\"15\" height=\"15\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.4\" stroke-linejoin=\"round\"><path d=\"M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z\"/></svg></span><span class=\"ah-savelist__label\">Save to List</span></button>"
               },
               "blocks": {}
             },
@@ -441,7 +430,6 @@
             "divider_1",
             "variant_picker",
             "order_swatches",
-            "divider_2",
             "lead_time",
             "buy_buttons",
             "save_list",

@@ -1,0 +1,92 @@
+{%- comment -%}
+  reference-style PDP breadcrumb: "Back | Home / Category / Subcategory / Product".
+  Category + subcategory are derived from where the product's collection sits in the
+  main menu — the top-level ancestor (e.g. Living) + the matching leaf (e.g. Sofas).
+{%- endcomment -%}
+{%- liquid
+  assign menu = linklists['main-menu']
+  assign bc_top_title = ''
+  assign bc_top_url = ''
+  assign bc_sub_title = ''
+  assign bc_sub_url = ''
+
+  # Pass 1: find a leaf (3rd-level) collection link the product belongs to,
+  # and capture its top-level ancestor (e.g. Living) + the leaf title (e.g. Sofas).
+  for top in menu.links
+    for mid in top.links
+      for leaf in mid.links
+        for c in product.collections
+          assign coll_path = '/collections/' | append: c.handle
+          if leaf.url == coll_path
+            assign bc_top_title = top.title
+            assign bc_top_url = top.url
+            assign bc_sub_title = leaf.title
+            assign bc_sub_url = leaf.url
+          endif
+        endfor
+      endfor
+    endfor
+  endfor
+
+  # Pass 2 (fallback): no leaf matched — match a top-level link to a collection.
+  if bc_top_title == blank
+    for top in menu.links
+      for c in product.collections
+        assign coll_path = '/collections/' | append: c.handle
+        if top.url == coll_path
+          assign bc_top_title = top.title
+          assign bc_top_url = top.url
+        endif
+      endfor
+    endfor
+  endif
+-%}
+<nav class="ah-breadcrumb" aria-label="Breadcrumb">
+  <a href="#" class="ah-bc-back" onclick="if(history.length>1){history.back();}return false;">&lsaquo;&nbsp;Back</a>
+  <span class="ah-bc-sep">|</span>
+  <a href="{{ routes.root_url }}" class="ah-bc-home">Home</a>
+  {%- if bc_top_title != blank -%}
+    <span class="ah-bc-sep">/</span>
+    <a href="{{ bc_top_url }}">{{ bc_top_title }}</a>
+  {%- endif -%}
+  {%- if bc_sub_title != blank -%}
+    <span class="ah-bc-sep">/</span>
+    <a href="{{ bc_sub_url }}">{{ bc_sub_title }}</a>
+  {%- endif -%}
+  <span class="ah-bc-sep">/</span>
+  <span class="ah-bc-current">{{ product.title }}</span>
+</nav>
+<style>
+  /* Make the breadcrumb section white — matches the white PDP below */
+  .shopify-section:has(.ah-breadcrumb) {
+    background: #ffffff !important;
+  }
+  .ah-breadcrumb {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 14px clamp(16px, 1.6vw, 26px);
+    font-family: "Jost", "Helvetica Neue", Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #6f6a63;
+    background: transparent;
+  }
+  .ah-breadcrumb a { color: #6f6a63; text-decoration: none; }
+  .ah-breadcrumb a:hover { color: #1b1b1b; }
+  .ah-breadcrumb .ah-bc-back { font-weight: 500; color: #1b1b1b; }
+  .ah-breadcrumb .ah-bc-sep { color: #c9c4bb; }
+  .ah-breadcrumb .ah-bc-current { color: #1b1b1b; }
+  @media screen and (max-width: 749px) {
+    .ah-breadcrumb { padding-inline: 16px; }
+  }
+</style>
+{% schema %}
+{
+  "name": "Breadcrumb",
+  "settings": [],
+  "presets": [{ "name": "Breadcrumb" }]
+}
+{% endschema %}

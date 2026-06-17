@@ -1,0 +1,35 @@
+{%- comment -%}
+  Hedi's: Wishlist ("My List") page. The grid is populated client-side from
+  localStorage by the wishlist script in snippets/scripts.liquid. Assign this
+  section's template (page.wishlist) to a page with handle "wishlist".
+{%- endcomment -%}
+<div class="ah-wishlist-page">
+  <h1 class="ah-wishlist-page__title">{{ section.settings.heading | default: 'My List' }}</h1>
+  <p id="ah-wishlist-empty" class="ah-wishlist-empty">{{ section.settings.empty_text | default: 'Your list is empty. Tap Save to List on any product to add it here.' }}</p>
+  <div id="ah-wishlist-grid"></div>
+</div>
+
+{% schema %}
+{
+  "name": "Wishlist",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "My List"
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "label": "Empty message",
+      "default": "Your list is empty. Tap Save to List on any product to add it here."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Wishlist"
+    }
+  ]
+}
+{% endschema %}

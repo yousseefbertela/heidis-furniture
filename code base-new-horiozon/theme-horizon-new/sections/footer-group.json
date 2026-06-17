@@ -2,10 +2,53 @@
   "type": "footer",
   "name": "Footer",
   "sections": {
-    "arhaus_footer": {
-      "type": "arhaus-footer",
-      "settings": {}
+    "hedis_footer": {
+      "type": "hedis-footer",
+      "settings": {},
+      "blocks": {
+        "col_shop": {
+          "type": "link_column",
+          "settings": {
+            "heading": "Shop",
+            "l1_label": "Living", "l1_url": "/collections/living",
+            "l2_label": "Dining", "l2_url": "/collections/dining",
+            "l3_label": "Bedroom", "l3_url": "/collections/bedroom",
+            "l4_label": "Outdoor", "l4_url": "/collections/outdoor",
+            "l5_label": "Lighting", "l5_url": "/collections/lighting",
+            "l6_label": "Decor", "l6_url": "/collections/decor",
+            "l7_label": "Rugs", "l7_url": "/collections/rugs",
+            "l8_label": "Office", "l8_url": "/collections/office"
+          }
+        },
+        "col_info": {
+          "type": "link_column",
+          "settings": {
+            "heading": "Further Info",
+            "l1_label": "Home", "l1_url": "/",
+            "l2_label": "About Hedis", "l2_url": "/pages/about-us",
+            "l3_label": "Trade Program", "l3_url": "/pages/trade-program",
+            "l4_label": "Contact Us", "l4_url": "/pages/contact",
+            "l5_label": "Blog", "l5_url": "/blogs/news",
+            "l6_label": "Sitemap", "l6_url": "/pages/sitemap"
+          }
+        },
+        "col_service": {
+          "type": "link_column",
+          "settings": {
+            "heading": "Customer Service",
+            "l1_label": "FAQs", "l1_url": "/pages/faqs",
+            "l2_label": "Returns & Exchanges", "l2_url": "/pages/returns-exchanges",
+            "l3_label": "Limited Warranty", "l3_url": "/pages/limited-warranty",
+            "l4_label": "Delivery & Shipping", "l4_url": "/pages/delivery-shipping",
+            "l5_label": "Terms Of Service", "l5_url": "/policies/terms-of-service",
+            "l6_label": "Contact Information", "l6_url": "/pages/contact",
+            "l7_label": "Privacy Policy", "l7_url": "/policies/privacy-policy",
+            "l8_label": "Refund Policy", "l8_url": "/policies/refund-policy"
+          }
+        }
+      },
+      "block_order": ["col_shop", "col_info", "col_service"]
     }
   },
-  "order": ["arhaus_footer"]
+  "order": ["hedis_footer"]
 }

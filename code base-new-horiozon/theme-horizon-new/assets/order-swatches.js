@@ -519,7 +519,7 @@ class OrderSwatchesComponent extends Component {
       || document.querySelector('.product-information__media');
 
     if (gallery) {
-      // Overlay the popover on the product image area (Arhaus style).
+      // Overlay the popover on the product image area (reference style).
       const g = gallery.getBoundingClientRect();
       const margin = 0;
 

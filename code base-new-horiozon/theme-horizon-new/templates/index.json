@@ -1,14 +1,42 @@
 {
   "sections": {
-    "arhaus_home": {
-      "type": "arhaus-home",
+    "hero": {
+      "type": "home-hero",
+      "settings": {}
+    },
+    "promo": {
+      "type": "home-promo",
+      "settings": {}
+    },
+    "categories": {
+      "type": "home-category-carousel",
       "settings": {
-        "bg_color": "#FFFFFF",
-        "text_color": "#232323",
-        "accent_color": "#8C6E45",
-        "muted_color": "#6F6A63"
-      }
+        "kicker": "Explore",
+        "heading": "Shop by category"
+      },
+      "blocks": {
+        "tile_1": { "type": "tile", "settings": { "title": "Living Room", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/huxley-sofa-stylish-living-room-display-fulfily-1.jpg?v=1780168583" } },
+        "tile_2": { "type": "tile", "settings": { "title": "Rugs", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/lci2303-576.jpg?v=1714084384" } },
+        "tile_3": { "type": "tile", "settings": { "title": "Tables", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/falco-nesting-tables-living-room-layered-nesting-design-fulfily-1.jpg?v=1779818357" } },
+        "tile_4": { "type": "tile", "settings": { "title": "Seating", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/close-up-of-huxley-sofa-stitch-work-and-fabric-weave-in-cozyreadingnook-fulfily-1.jpg?v=1780164479" } },
+        "tile_5": { "type": "tile", "settings": { "title": "Outdoor", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/petite-flamingo-sculpture-on-natural-stone-in-rustic-garden-daylight-fulfily-2.jpg?v=1779562131" } }
+      },
+      "block_order": ["tile_1", "tile_2", "tile_3", "tile_4", "tile_5"]
+    },
+    "editorial": {
+      "type": "home-editorial",
+      "settings": {}
+    },
+    "story": {
+      "type": "home-story",
+      "settings": {},
+      "blocks": {
+        "col_1": { "type": "column", "settings": { "title": "Artisan made", "text": "Skilled makers, time-honoured techniques and a refusal to cut corners." } },
+        "col_2": { "type": "column", "settings": { "title": "Natural materials", "text": "Solid woods, natural fibres and full-grain leathers chosen to age beautifully." } },
+        "col_3": { "type": "column", "settings": { "title": "Design help", "text": "Complimentary guidance to plan, style and furnish every room with ease." } }
+      },
+      "block_order": ["col_1", "col_2", "col_3"]
     }
   },
-  "order": ["arhaus_home"]
+  "order": ["hero", "promo", "categories", "editorial", "story"]
 }

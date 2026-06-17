@@ -1,0 +1,106 @@
+{%- comment -%} Hedi's home — Category carousel. Each tile is a reorderable block. {%- endcomment -%}
+{% render 'hedis-home-base' %}
+<div class="hh-home" id="hh-cats-{{ section.id }}">
+  <section class="hh-sec hh-rv">
+    <div class="hh-head">
+      {%- if section.settings.kicker != blank -%}<p class="hh-kick">{{ section.settings.kicker }}</p>{%- endif -%}
+      {%- if section.settings.heading != blank -%}<h2>{{ section.settings.heading }}</h2>{%- endif -%}
+    </div>
+    <div class="hh-rail-wrap">
+      <button class="hh-nav hh-nav--prev" data-rail="hhcat{{ section.id }}" aria-label="Previous">&#8249;</button>
+      <button class="hh-nav hh-nav--next" data-rail="hhcat{{ section.id }}" aria-label="Next">&#8250;</button>
+      <div class="hh-catrail" id="hhcat{{ section.id }}">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign img = block.settings.image
+            assign manual = block.settings.image_url
+            assign linkurl = block.settings.link
+            # If no image set, borrow the linked collection's image (or first product image) so the tile is never blank.
+            assign fallback = null
+            if img == blank and manual == blank and linkurl != blank
+              assign handle = linkurl | split: '/collections/' | last | split: '/' | first | split: '?' | first
+              assign coll = collections[handle]
+              if coll.image != blank
+                assign fallback = coll.image
+              else
+                for p in coll.products limit: 8
+                  if p.featured_media.preview_image != blank
+                    assign fallback = p.featured_media.preview_image
+                    break
+                  endif
+                endfor
+              endif
+            endif
+          -%}
+          <a class="hh-cat" href="{{ linkurl | default: '#' }}" {{ block.shopify_attributes }}>
+            <div class="hh-cat__img">
+              {%- if img != blank -%}
+                <img src="{{ img | image_url: width: 880 }}" alt="{{ block.settings.title | escape }}" loading="lazy">
+              {%- elsif manual != blank -%}
+                <img src="{{ manual }}" alt="{{ block.settings.title | escape }}" loading="lazy"{% if fallback %} onerror="this.onerror=null;this.src='{{ fallback | image_url: width: 880 }}'"{% endif %}>
+              {%- elsif fallback -%}
+                {{ fallback | image_url: width: 880 | image_tag: loading: 'lazy', alt: block.settings.title }}
+              {%- else -%}
+                <div class="hh-cat__ph"></div>
+              {%- endif -%}
+            </div>
+            {%- if block.settings.title != blank -%}<span class="hh-cat__label">{{ block.settings.title }}</span>{%- endif -%}
+          </a>
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+</div>
+
+{% stylesheet %}
+  .hh-rail-wrap { position: relative; }
+  .hh-catrail { display: flex; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; padding: 6px 40px; scrollbar-width: none; }
+  .hh-catrail::-webkit-scrollbar { display: none; }
+  .hh-cat { position: relative; flex: 0 0 auto; width: clamp(280px, 31vw, 440px); scroll-snap-align: start; overflow: hidden; }
+  .hh-cat__img { position: relative; aspect-ratio: 4/5; overflow: hidden; background: #e3dccd; }
+  .hh-cat__img img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.5s cubic-bezier(.2,.6,.2,1); }
+  .hh-cat__ph { width: 100%; height: 100%; background: #e3dccd; }
+  .hh-cat__img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,.5) 100%); }
+  .hh-cat:hover .hh-cat__img img { transform: scale(1.05); }
+  .hh-cat__label { position: absolute; left: 0; right: 0; bottom: 30px; z-index: 2; text-align: center; color: #fff; font-family: "Cormorant Garamond", serif; font-weight: 500; font-size: clamp(24px, 2vw, 32px); letter-spacing: .01em; text-shadow: 0 2px 16px rgba(0,0,0,.5); }
+  .hh-nav { position: absolute; top: 42%; width: 54px; height: 54px; border-radius: 50%; border: 1px solid rgba(255,255,255,.7); background: rgba(0,0,0,.28); color: #fff; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .3s ease; z-index: 3; backdrop-filter: blur(2px); }
+  .hh-nav:hover { background: #fff; color: #2a2722; border-color: #fff; }
+  .hh-nav--prev { left: 18px; } .hh-nav--next { right: 18px; }
+  @media (max-width: 600px) { .hh-cat { width: 78vw; } }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Home — Categories",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Explore" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Shop by category" }
+  ],
+  "blocks": [
+    {
+      "type": "tile",
+      "name": "Category tile",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "image_url", "label": "Or image URL (fallback)" },
+        { "type": "text", "id": "title", "label": "Title" },
+        { "type": "url", "id": "link", "label": "Link (collection)" }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Home — Categories",
+      "blocks": [
+        { "type": "tile", "settings": { "title": "Living Room", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/huxley-sofa-stylish-living-room-display-fulfily-1.jpg?v=1780168583" } },
+        { "type": "tile", "settings": { "title": "Rugs", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/lci2303-576.jpg?v=1714084384" } },
+        { "type": "tile", "settings": { "title": "Tables", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/falco-nesting-tables-living-room-layered-nesting-design-fulfily-1.jpg?v=1779818357" } },
+        { "type": "tile", "settings": { "title": "Seating", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/close-up-of-huxley-sofa-stitch-work-and-fabric-weave-in-cozyreadingnook-fulfily-1.jpg?v=1780164479" } },
+        { "type": "tile", "settings": { "title": "Outdoor", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/petite-flamingo-sculpture-on-natural-stone-in-rustic-garden-daylight-fulfily-2.jpg?v=1779562131" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

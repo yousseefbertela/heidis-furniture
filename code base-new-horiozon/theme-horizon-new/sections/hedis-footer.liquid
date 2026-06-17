@@ -1,7 +1,11 @@
-{%- comment -%} Arhaus-style footer for Hedi's Furniture (Horizon). Self-contained: own CSS + content. v2 {%- endcomment -%}
+{%- comment -%} Footer for Hedi's Furniture (Horizon). Self-contained: own CSS + content. Link columns are editable blocks. {%- endcomment -%}
 {%- liquid
   assign teal = section.settings.teal_color
   assign dark = section.settings.dark_color
+  assign band_text = section.settings.band_text_color
+  assign heading_c = section.settings.heading_color
+  assign text_c = section.settings.text_color
+  assign link_hover = section.settings.link_hover_color
 -%}
 <style>
   #af-{{ section.id }}{ font-family:"Jost","Helvetica Neue",Arial,sans-serif; }
@@ -13,26 +17,29 @@
   #af-{{ section.id }} .af-map iframe{ width:100%; height:300px; border:0; display:block; }
 
   /* TEAL BAND */
-  #af-{{ section.id }} .af-band{ background:{{ teal }}; color:#fff; }
+  #af-{{ section.id }} .af-band{ background:{{ teal }}; color:{{ band_text }}; }
   #af-{{ section.id }} .af-band__in{ max-width:1280px; margin:0 auto; padding:26px 24px; display:grid; grid-template-columns:repeat(3,1fr); }
   #af-{{ section.id }} .af-band__item{ display:flex; align-items:center; justify-content:center; gap:12px; font-size:14px; letter-spacing:.04em; text-align:center; position:relative; }
   #af-{{ section.id }} .af-band__item + .af-band__item::before{ content:""; position:absolute; left:0; top:50%; transform:translateY(-50%); height:34px; width:1px; background:rgba(255,255,255,.25); }
   #af-{{ section.id }} .af-band__icon{ width:26px; height:26px; flex:0 0 auto; stroke:#fff; fill:none; stroke-width:1.5; }
 
   /* DARK FOOTER */
-  #af-{{ section.id }} .af-main{ background:{{ dark }}; color:#b7b2ab; }
-  #af-{{ section.id }} .af-main__in{ max-width:1280px; margin:0 auto; padding:64px 24px 40px; display:grid; grid-template-columns:1.5fr 1fr 1fr 1.2fr 1.5fr; gap:40px; }
-  #af-{{ section.id }} .af-col h4{ color:#fff; font-size:13px; font-weight:500; letter-spacing:.16em; text-transform:uppercase; margin:0 0 20px; font-family:"Jost","Helvetica Neue",Arial,sans-serif; }
+  #af-{{ section.id }} .af-main{ background:{{ dark }}; color:{{ text_c }}; }
+  #af-{{ section.id }} .af-main__in{ max-width:1280px; margin:0 auto; padding:64px 24px 40px; display:flex; flex-wrap:wrap; gap:40px; }
+  #af-{{ section.id }} .af-col{ flex:1 1 150px; }
+  #af-{{ section.id }} .af-col--brand{ flex:1.6 1 240px; }
+  #af-{{ section.id }} .af-news{ flex:1.6 1 280px; }
+  #af-{{ section.id }} .af-col h4{ color:{{ heading_c }}; font-size:13px; font-weight:500; letter-spacing:.16em; text-transform:uppercase; margin:0 0 20px; font-family:"Jost","Helvetica Neue",Arial,sans-serif; }
   #af-{{ section.id }} .af-col ul{ list-style:none; margin:0; padding:0; }
   #af-{{ section.id }} .af-col li{ margin-bottom:11px; }
-  #af-{{ section.id }} .af-col a{ font-size:13.5px; color:#b7b2ab; letter-spacing:.02em; transition:color .2s ease; }
-  #af-{{ section.id }} .af-col a:hover{ color:#fff; }
+  #af-{{ section.id }} .af-col a{ font-size:13.5px; color:{{ text_c }}; letter-spacing:.02em; transition:color .2s ease; }
+  #af-{{ section.id }} .af-col a:hover{ color:{{ link_hover }}; }
 
-  #af-{{ section.id }} .af-addr{ font-size:13.5px; line-height:1.7; color:#b7b2ab; margin:0 0 18px; font-style:normal; }
+  #af-{{ section.id }} .af-addr{ font-size:13.5px; line-height:1.7; color:{{ text_c }}; margin:0 0 18px; font-style:normal; }
   #af-{{ section.id }} .af-contact{ display:flex; align-items:center; gap:10px; margin-bottom:10px; font-size:13.5px; }
   #af-{{ section.id }} .af-contact svg{ width:15px; height:15px; stroke:#9a958d; fill:none; stroke-width:1.6; flex:0 0 auto; }
   #af-{{ section.id }} .af-follow{ margin-top:22px; }
-  #af-{{ section.id }} .af-follow__label{ color:#fff; font-size:12px; letter-spacing:.16em; text-transform:uppercase; margin:0 0 14px; }
+  #af-{{ section.id }} .af-follow__label{ color:{{ heading_c }}; font-size:12px; letter-spacing:.16em; text-transform:uppercase; margin:0 0 14px; }
   #af-{{ section.id }} .af-social{ display:flex; gap:12px; }
   #af-{{ section.id }} .af-social a{ width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
   #af-{{ section.id }} .af-social svg{ width:17px; height:17px; fill:#fff; }
@@ -41,7 +48,7 @@
   #af-{{ section.id }} .af-social--pin{ background:#e60023; }
 
   /* NEWSLETTER */
-  #af-{{ section.id }} .af-news p{ font-size:13.5px; line-height:1.7; margin:0 0 18px; color:#b7b2ab; }
+  #af-{{ section.id }} .af-news p{ font-size:13.5px; line-height:1.7; margin:0 0 18px; color:{{ text_c }}; }
   #af-{{ section.id }} .af-news form{ display:flex; max-width:330px; }
   #af-{{ section.id }} .af-news input[type=email]{ flex:1; background:#2a2a2a; border:1px solid #3a3a3a; color:#fff; padding:12px 14px; font-size:13px; font-family:inherit; outline:none; }
   #af-{{ section.id }} .af-news input[type=email]::placeholder{ color:#8a857e; }
@@ -55,11 +62,11 @@
   #af-{{ section.id }} .af-pays{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
   #af-{{ section.id }} .af-pays svg, #af-{{ section.id }} .af-pays img{ height:24px; width:auto; }
 
-  @media (max-width:1024px){ #af-{{ section.id }} .af-main__in{ grid-template-columns:1fr 1fr; gap:36px; } }
+  @media (max-width:1024px){ #af-{{ section.id }} .af-col, #af-{{ section.id }} .af-col--brand, #af-{{ section.id }} .af-news{ flex:1 1 40%; } }
   @media (max-width:600px){
     #af-{{ section.id }} .af-band__in{ grid-template-columns:1fr; gap:18px; }
     #af-{{ section.id }} .af-band__item + .af-band__item::before{ display:none; }
-    #af-{{ section.id }} .af-main__in{ grid-template-columns:1fr; }
+    #af-{{ section.id }} .af-col, #af-{{ section.id }} .af-col--brand, #af-{{ section.id }} .af-news{ flex:1 1 100%; }
     #af-{{ section.id }} .af-bottom__in{ flex-direction:column; align-items:flex-start; }
   }
 </style>
@@ -105,48 +112,26 @@
         </div>
       </div>
 
-      <div class="af-col">
-        <h4>Shop</h4>
-        <ul>
-          <li><a href="/collections/living">Living</a></li>
-          <li><a href="/collections/dining">Dining</a></li>
-          <li><a href="/collections/bedroom">Bedroom</a></li>
-          <li><a href="/collections/outdoor">Outdoor</a></li>
-          <li><a href="/collections/lighting">Lighting</a></li>
-          <li><a href="/collections/decor">Decor</a></li>
-          <li><a href="/collections/rugs">Rugs</a></li>
-          <li><a href="/collections/office">Office</a></li>
-        </ul>
-      </div>
-
-      <div class="af-col">
-        <h4>Further Info</h4>
-        <ul>
-          <li><a href="/">Home</a></li>
-          <li><a href="/pages/about-us">About Hedis</a></li>
-          <li><a href="/pages/trade-program">Trade Program</a></li>
-          <li><a href="/pages/contact">Contact Us</a></li>
-          <li><a href="/blogs/news">Blog</a></li>
-          <li><a href="/pages/sitemap">Sitemap</a></li>
-        </ul>
-      </div>
-
-      <div class="af-col">
-        <h4>Customer Service</h4>
-        <ul>
-          <li><a href="/pages/faqs">FAQs</a></li>
-          <li><a href="/pages/returns-exchanges">Returns &amp; Exchanges</a></li>
-          <li><a href="/pages/limited-warranty">Limited Warranty</a></li>
-          <li><a href="/pages/delivery-shipping">Delivery &amp; Shipping</a></li>
-          <li><a href="/policies/terms-of-service">Terms Of Service</a></li>
-          <li><a href="/pages/contact">Contact Information</a></li>
-          <li><a href="/policies/privacy-policy">Privacy Policy</a></li>
-          <li><a href="/policies/refund-policy">Refund Policy</a></li>
-        </ul>
-      </div>
+      {%- comment -%} Editable link columns (blocks) {%- endcomment -%}
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'link_column' -%}
+          <div class="af-col" {{ block.shopify_attributes }}>
+            {%- if block.settings.heading != blank -%}<h4>{{ block.settings.heading }}</h4>{%- endif -%}
+            <ul>
+              {%- for i in (1..8) -%}
+                {%- assign lab = 'l' | append: i | append: '_label' -%}
+                {%- assign url = 'l' | append: i | append: '_url' -%}
+                {%- if block.settings[lab] != blank -%}
+                  <li><a href="{{ block.settings[url] | default: '#' }}">{{ block.settings[lab] }}</a></li>
+                {%- endif -%}
+              {%- endfor -%}
+            </ul>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
 
       <div class="af-col af-news">
-        <h4>Newsletter Sign Up</h4>
+        <h4>{{ section.settings.newsletter_heading | default: 'Newsletter Sign Up' }}</h4>
         <p>{{ section.settings.newsletter_text }}</p>
         {%- form 'customer' -%}
           <input type="hidden" name="contact[tags]" value="newsletter">
@@ -171,14 +156,18 @@
 
 {% schema %}
 {
-  "name": "Arhaus Footer",
+  "name": "Footer",
   "settings": [
-    { "type": "header", "content": "Colors" },
-    { "type": "color", "id": "teal_color", "label": "Promo band / accent", "default": "#2A6876" },
+    { "type": "header", "content": "Colors (custom)" },
+    { "type": "color", "id": "teal_color", "label": "Promo band background", "default": "#2A6876" },
+    { "type": "color", "id": "band_text_color", "label": "Promo band text", "default": "#FFFFFF" },
     { "type": "color", "id": "dark_color", "label": "Footer background", "default": "#1A1A1A" },
+    { "type": "color", "id": "heading_color", "label": "Column headings", "default": "#FFFFFF" },
+    { "type": "color", "id": "text_color", "label": "Body & links", "default": "#B7B2AB" },
+    { "type": "color", "id": "link_hover_color", "label": "Link hover", "default": "#FFFFFF" },
     { "type": "header", "content": "Map" },
     { "type": "checkbox", "id": "show_map", "label": "Show map", "default": true },
-    { "type": "text", "id": "map_query", "label": "Map address", "default": "199 Boylston St, Chestnut Hill, MA 02467" },
+    { "type": "text", "id": "map_query", "label": "Map address (type any address to move the map)", "default": "199 Boylston St, Chestnut Hill, MA 02467" },
     { "type": "header", "content": "Promo band" },
     { "type": "text", "id": "promo_1", "label": "Item 1", "default": "Free Shipping US Order $100" },
     { "type": "text", "id": "promo_2", "label": "Item 2", "default": "Free Returns*" },
@@ -189,12 +178,40 @@
     { "type": "text", "id": "phone", "label": "Phone", "default": "+1 774-440-1603" },
     { "type": "text", "id": "email", "label": "Email", "default": "info@hedisfurniture.com" },
     { "type": "header", "content": "Newsletter" },
+    { "type": "text", "id": "newsletter_heading", "label": "Heading", "default": "Newsletter Sign Up" },
     { "type": "text", "id": "newsletter_text", "label": "Text", "default": "Receive our latest updates about our products & promotions." },
     { "type": "header", "content": "Social" },
     { "type": "text", "id": "facebook_url", "label": "Facebook URL", "default": "https://www.facebook.com/" },
     { "type": "text", "id": "instagram_url", "label": "Instagram URL", "default": "https://www.instagram.com/" },
     { "type": "text", "id": "pinterest_url", "label": "Pinterest URL", "default": "https://www.pinterest.com/" }
   ],
-  "presets": [ { "name": "Arhaus Footer" } ]
+  "blocks": [
+    {
+      "type": "link_column",
+      "name": "Link column",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Column heading" },
+        { "type": "text", "id": "l1_label", "label": "Link 1 text" }, { "type": "url", "id": "l1_url", "label": "Link 1 URL" },
+        { "type": "text", "id": "l2_label", "label": "Link 2 text" }, { "type": "url", "id": "l2_url", "label": "Link 2 URL" },
+        { "type": "text", "id": "l3_label", "label": "Link 3 text" }, { "type": "url", "id": "l3_url", "label": "Link 3 URL" },
+        { "type": "text", "id": "l4_label", "label": "Link 4 text" }, { "type": "url", "id": "l4_url", "label": "Link 4 URL" },
+        { "type": "text", "id": "l5_label", "label": "Link 5 text" }, { "type": "url", "id": "l5_url", "label": "Link 5 URL" },
+        { "type": "text", "id": "l6_label", "label": "Link 6 text" }, { "type": "url", "id": "l6_url", "label": "Link 6 URL" },
+        { "type": "text", "id": "l7_label", "label": "Link 7 text" }, { "type": "url", "id": "l7_url", "label": "Link 7 URL" },
+        { "type": "text", "id": "l8_label", "label": "Link 8 text" }, { "type": "url", "id": "l8_url", "label": "Link 8 URL" }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "Footer",
+      "blocks": [
+        { "type": "link_column", "settings": { "heading": "Shop", "l1_label": "Living", "l1_url": "shopify://collections/living", "l2_label": "Dining", "l2_url": "shopify://collections/dining", "l3_label": "Bedroom", "l3_url": "shopify://collections/bedroom", "l4_label": "Outdoor", "l4_url": "shopify://collections/outdoor", "l5_label": "Lighting", "l5_url": "shopify://collections/lighting", "l6_label": "Decor", "l6_url": "shopify://collections/decor", "l7_label": "Rugs", "l7_url": "shopify://collections/rugs", "l8_label": "Office", "l8_url": "shopify://collections/office" } },
+        { "type": "link_column", "settings": { "heading": "Further Info", "l1_label": "Home", "l1_url": "shopify://", "l2_label": "About Hedis", "l2_url": "shopify://pages/about-us", "l3_label": "Trade Program", "l3_url": "shopify://pages/trade-program", "l4_label": "Contact Us", "l4_url": "shopify://pages/contact", "l5_label": "Blog", "l5_url": "shopify://blogs/news", "l6_label": "Sitemap", "l6_url": "shopify://pages/sitemap" } },
+        { "type": "link_column", "settings": { "heading": "Customer Service", "l1_label": "FAQs", "l1_url": "shopify://pages/faqs", "l2_label": "Returns & Exchanges", "l2_url": "shopify://pages/returns-exchanges", "l3_label": "Limited Warranty", "l3_url": "shopify://pages/limited-warranty", "l4_label": "Delivery & Shipping", "l4_url": "shopify://pages/delivery-shipping", "l5_label": "Terms Of Service", "l5_url": "shopify://policies/terms-of-service", "l6_label": "Contact Information", "l6_url": "shopify://pages/contact", "l7_label": "Privacy Policy", "l7_url": "shopify://policies/privacy-policy", "l8_label": "Refund Policy", "l8_url": "shopify://policies/refund-policy" } }
+      ]
+    }
+  ]
 }
 {% endschema %}

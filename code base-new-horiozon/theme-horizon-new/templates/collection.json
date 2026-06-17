@@ -9,8 +9,8 @@
  */
 {
   "sections": {
-    "arhaus-collection-header": {
-      "type": "arhaus-collection-header",
+    "hedis-collection-header": {
+      "type": "hedis-collection-header",
       "settings": {
         "menu": "main-menu",
         "container": "container",
@@ -154,7 +154,7 @@
     }
   },
   "order": [
-    "arhaus-collection-header",
+    "hedis-collection-header",
     "main"
   ]
 }

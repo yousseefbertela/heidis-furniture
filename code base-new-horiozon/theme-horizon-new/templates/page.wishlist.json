@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "wishlist",
+      "settings": {
+        "heading": "My List"
+      }
+    }
+  },
+  "order": ["main"]
+}

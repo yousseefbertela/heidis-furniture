@@ -1,4 +1,4 @@
-{%- comment -%} Arhaus-style homepage v12 for Hedi's Furniture. Newsletter removed; warm wood story bg; dining promo framed; bigger nav; tighter carousel gap. {%- endcomment -%}
+{%- comment -%} reference-style homepage v12 for Hedi's Furniture. Newsletter removed; warm wood story bg; dining promo framed; bigger nav; tighter carousel gap. {%- endcomment -%}
 {%- liquid
   assign bg = section.settings.bg_color
   assign ink = section.settings.text_color
@@ -24,7 +24,7 @@
   .ah-btn--light:hover{ background:transparent; color:#fff; border-color:#fff; box-shadow:none; }
   .ah-rv{ opacity:0; transform:translateY(34px); transition:opacity 1.1s ease,transform 1.1s ease; }
   .ah-rv.in{ opacity:1; transform:none; }
-  /* Bigger top-nav links, Arhaus-style (Horizon header uses .menu-list__link) */
+  /* Bigger top-nav links, reference-style (Horizon header uses .menu-list__link) */
   .menu-list__link,
   .menu-list__link-title{ font-size:15.5px !important; letter-spacing:.085em !important; }
   /* HERO */
@@ -206,7 +206,7 @@
 
 {% schema %}
 {
-  "name": "Arhaus Home",
+  "name": "Hedi's Home",
   "tag": "section",
   "settings": [
     { "type": "header", "content": "Palette" },
@@ -235,7 +235,7 @@
     { "type": "url", "id": "room_1_link", "label": "Tile 1 link" },
     { "type": "text", "id": "room_2_image_url", "label": "Tile 2 image", "default": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/lci2303-576.jpg?v=1714084384" },
     { "type": "text", "id": "room_2_title", "label": "Tile 2 title", "default": "Rugs" },
-    { "type": "url", "id": "room_2_link", "label": "Tile 2 link", "default": "shopify://collections/rug" },
+    { "type": "url", "id": "room_2_link", "label": "Tile 2 link" },
     { "type": "text", "id": "room_3_image_url", "label": "Tile 3 image", "default": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/falco-nesting-tables-living-room-layered-nesting-design-fulfily-1.jpg?v=1779818357" },
     { "type": "text", "id": "room_3_title", "label": "Tile 3 title", "default": "Tables" },
     { "type": "url", "id": "room_3_link", "label": "Tile 3 link" },
@@ -262,6 +262,6 @@
     { "type": "text", "id": "col_3_title", "label": "Col 3 title", "default": "Design help" },
     { "type": "text", "id": "col_3_text", "label": "Col 3 text", "default": "Complimentary guidance to plan, style and furnish every room with ease." }
   ],
-  "presets": [ { "name": "Arhaus Home" } ]
+  "presets": [ { "name": "Hedi's Home" } ]
 }
 {% endschema %}
