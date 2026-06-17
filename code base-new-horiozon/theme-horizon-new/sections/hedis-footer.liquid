@@ -116,12 +116,17 @@
         </div>
       </div>
 
-      {%- comment -%} Link columns — pulled from navigation menus (Online Store › Navigation), exactly like the live golden theme. Edit a menu to change that column's links. {%- endcomment -%}
+      {%- comment -%} Link columns — pulled from navigation menus (Online Store › Navigation), exactly like the live golden theme. Each column uses its picked menu, or falls back to the matching golden menu by handle (Shop / Our Company / Customer Care). Edit the menu to change a column's links. {%- endcomment -%}
+      {%- assign col_fallbacks = 'shop,our-company,footer' | split: ',' -%}
       {%- for c in (1..3) -%}
         {%- assign ch = 'col' | append: c | append: '_heading' -%}
         {%- assign cm = 'col' | append: c | append: '_menu' -%}
         {%- assign heading = section.settings[ch] -%}
         {%- assign col_menu = section.settings[cm] -%}
+        {%- if col_menu == blank or col_menu.links.size == 0 -%}
+          {%- assign fb_handle = col_fallbacks[forloop.index0] -%}
+          {%- assign col_menu = linklists[fb_handle] -%}
+        {%- endif -%}
         {%- if heading != blank or col_menu.links.size > 0 -%}
           <div class="af-col">
             {%- if heading != blank -%}<h4>{{ heading }}</h4>{%- endif -%}
@@ -196,11 +201,11 @@
     { "type": "header", "content": "Link columns" },
     { "type": "paragraph", "content": "Each column pulls its links from a navigation menu (Online Store › Navigation) — exactly like the live theme. Edit the menu to change that column's links; the heading below is the column title." },
     { "type": "text", "id": "col1_heading", "label": "Column 1 heading", "default": "Shop" },
-    { "type": "link_list", "id": "col1_menu", "label": "Column 1 menu", "default": "shop" },
+    { "type": "link_list", "id": "col1_menu", "label": "Column 1 menu", "info": "Defaults to the Shop menu. Pick a menu to override." },
     { "type": "text", "id": "col2_heading", "label": "Column 2 heading", "default": "Further Info" },
-    { "type": "link_list", "id": "col2_menu", "label": "Column 2 menu", "default": "our-company" },
+    { "type": "link_list", "id": "col2_menu", "label": "Column 2 menu", "info": "Defaults to the Our Company menu. Pick a menu to override." },
     { "type": "text", "id": "col3_heading", "label": "Column 3 heading", "default": "Customer Service" },
-    { "type": "link_list", "id": "col3_menu", "label": "Column 3 menu", "default": "footer" }
+    { "type": "link_list", "id": "col3_menu", "label": "Column 3 menu", "info": "Defaults to the Customer Care menu. Pick a menu to override." }
   ],
   "presets": [ { "name": "Footer" } ]
 }
