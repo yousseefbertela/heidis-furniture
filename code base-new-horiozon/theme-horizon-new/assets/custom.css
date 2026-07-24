@@ -14,6 +14,8 @@
   --font-accent--family: "Cormorant Garamond", Georgia, serif !important;
   --font-body--family: "Jost", "Helvetica Neue", Arial, sans-serif !important;
   --font-subheading--family: "Jost", "Helvetica Neue", Arial, sans-serif !important;
+  /* Prices + dimensions: clean humanist sans (Arhaus-style), lining numerals. */
+  --font-price: "Nunito Sans", "Helvetica Neue", Arial, sans-serif;
 }
 
 /* ---- 2. Background: plain white, site-wide --------------------------------
@@ -160,7 +162,7 @@ body {
 .product-card .price *,
 .product-card .price__regular,
 .product-card [class*="price"] {
-  font-family: var(--font-primary--family) !important;
+  font-family: var(--font-price) !important;
   font-size: 1rem !important;
   font-weight: 400 !important;
   letter-spacing: 0.01em !important;
@@ -328,10 +330,10 @@ body {
   margin: 0 !important;
 }
 
-/* Price — serif, medium. */
+/* Price — clean humanist sans (Arhaus-style). */
 .product-information .product-details .group-block-content .price,
 .product-information .product-details .price {
-  font-family: var(--font-primary--family) !important;
+  font-family: var(--font-price) !important;
   font-size: clamp(18px, 1.4vw, 22px) !important;
   font-weight: 400 !important;
   color: #1b1b1b !important;
@@ -670,7 +672,7 @@ body {
   margin: 0 0 8px;
 }
 .product-information .ah-dims__value {
-  font-family: var(--font-primary--family);
+  font-family: var(--font-price);
   font-size: 15px;
   color: #3a352f;
   margin: 0 0 8px;
@@ -803,10 +805,10 @@ body {
   color: #1b1b1b !important;
   line-height: 1.25 !important;
 }
-/* Price — small Jost, muted (reference "From $X"). */
+/* Price — small clean sans, muted (reference "From $X"). */
 .product-recommendations .product-card .price,
 .product-recommendations .product-card [class*="price"] {
-  font-family: var(--font-body--family) !important;
+  font-family: var(--font-price) !important;
   font-size: 0.9rem !important;
   letter-spacing: 0.01em !important;
   color: #4a4641 !important;
