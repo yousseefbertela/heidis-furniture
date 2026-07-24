@@ -164,7 +164,7 @@ body {
 .product-card [class*="price"] {
   font-family: var(--font-price) !important;
   font-size: 1rem !important;
-  font-weight: 400 !important;
+  font-weight: 300 !important;
   letter-spacing: 0.01em !important;
 }
 /* Sale price in the LL draft's red. */
@@ -335,7 +335,7 @@ body {
 .product-information .product-details .price {
   font-family: var(--font-price) !important;
   font-size: clamp(18px, 1.4vw, 22px) !important;
-  font-weight: 400 !important;
+  font-weight: 300 !important;
   color: #1b1b1b !important;
 }
 
@@ -674,6 +674,7 @@ body {
 .product-information .ah-dims__value {
   font-family: var(--font-price);
   font-size: 15px;
+  font-weight: 300;
   color: #3a352f;
   margin: 0 0 8px;
 }
@@ -810,6 +811,7 @@ body {
 .product-recommendations .product-card [class*="price"] {
   font-family: var(--font-price) !important;
   font-size: 0.9rem !important;
+  font-weight: 300 !important;
   letter-spacing: 0.01em !important;
   color: #4a4641 !important;
 }
