@@ -1,0 +1,83 @@
+{%- comment -%}
+  Renders one merged "Availability" filter with four options in a fixed order:
+    In Stock  ->  native filter.v.availability = 1
+    Available Soon ->  metafield custom.availability_status = "Available Soon"
+    Custom    ->  metafield custom.availability_status = "Custom"
+    Out of Stock -> native filter.v.availability = 0
+  Each option is a single native filter value, so we reuse Shopify's own
+  url_to_add / url_to_remove (preserves other active filters, correct encoding).
+  An option is only rendered if its underlying value exists in this collection.
+
+  Params:
+    native_filter  the filter.v.availability filter object (may be nil)
+    status_filter  the custom.availability_status metafield filter (may be nil)
+    show_count     true to render the count badge
+    count_class    css class for the count badge
+{%- endcomment -%}
+{%- assign _order = 'instock,available_soon,custom,outofstock' | split: ',' -%}
+{%- for _tok in _order -%}
+  {%- liquid
+    assign _v = null
+    assign _lbl = ''
+    case _tok
+      when 'instock'
+        assign _lbl = 'In Stock'
+        if native_filter
+          for v in native_filter.values
+            if v.value == '1'
+              assign _v = v
+              break
+            endif
+          endfor
+        endif
+      when 'outofstock'
+        assign _lbl = 'Out of Stock'
+        if native_filter
+          for v in native_filter.values
+            if v.value == '0'
+              assign _v = v
+              break
+            endif
+          endfor
+        endif
+      when 'available_soon'
+        assign _lbl = 'Available Soon'
+        if status_filter
+          for v in status_filter.values
+            assign _vl = v.label | downcase
+            if _vl contains 'available' or _vl contains 'soon'
+              assign _v = v
+              break
+            endif
+          endfor
+        endif
+      when 'custom'
+        assign _lbl = 'Custom'
+        if status_filter
+          for v in status_filter.values
+            assign _vl = v.label | downcase
+            if _vl contains 'custom'
+              assign _v = v
+              break
+            endif
+          endfor
+        endif
+    endcase
+  -%}
+  {%- if _v -%}
+    {%- liquid
+      assign _url = _v.url_to_add
+      if _v.active
+        assign _url = _v.url_to_remove
+      endif
+    -%}
+    <li>
+      <label class="ahc-opt{% if _v.active %} is-active{% endif %}">
+        <input type="checkbox" class="ahc-opt__cb" data-ahc-url="{{ _url }}"{% if _v.active %} checked{% endif %}>
+        <span class="ahc-opt__box" aria-hidden="true"></span>
+        <span class="ahc-opt__label">{{ _lbl }}</span>
+        {%- if show_count -%}<span class="{{ count_class }}">{{ _v.count }}</span>{%- endif -%}
+      </label>
+    </li>
+  {%- endif -%}
+{%- endfor -%}

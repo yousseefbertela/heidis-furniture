@@ -493,6 +493,22 @@
           assign ahc_mat_registry = ahc_mat_registry | append: 'Other' | append: '¦' | append: ocount | append: '¦' | append: oflag | append: '¦' | append: ovals | append: '§'
         endif
       endif
+
+      comment
+        Availability merge: combine the native In stock/Out of stock filter
+        (filter.v.availability) with the custom Availability Status metafield
+        (Available Soon / Custom) into one "Availability" control. Each option is
+        a single native filter value, so we reuse Shopify's own url_to_add/remove.
+      endcomment
+      assign ahc_avail_native = null
+      assign ahc_avail_status = null
+      for f in collection.filters
+        if f.param_name == 'filter.v.availability'
+          assign ahc_avail_native = f
+        elsif f.param_name == 'filter.p.m.custom.availability_status'
+          assign ahc_avail_status = f
+        endif
+      endfor
     -%}
 
     <div class="ahc-toolbar" id="ahc-toolbar-{{ section.id }}">
@@ -500,7 +516,13 @@
       <div class="ahc-chips" role="group" aria-label="Refine">
         {%- assign chip_rendered = 0 -%}
         {%- for filter in collection.filters limit: chip_count -%}
-          {%- if filter.values.size > 0 -%}
+          {%- liquid
+            assign ahc_skip_chip = false
+            if ahc_avail_status and ahc_avail_native and filter.param_name == ahc_avail_status.param_name
+              assign ahc_skip_chip = true
+            endif
+          -%}
+          {%- if filter.values.size > 0 and ahc_skip_chip == false -%}
             <div class="ahc-chip-wrap">
               <button class="ahc-chip" type="button" aria-expanded="false" data-ahc-chip data-ahc-filter="{{ filter.label | escape }}">
                 {{ filter.label }}
@@ -509,7 +531,12 @@
               <div class="ahc-panel" role="menu">
                 <p class="ahc-panel__title">{{ filter.label }}</p>
                 <ul class="ahc-panel__list">
-                  {%- if ahc_mat_param != blank and filter.param_name == ahc_mat_param and ahc_mat_registry != blank -%}
+                  {%- if ahc_avail_native and filter.param_name == ahc_avail_native.param_name -%}
+                    {%- render 'ahc-availability-options',
+                      native_filter: ahc_avail_native,
+                      status_filter: ahc_avail_status,
+                      show_count: false -%}
+                  {%- elsif ahc_mat_param != blank and filter.param_name == ahc_mat_param and ahc_mat_registry != blank -%}
                     {%- render 'ahc-material-options',
                       registry: ahc_mat_registry,
                       mat_param: ahc_mat_param,
@@ -575,11 +602,23 @@
         </div>
         <div class="ahc-drawer__body">
           {%- for filter in collection.filters -%}
-            {%- if filter.values.size > 0 -%}
+            {%- liquid
+              assign ahc_skip_group = false
+              if ahc_avail_status and ahc_avail_native and filter.param_name == ahc_avail_status.param_name
+                assign ahc_skip_group = true
+              endif
+            -%}
+            {%- if filter.values.size > 0 and ahc_skip_group == false -%}
               <div class="ahc-drawer__group">
                 <p class="ahc-drawer__gtitle">{{ filter.label }}</p>
                 <ul class="ahc-drawer__list">
-                  {%- if ahc_mat_param != blank and filter.param_name == ahc_mat_param and ahc_mat_registry != blank -%}
+                  {%- if ahc_avail_native and filter.param_name == ahc_avail_native.param_name -%}
+                    {%- render 'ahc-availability-options',
+                      native_filter: ahc_avail_native,
+                      status_filter: ahc_avail_status,
+                      show_count: true,
+                      count_class: 'ahc-drawer__count' -%}
+                  {%- elsif ahc_mat_param != blank and filter.param_name == ahc_mat_param and ahc_mat_registry != blank -%}
                     {%- render 'ahc-material-options',
                       registry: ahc_mat_registry,
                       mat_param: ahc_mat_param,
