@@ -412,7 +412,7 @@
           unless f.param_name == ahc_mat_param
             for v in f.values
               if v.active
-                assign ev = v.value | url_encode
+                assign ev = v.value | replace: '&amp;', '&' | url_encode
                 assign ahc_mat_keep = ahc_mat_keep | append: '&' | append: f.param_name | append: '=' | append: ev
               endif
             endfor

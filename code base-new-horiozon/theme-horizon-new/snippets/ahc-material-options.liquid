@@ -55,7 +55,12 @@
     assign _nm = _newmats | split: '^'
     for _x in _nm
       if _x != ''
-        assign _ex = _x | url_encode
+        comment
+          Un-escape HTML entities (e.g. &amp; -> &) that Liquid returns in
+          filter values; Shopify's filter matching expects the literal char,
+          so url_encode must see & not &amp; or the value never matches.
+        endcomment
+        assign _ex = _x | replace: '&amp;', '&' | url_encode
         assign _matq = _matq | append: '&' | append: mat_param | append: '=' | append: _ex
       endif
     endfor
