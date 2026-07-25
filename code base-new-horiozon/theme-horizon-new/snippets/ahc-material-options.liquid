@@ -1,0 +1,76 @@
+{%- comment -%}
+  Renders the simplified Material filter as clean buckets (Wood, Metal, ...).
+  Each bucket links to a native filter URL that OR-selects every raw metafield
+  value under it, while preserving other active filters + sort. Multi-select:
+  toggling a bucket adds/removes its raw values from the active set.
+
+  Params (pass via render):
+    registry    ahc_mat_registry  — records joined by §, fields by ¦
+                (Name ¦ count ¦ active(0/1) ¦ rawval1^rawval2^...)
+    mat_param   material filter param_name (e.g. filter.p.m.custom.material)
+    keep        preserved other-filter query, each piece prefixed with &
+    active_mat  ^-joined currently active raw material values
+    col_url     collection.url
+    show_count  true to render the count badge
+    count_class css class for the count badge (matches surrounding context)
+{%- endcomment -%}
+{%- assign _recs = registry | split: '§' -%}
+{%- for _rec in _recs -%}
+  {%- liquid
+    assign _f = _rec | split: '¦'
+    assign _name = _f[0]
+    assign _count = _f[1]
+    assign _flag = _f[2]
+    assign _vals = _f[3] | split: '^'
+
+    assign _newmats = ''
+    if _flag == '1'
+      assign _cur = active_mat | split: '^'
+      for _x in _cur
+        if _x != ''
+          assign _inb = false
+          for _bv in _vals
+            if _bv == _x
+              assign _inb = true
+              break
+            endif
+          endfor
+          unless _inb
+            assign _newmats = _newmats | append: _x | append: '^'
+          endunless
+        endif
+      endfor
+    else
+      assign _newmats = active_mat
+      for _bv in _vals
+        if _bv != ''
+          unless _newmats contains _bv
+            assign _newmats = _newmats | append: _bv | append: '^'
+          endunless
+        endif
+      endfor
+    endif
+
+    assign _matq = ''
+    assign _nm = _newmats | split: '^'
+    for _x in _nm
+      if _x != ''
+        assign _ex = _x | url_encode
+        assign _matq = _matq | append: '&' | append: mat_param | append: '=' | append: _ex
+      endif
+    endfor
+    assign _allq = keep | append: _matq | remove_first: '&'
+    assign _url = col_url
+    if _allq != blank
+      assign _url = col_url | append: '?' | append: _allq
+    endif
+  -%}
+  <li>
+    <label class="ahc-opt{% if _flag == '1' %} is-active{% endif %}">
+      <input type="checkbox" class="ahc-opt__cb" data-ahc-url="{{ _url }}"{% if _flag == '1' %} checked{% endif %}>
+      <span class="ahc-opt__box" aria-hidden="true"></span>
+      <span class="ahc-opt__label">{{ _name }}</span>
+      {%- if show_count -%}<span class="{{ count_class }}">{{ _count }}</span>{%- endif -%}
+    </label>
+  </li>
+{%- endfor -%}

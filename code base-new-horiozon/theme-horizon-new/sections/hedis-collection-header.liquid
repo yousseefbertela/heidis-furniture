@@ -374,6 +374,127 @@
       assign values_per_chip = section.settings.values_per_chip | default: 14
     -%}
 
+    {%- comment -%}
+      Material filter simplification.
+      The store's Material metafield (filter.p.m.custom.material) holds raw
+      composition strings ("100% Olefin, Solid FSC-Certified Teak, ...") so the
+      native filter lists dozens of unreadable, near-unique values. We roll those
+      raw values up into a few clean buckets (Wood / Metal / Fabric / ...) by
+      keyword, summing counts. Each bucket links to a native filter URL that
+      OR-selects every raw value under it, so Shopify does the actual filtering.
+      A value may fall in several buckets (e.g. teak + olefin => Wood + Fabric),
+      exactly like Arhaus. Anything unmatched lands in "Other" so nothing hides.
+      Result string `ahc_mat_registry`: records joined by §, fields by ¦:
+        Name ¦ count ¦ active(0/1) ¦ rawval1^rawval2^...
+    {%- endcomment -%}
+    {%- liquid
+      assign ahc_mat_filter = null
+      for f in collection.filters
+        assign flbl = f.label | downcase
+        if flbl contains 'material'
+          assign ahc_mat_filter = f
+          break
+        endif
+      endfor
+
+      assign ahc_mat_registry = ''
+      assign ahc_mat_param = ''
+      assign ahc_mat_keep = ''
+      assign ahc_active_mat = ''
+
+      if ahc_mat_filter
+        assign ahc_mat_param = ahc_mat_filter.param_name
+
+        comment
+          Preserve every OTHER active filter (+ sort) so bucket links don't drop them.
+        endcomment
+        for f in collection.filters
+          unless f.param_name == ahc_mat_param
+            for v in f.values
+              if v.active
+                assign ev = v.value | url_encode
+                assign ahc_mat_keep = ahc_mat_keep | append: '&' | append: f.param_name | append: '=' | append: ev
+              endif
+            endfor
+          endunless
+        endfor
+        if collection.sort_by != blank
+          assign ahc_mat_keep = ahc_mat_keep | append: '&sort_by=' | append: collection.sort_by
+        endif
+
+        comment
+          Currently-active raw material values (^-joined) for multi-bucket toggling.
+        endcomment
+        for v in ahc_mat_filter.values
+          if v.active
+            assign ahc_active_mat = ahc_active_mat | append: v.value | append: '^'
+          endif
+        endfor
+
+        assign ahc_bconf = 'Wood=teak~eucalyptus~mahogany~oak~walnut~acacia~mango~pine~cedar~wood|Metal=aluminum~aluminium~iron~steel~metal~brass~zinc|Fabric=olefin~polypropylene~polyester~acrylic~fabric~linen~cotton~velvet~boucle|Wicker=wicker~rattan~polyethylene~rope~resin|Concrete=concrete~cement~grc|Stone=lavastone~stone~marble~travertine~granite~slate~limestone|Ceramic=ceramic~porcelain'
+        assign ahc_buckets = ahc_bconf | split: '|'
+        assign ahc_matched = ''
+
+        for b in ahc_buckets
+          assign bparts = b | split: '='
+          assign bname = bparts[0]
+          assign bkws = bparts[1] | split: '~'
+          assign bcount = 0
+          assign bactive = false
+          assign bvals = ''
+          for v in ahc_mat_filter.values
+            assign lab = v.label | downcase
+            assign hit = false
+            for kw in bkws
+              if lab contains kw
+                assign hit = true
+                break
+              endif
+            endfor
+            if hit
+              assign bcount = bcount | plus: v.count
+              assign bvals = bvals | append: v.value | append: '^'
+              assign ahc_matched = ahc_matched | append: '|#|' | append: v.value | append: '|#|'
+              if v.active
+                assign bactive = true
+              endif
+            endif
+          endfor
+          if bcount > 0
+            assign bflag = '0'
+            if bactive
+              assign bflag = '1'
+            endif
+            assign ahc_mat_registry = ahc_mat_registry | append: bname | append: '¦' | append: bcount | append: '¦' | append: bflag | append: '¦' | append: bvals | append: '§'
+          endif
+        endfor
+
+        comment
+          Catch-all: any raw value not matched above, so no product silently drops.
+        endcomment
+        assign ocount = 0
+        assign oactive = false
+        assign ovals = ''
+        for v in ahc_mat_filter.values
+          assign vkey = '|#|' | append: v.value | append: '|#|'
+          unless ahc_matched contains vkey
+            assign ocount = ocount | plus: v.count
+            assign ovals = ovals | append: v.value | append: '^'
+            if v.active
+              assign oactive = true
+            endif
+          endunless
+        endfor
+        if ocount > 0
+          assign oflag = '0'
+          if oactive
+            assign oflag = '1'
+          endif
+          assign ahc_mat_registry = ahc_mat_registry | append: 'Other' | append: '¦' | append: ocount | append: '¦' | append: oflag | append: '¦' | append: ovals | append: '§'
+        endif
+      endif
+    -%}
+
     <div class="ahc-toolbar" id="ahc-toolbar-{{ section.id }}">
       {%- if section.settings.show_filters -%}
       <div class="ahc-chips" role="group" aria-label="Refine">
@@ -388,21 +509,31 @@
               <div class="ahc-panel" role="menu">
                 <p class="ahc-panel__title">{{ filter.label }}</p>
                 <ul class="ahc-panel__list">
-                  {%- for v in filter.values limit: values_per_chip -%}
-                    {%- liquid
-                      assign vurl = v.url_to_add
-                      if v.active
-                        assign vurl = v.url_to_remove
-                      endif
-                    -%}
-                    <li>
-                      <label class="ahc-opt{% if v.active %} is-active{% endif %}">
-                        <input type="checkbox" class="ahc-opt__cb" data-ahc-url="{{ vurl }}"{% if v.active %} checked{% endif %}>
-                        <span class="ahc-opt__box" aria-hidden="true"></span>
-                        <span class="ahc-opt__label">{{ v.label }}</span>
-                      </label>
-                    </li>
-                  {%- endfor -%}
+                  {%- if ahc_mat_param != blank and filter.param_name == ahc_mat_param and ahc_mat_registry != blank -%}
+                    {%- render 'ahc-material-options',
+                      registry: ahc_mat_registry,
+                      mat_param: ahc_mat_param,
+                      keep: ahc_mat_keep,
+                      active_mat: ahc_active_mat,
+                      col_url: collection.url,
+                      show_count: false -%}
+                  {%- else -%}
+                    {%- for v in filter.values limit: values_per_chip -%}
+                      {%- liquid
+                        assign vurl = v.url_to_add
+                        if v.active
+                          assign vurl = v.url_to_remove
+                        endif
+                      -%}
+                      <li>
+                        <label class="ahc-opt{% if v.active %} is-active{% endif %}">
+                          <input type="checkbox" class="ahc-opt__cb" data-ahc-url="{{ vurl }}"{% if v.active %} checked{% endif %}>
+                          <span class="ahc-opt__box" aria-hidden="true"></span>
+                          <span class="ahc-opt__label">{{ v.label }}</span>
+                        </label>
+                      </li>
+                    {%- endfor -%}
+                  {%- endif -%}
                 </ul>
               </div>
             </div>
@@ -448,22 +579,33 @@
               <div class="ahc-drawer__group">
                 <p class="ahc-drawer__gtitle">{{ filter.label }}</p>
                 <ul class="ahc-drawer__list">
-                  {%- for v in filter.values -%}
-                    {%- liquid
-                      assign vurl = v.url_to_add
-                      if v.active
-                        assign vurl = v.url_to_remove
-                      endif
-                    -%}
-                    <li>
-                      <label class="ahc-opt{% if v.active %} is-active{% endif %}">
-                        <input type="checkbox" class="ahc-opt__cb" data-ahc-url="{{ vurl }}"{% if v.active %} checked{% endif %}>
-                        <span class="ahc-opt__box" aria-hidden="true"></span>
-                        <span class="ahc-opt__label">{{ v.label }}</span>
-                        <span class="ahc-drawer__count">{{ v.count }}</span>
-                      </label>
-                    </li>
-                  {%- endfor -%}
+                  {%- if ahc_mat_param != blank and filter.param_name == ahc_mat_param and ahc_mat_registry != blank -%}
+                    {%- render 'ahc-material-options',
+                      registry: ahc_mat_registry,
+                      mat_param: ahc_mat_param,
+                      keep: ahc_mat_keep,
+                      active_mat: ahc_active_mat,
+                      col_url: collection.url,
+                      show_count: true,
+                      count_class: 'ahc-drawer__count' -%}
+                  {%- else -%}
+                    {%- for v in filter.values -%}
+                      {%- liquid
+                        assign vurl = v.url_to_add
+                        if v.active
+                          assign vurl = v.url_to_remove
+                        endif
+                      -%}
+                      <li>
+                        <label class="ahc-opt{% if v.active %} is-active{% endif %}">
+                          <input type="checkbox" class="ahc-opt__cb" data-ahc-url="{{ vurl }}"{% if v.active %} checked{% endif %}>
+                          <span class="ahc-opt__box" aria-hidden="true"></span>
+                          <span class="ahc-opt__label">{{ v.label }}</span>
+                          <span class="ahc-drawer__count">{{ v.count }}</span>
+                        </label>
+                      </li>
+                    {%- endfor -%}
+                  {%- endif -%}
                 </ul>
               </div>
             {%- endif -%}
