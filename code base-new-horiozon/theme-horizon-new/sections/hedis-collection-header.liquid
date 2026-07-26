@@ -445,7 +445,7 @@
         assign ahc_prio = 'Fabric=olefin~polypropylene~polyester~acrylic~fabric~linen~cotton~velvet~boucle~viscose~rayon~wool~nylon~leather~burlap~chenille~suede~sheepskin|Wicker=wicker~rattan~polyethylene~rope~resin~seagrass~jute~cane|Stone=lavastone~marble~travertine~granite~slate~limestone~dolomite~stone|Concrete=concrete~cement~grc|Ceramic=ceramic~porcelain|Wood=teak~eucalyptus~mahogany~oak~walnut~acacia~mango~pine~cedar~parawood~hardwood~veneer~bamboo~wood|Metal=aluminum~aluminium~iron~steel~metal~brass~zinc~nickel'
         assign ahc_prio_buckets = ahc_prio | split: '|'
 
-        comment Pass 1: assign each value to exactly one bucket name (parallel to .values order). endcomment
+        # Pass 1: assign each value to exactly one bucket name (parallel to .values order).
         assign ahc_assigns = ''
         for v in ahc_mat_filter.values
           assign lab = v.label | downcase
@@ -469,7 +469,7 @@
         endfor
         assign ahc_assigns_arr = ahc_assigns | split: '^'
 
-        comment Pass 2: emit buckets in display order, each pulling only its own assigned values. endcomment
+        # Pass 2: emit buckets in display order, each pulling only its own assigned values.
         assign ahc_display = 'Wood,Metal,Fabric,Wicker,Stone,Concrete,Ceramic,Other' | split: ','
         for dname in ahc_display
           assign bcount = 0
