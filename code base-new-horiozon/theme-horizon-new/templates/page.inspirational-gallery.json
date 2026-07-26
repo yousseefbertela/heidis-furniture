@@ -1,0 +1,36 @@
+{
+  "sections": {
+    "gallery": {
+      "type": "hedis-inspiration-gallery",
+      "blocks": {
+        "i1":  { "type": "image", "settings": { "size": "large",  "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/huxley-sofa-in-modern-spacious-living-room-with-natural-light-fulfily-0.jpg?v=1780164479" } },
+        "i2":  { "type": "image", "settings": { "size": "normal", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/full-shot-of-kandor-leather-sofa-in-modern-living-room-fulfily-1.jpg?v=1777176616" } },
+        "i3":  { "type": "image", "settings": { "size": "normal", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/elegant-dining-room-white-miramara-chandelier-styled-setting-fulfily-2.jpg?v=1777888762" } },
+        "i4":  { "type": "image", "settings": { "size": "tall",   "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/full-height-realistic-olive-tree-in-modern-interior-fulfily-1.jpg?v=1778773505" } },
+        "i5":  { "type": "image", "settings": { "size": "normal", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/belmont-sectional-sofa-in-modern-living-room-fulfily-0.jpg?v=1780950457" } },
+        "i6":  { "type": "image", "settings": { "size": "wide",   "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/mccoy-sectional-outdoor-elevated-view-fulfily-2.jpg?v=1775770782" } },
+        "i7":  { "type": "image", "settings": { "size": "normal", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/full-view-of-lowell-sofa-in-ivory-leather-in-stylish-living-room-fulfily-1.jpg?v=1780691690" } },
+        "i8":  { "type": "image", "settings": { "size": "tall",   "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/person-seated-on-sapphire-olive-dylan-sofa-fulfily-2.jpg?v=1777174859" } },
+        "i9":  { "type": "image", "settings": { "size": "normal", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/full-view-outdoor-teak-table-garden-dining-scene-fulfily-1.jpg?v=1778013719" } },
+        "i10": { "type": "image", "settings": { "size": "normal", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/ophelia-swivel-chair-modern-living-room-two-in-medium-gray-fabric-fulfily-1.jpg?v=1780695730" } },
+        "i11": { "type": "image", "settings": { "size": "normal", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/falco-nesting-tables-close-up-reclaimed-french-oak-bases-fulfily-0.jpg?v=1779818358" } },
+        "i12": { "type": "image", "settings": { "size": "large",  "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/interior-modern-organic-seat-belt-rocking-chair-setup-fulfily-2.jpg?v=1775013649" } },
+        "i13": { "type": "image", "settings": { "size": "normal", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/side-view-kandor-leather-sofa-emphasizing-vertical-channels-fulfily-2.jpg?v=1777176616" } },
+        "i14": { "type": "image", "settings": { "size": "tall",   "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/miramar-chandelier-white-modern-dining-area-fulfily-2.jpg?v=1777889050" } },
+        "i15": { "type": "image", "settings": { "size": "normal", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/tiny-flamingo-sculpture-modern-interior-soft-cinematic-light-fulfily-1.jpg?v=1779562327" } },
+        "i16": { "type": "image", "settings": { "size": "wide",   "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/modern-coastal-interior-dining-space-with-teak-table-fulfily-2.jpg?v=1778011164" } },
+        "i17": { "type": "image", "settings": { "size": "normal", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/belmont-sectional-sofa-full-view-living-room-cozy-ambience-fulfily-1.jpg?v=1780950663" } },
+        "i18": { "type": "image", "settings": { "size": "normal", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/asher-dining-table-rectangular-artistic-shot-fulfily-2.jpg?v=1775014005" } },
+        "i19": { "type": "image", "settings": { "size": "normal", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/ophelia-swivel-chair-side-profile-warm-living-space-textured-rug-fulfily-2.jpg?v=1780695730" } },
+        "i20": { "type": "image", "settings": { "size": "normal", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/rusticwormwoodoak.jpg?v=1776704700" } },
+        "i21": { "type": "image", "settings": { "size": "normal", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/side-view-of-lowell-sofa-against-textured-wall-with-decor-elements-fulfily-2.jpg?v=1780691690" } },
+        "i22": { "type": "image", "settings": { "size": "normal", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/close-up-of-huxley-sofa-stitch-work-and-fabric-weave-in-cozyreadingnook-fulfily-1.jpg?v=1780164479" } },
+        "i23": { "type": "image", "settings": { "size": "normal", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/close-up-view-of-kandor-leather-sofa-fine-grain-texture-fulfily-0.jpg?v=1777176616" } },
+        "i24": { "type": "image", "settings": { "size": "normal", "image_url": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/outdoor-coastal-teak-dining-table-on-sunlit-patio-fulfily-1.jpg?v=1778011164" } }
+      },
+      "block_order": ["i1","i2","i3","i4","i5","i6","i7","i8","i9","i10","i11","i12","i13","i14","i15","i16","i17","i18","i19","i20","i21","i22","i23","i24"],
+      "settings": {}
+    }
+  },
+  "order": ["gallery"]
+}

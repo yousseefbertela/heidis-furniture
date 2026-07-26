@@ -11,22 +11,33 @@
 - Prefer the smallest change: extend/configure existing theme sections over creating new files.
 
 ## Deploying changes — how code reaches the Horizon draft (IMPORTANT)
-The store has the **Shopify MCP** connected + authorized (tools `mcp__<id>__graphql_query` /
-`graphql_mutation`). That is how we push. The Shopify **CLI is NOT authorized** for this store
-(`shopify theme push` / `shopify theme dev` fail with "not authorized") — don't use it. The reliable
-loop (settled 2026-06-17):
+Two push paths exist. **Prefer the CLI** — it surfaces validation errors the MCP hides.
+
 1. **Edit locally** in `code base-new-horiozon/theme-horizon-new/`.
 2. **Commit + push to GitHub** — `git push origin main`; repo `yousseefbertela/heidis-furniture`,
    **public**, commit straight to `main`.
-3. **Push to the Horizon draft via the MCP** — `graphql_mutation` → `themeFilesUpsert`, with
-   `themeId: "gid://shopify/OnlineStoreTheme/151554883672"` and, per file,
-   `body: { type: URL, value: "https://raw.githubusercontent.com/yousseefbertela/heidis-furniture/<SHA>/code%20base-new-horiozon/theme-horizon-new/<themepath>" }`.
-   Shopify fetches the exact committed bytes from the public raw URL → perfect fidelity, no
-   hand-transcription. `filename` is the theme-root-relative path (e.g. `sections/header.liquid`);
-   use `%20` for the spaces in the repo path.
-4. **Verify** — `themeFilesUpsert` returns an **empty `upsertedThemeFiles` array even on success**;
-   that is NOT a failure. Confirm with `theme(id){ files(filenames:[…]){ nodes{ checksumMd5 } } }`
-   and match each to `git show HEAD:<repopath> | md5sum` (or `curl -s <rawURL> | md5sum`).
+3. **Push to the Horizon draft. Pick one:**
+   - **CLI (preferred, authorized as of 2026-06-18).** Always scope to the changed file(s) and use
+     `--nodelete` so it can NEVER touch editor-owned JSON or delete remote files:
+     `shopify theme push --store=hedisfurniture.myshopify.com --theme=151554883672 --path="code base-new-horiozon/theme-horizon-new" --only=sections/hedis-footer.liquid --nodelete`
+     A bare `shopify theme push` (no `--only`) would upload local `settings_data.json` /
+     `templates/*.json` / `*-group.json` and **wipe the editor config** — never run it unscoped.
+     The CLI prints real schema/Liquid errors (e.g. `Invalid schema: setting ... default is invalid`).
+     To delete one remote file: `--only=<path>` with the file absent locally and WITHOUT `--nodelete`.
+   - **MCP `themeFilesUpsert`** — `graphql_mutation`, `themeId: "gid://shopify/OnlineStoreTheme/151554883672"`,
+     per file `body: { type: URL, value: "https://raw.githubusercontent.com/yousseefbertela/heidis-furniture/<SHA>/code%20base-new-horiozon/theme-horizon-new/<themepath>" }`
+     (`%20` for the repo-path spaces; `filename` is the theme-root-relative path).
+     **CRITICAL caveat:** an empty `upsertedThemeFiles` array does NOT prove success — Shopify
+     **silently rejects invalid files** (e.g. a bad `{% schema %}`) and returns the same empty array
+     with no `userErrors`. If a push "succeeds" but the draft never changes, the file is being
+     rejected; switch to the CLI to see the actual error. (URL-body `type: URL` is also fragile.)
+4. **Verify ALWAYS** with `theme(id){ files(filenames:[…]){ nodes{ checksumMd5 } } }` and match each to
+   `git show HEAD:<repopath> | md5sum`. Mismatch = the push did not land — do not trust the success message.
+
+**Schema gotcha:** a `link_list` setting's `default` accepts ONLY `main-menu` or `footer`; any other
+menu handle is "invalid" and silently kills the whole upsert. To wire a column to a custom menu,
+leave the `link_list` default off and resolve it in Liquid by handle: `linklists['shop'].links`
+(see `sections/hedis-footer.liquid` — columns fall back to `shop`/`our-company`/`footer`).
 
 **Safety:** the MCP **auto-blocks writes to the live/MAIN theme** — `themeFilesUpsert` only works on
 unpublished themes, so it physically cannot touch live **golden**. Still always pass the draft id.
@@ -93,3 +104,32 @@ layout). For content that must persist + stay editable, use **section-setting de
 - **Native swatches** (the circular colour chips + `Color: <value>` label) are Horizon's built-in
   `variant-picker` block (`show_swatches: true`) — no custom code needed; just configure swatches per
   option value in Admin.
+
+### Inspirational Gallery (Horizon theme) — "Your Style, Your Story"
+- **What:** an Arhaus-style "Inspirational Gallery" page (full-bleed masonry of lifestyle/interior
+  photos with an editorial heading + subtitle), modeled on
+  `arhaus.com/pages/inspirational-gallery`. Lives under the **Design Services** area of the site.
+- **Files (in `code base-new-horiozon/theme-horizon-new/`):**
+  - `sections/hedis-inspiration-gallery.liquid` — reusable theme **section** (scoped `#hig-<id>`
+    markup + `{% stylesheet %}`-style inline `<style>` + `{% schema %}`). Has a **preset**, so it can
+    be dragged onto ANY page in the editor and ships pre-populated with ~24 demo interior images.
+  - `templates/page.inspirational-gallery.json` — page template that renders the section with the 24
+    demo image blocks (bootstrap; editor owns it after first open).
+- **Shopify page:** "Inspirational Gallery" (`/pages/inspirational-gallery`,
+  `Page id 120782028888`, template suffix `inspirational-gallery`, published). Unlinked from any menu,
+  so it does NOT surface on live golden (golden lacks the template → renders as a plain page).
+- **Editable:** heading, subtitle, breadcrumb toggle, columns (3-6, default 5), gap (default 4px), row-height unit
+  (desktop+mobile), full-bleed toggle, colors, padding, lightbox toggle — all section settings.
+  Each image is a **block**: native `image_picker` ("Select image" in editor) **plus** an `image_url`
+  text fallback (so it ships populated without uploads), a `size` (normal / tall / wide / large
+  feature → drives col/row spans for the masonry rhythm), and an optional `link`.
+- **Layout:** CSS Grid masonry — `grid-template-columns: repeat(--cols,1fr)`, `grid-auto-rows: --unit`,
+  `grid-auto-flow: row dense`; tiles span rows/cols by `size`. 5 cols desktop → 4 (≤1100) → 2 (≤749).
+  Optional click-to-zoom **lightbox** (vanilla JS, prev/next/Esc). Scroll-reveal is gated on a
+  JS-added `.hig-js` class so tiles are NEVER permanently hidden if JS is off/fails.
+- **Demo images:** store CDN `/files/...fulfily*` interior room scenes (living/dining rooms, a person
+  on a sofa, material close-ups). Merchant swaps any via the block's image picker.
+- **NOT linked in nav:** `main-menu` (where "Design Services" lives) is shared with live golden, so a
+  nav link was deliberately not added. To put it under Design Services: Admin → Navigation → Main menu
+  → add item under "Design Services" → `/pages/inspirational-gallery` (this DOES change golden's nav),
+  or point Horizon's `header-group.json` at a Horizon-only menu first.
