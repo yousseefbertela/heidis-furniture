@@ -87,6 +87,9 @@
     href="{{ 'product-title-truncation.js' | asset_url }}"
     fetchpriority="low"
   >
+
+  {%- comment -%} Arhaus-style instant (no-reload) filtering for the custom collection filter. {%- endcomment -%}
+  <script src="{{ 'ahc-filter-ajax.js' | asset_url }}" defer></script>
 {% endif %}
 
 <link

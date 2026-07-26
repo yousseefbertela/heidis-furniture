@@ -660,113 +660,90 @@
 
 <script>
 (function(){
-  var root = document.getElementById('ahc-{{ section.id }}');
-  if(!root) return;
+  var SID = '{{ section.id }}';
+  function q(id){ return document.getElementById(id); }
 
-  var rail = document.getElementById('ahc-rail-{{ section.id }}');
-  var navs = root.querySelectorAll('.ahc-nav');
-  function step(){ var c = rail && rail.children[0]; return c ? (c.getBoundingClientRect().width + 8) : 300; }
-  function sync(){
-    if(!rail) return;
-    var max = rail.scrollWidth - rail.clientWidth - 2;
-    navs.forEach(function(b){
-      var prev = b.classList.contains('ahc-nav--prev');
-      if(rail.scrollWidth <= rail.clientWidth + 4){ b.hidden = true; return; }
-      b.hidden = prev ? rail.scrollLeft <= 2 : rail.scrollLeft >= max;
-    });
-  }
-  navs.forEach(function(b){
-    b.addEventListener('click', function(){
+  /* UI init (rail arrows, chip dropdowns, drawer). Exposed globally + re-callable
+     so the AJAX controller can rebind after it swaps this section's DOM. Element
+     listeners bind to fresh nodes each call (old nodes are discarded on swap);
+     document-level listeners are bound once and guarded. */
+  function initUI(){
+    var root = q('ahc-' + SID);
+    if(!root) return;
+
+    var rail = q('ahc-rail-' + SID);
+    var navs = root.querySelectorAll('.ahc-nav');
+    function step(){ var c = rail && rail.children[0]; return c ? (c.getBoundingClientRect().width + 8) : 300; }
+    function sync(){
       if(!rail) return;
-      rail.scrollBy({ left: b.classList.contains('ahc-nav--prev') ? -step()*1.4 : step()*1.4, behavior:'smooth' });
+      var max = rail.scrollWidth - rail.clientWidth - 2;
+      navs.forEach(function(b){
+        var prev = b.classList.contains('ahc-nav--prev');
+        if(rail.scrollWidth <= rail.clientWidth + 4){ b.hidden = true; return; }
+        b.hidden = prev ? rail.scrollLeft <= 2 : rail.scrollLeft >= max;
+      });
+    }
+    navs.forEach(function(b){
+      b.addEventListener('click', function(){
+        if(!rail) return;
+        rail.scrollBy({ left: b.classList.contains('ahc-nav--prev') ? -step()*1.4 : step()*1.4, behavior:'smooth' });
+      });
     });
-  });
-  if(rail){
-    rail.addEventListener('scroll', sync, { passive:true });
-    window.addEventListener('resize', sync);
-    sync();
-  }
+    if(rail){ rail.addEventListener('scroll', sync, { passive:true }); sync(); }
+    window.__ahcSyncRail = sync;
 
-  var chips = root.querySelectorAll('[data-ahc-chip]');
-  var mqMobile = window.matchMedia('(max-width:600px)');
-  function closeAllChips(except){
-    chips.forEach(function(c){ if(c !== except) c.setAttribute('aria-expanded','false'); });
-  }
-  function scrollDrawerToGroup(label){
-    if(!drawer || !label) return;
-    var groups = drawer.querySelectorAll('.ahc-drawer__group');
-    for(var i=0;i<groups.length;i++){
-      var t = groups[i].querySelector('.ahc-drawer__gtitle');
-      if(t && t.textContent.trim() === label.trim()){
-        var g = groups[i];
-        setTimeout(function(){ g.scrollIntoView({ block:'start', behavior:'smooth' }); }, 60);
-        break;
+    var chips = root.querySelectorAll('[data-ahc-chip]');
+    var drawer = q('ahc-drawer-' + SID);
+    var more = root.querySelector('[data-ahc-more]');
+    var mqMobile = window.matchMedia('(max-width:600px)');
+    function closeAllChips(except){ chips.forEach(function(c){ if(c !== except) c.setAttribute('aria-expanded','false'); }); }
+    window.__ahcCloseChips = closeAllChips;
+    function openDrawer(){ if(!drawer) return; drawer.hidden=false; void drawer.offsetWidth; drawer.classList.add('is-open'); document.body.classList.add('ahc-drawer-open'); if(more) more.setAttribute('aria-expanded','true'); }
+    function closeDrawer(){ if(!drawer) return; drawer.classList.remove('is-open'); document.body.classList.remove('ahc-drawer-open'); if(more) more.setAttribute('aria-expanded','false'); setTimeout(function(){ drawer.hidden=true; }, 320); }
+    window.__ahcCloseDrawer = closeDrawer;
+    function scrollDrawerToGroup(label){
+      if(!drawer || !label) return;
+      var groups = drawer.querySelectorAll('.ahc-drawer__group');
+      for(var i=0;i<groups.length;i++){
+        var t = groups[i].querySelector('.ahc-drawer__gtitle');
+        if(t && t.textContent.trim() === label.trim()){
+          (function(g){ setTimeout(function(){ g.scrollIntoView({ block:'start', behavior:'smooth' }); }, 60); })(groups[i]);
+          break;
+        }
       }
     }
+    chips.forEach(function(chip){
+      chip.addEventListener('click', function(e){
+        e.stopPropagation();
+        if(mqMobile.matches && drawer){ closeAllChips(null); openDrawer(); scrollDrawerToGroup(chip.getAttribute('data-ahc-filter')); return; }
+        var open = chip.getAttribute('aria-expanded') === 'true';
+        closeAllChips(chip);
+        chip.setAttribute('aria-expanded', open ? 'false' : 'true');
+      });
+    });
+    if(more && drawer){
+      more.addEventListener('click', function(e){ e.stopPropagation(); closeAllChips(null); openDrawer(); });
+      drawer.querySelectorAll('[data-ahc-drawer-close]').forEach(function(el){ el.addEventListener('click', closeDrawer); });
+    }
   }
-  chips.forEach(function(chip){
-    chip.addEventListener('click', function(e){
-      e.stopPropagation();
-      // On phones the inline dropdown is clipped by the scrolling chip strip,
-      // so open the full filter drawer and jump to this filter's group.
-      if(mqMobile.matches && drawer){
-        closeAllChips(null);
-        openDrawer();
-        scrollDrawerToGroup(chip.getAttribute('data-ahc-filter'));
-        return;
-      }
-      var open = chip.getAttribute('aria-expanded') === 'true';
-      closeAllChips(chip);
-      chip.setAttribute('aria-expanded', open ? 'false' : 'true');
-    });
-  });
-  document.addEventListener('click', function(e){
-    if(!root.contains(e.target)) closeAllChips(null);
-    else if(!e.target.closest('[data-ahc-chip]') && !e.target.closest('.ahc-panel')) closeAllChips(null);
-  });
+  window.__ahcInitHeader = initUI;
 
-  // Filter checkboxes — toggling navigates to the add/remove URL. Shopify's
-  // url_to_add / url_to_remove already include the other active filters, so each
-  // toggle accumulates (true multi-select), and active values render pre-checked.
-  root.querySelectorAll('.ahc-opt__cb[data-ahc-url]').forEach(function(cb){
-    cb.addEventListener('change', function(){
-      var url = cb.getAttribute('data-ahc-url');
-      if(url){ window.location.href = url; }
+  if(!window.__ahcDocBound){
+    window.__ahcDocBound = true;
+    document.addEventListener('click', function(e){
+      var root = q('ahc-' + SID);
+      if(!root || !window.__ahcCloseChips) return;
+      if(!root.contains(e.target)) window.__ahcCloseChips(null);
+      else if(!e.target.closest('[data-ahc-chip]') && !e.target.closest('.ahc-panel')) window.__ahcCloseChips(null);
     });
-  });
-
-  var sort = root.querySelector('[data-ahc-sort]');
-  if(sort){
-    sort.addEventListener('change', function(){
-      var url = new URL(window.location.href);
-      url.searchParams.set('sort_by', sort.value);
-      url.searchParams.delete('page');
-      window.location.href = url.toString();
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape'){ var d = q('ahc-drawer-' + SID); if(d && d.classList.contains('is-open') && window.__ahcCloseDrawer) window.__ahcCloseDrawer(); }
     });
+    window.addEventListener('resize', function(){ if(window.__ahcSyncRail) window.__ahcSyncRail(); });
   }
 
-  var more = root.querySelector('[data-ahc-more]');
-  var drawer = document.getElementById('ahc-drawer-{{ section.id }}');
-  function openDrawer(){
-    if(!drawer) return;
-    drawer.hidden = false;
-    void drawer.offsetWidth; /* reflow so the slide-in transition runs */
-    drawer.classList.add('is-open');
-    document.body.classList.add('ahc-drawer-open');
-    if(more) more.setAttribute('aria-expanded','true');
-  }
-  function closeDrawer(){
-    if(!drawer) return;
-    drawer.classList.remove('is-open');
-    document.body.classList.remove('ahc-drawer-open');
-    if(more) more.setAttribute('aria-expanded','false');
-    setTimeout(function(){ drawer.hidden = true; }, 320);
-  }
-  if(more && drawer){
-    more.addEventListener('click', function(e){ e.stopPropagation(); closeAllChips(null); openDrawer(); });
-    drawer.querySelectorAll('[data-ahc-drawer-close]').forEach(function(el){ el.addEventListener('click', closeDrawer); });
-    document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && drawer.classList.contains('is-open')) closeDrawer(); });
-  }
+  if(document.readyState !== 'loading') initUI();
+  else document.addEventListener('DOMContentLoaded', initUI);
 })();
 </script>
 
