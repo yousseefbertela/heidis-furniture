@@ -1228,41 +1228,63 @@ body {
 }
 
 /* ==========================================================================
-   Mega menu — smoothness pass (no layout change)
-   Horizon opens the dropdown with a 360ms ease reveal, which reads as "drift
-   open" / laggy. The header height, the clip-path reveal AND the content fade
-   all derive from --submenu-animation-speed + --ease-out-cubic, so overriding
-   those two (scoped to the header, to avoid touching drawers/dialogs elsewhere)
-   makes the whole reveal snap open quickly and stay in sync.
-     - duration 360ms -> 150ms
-     - easing -> cubic-bezier(0.22,0.61,0.36,1) (fast start, quick settle)
-   Plus an animated underline as the top-level hover cue (scales in from left),
-   instead of relying only on Horizon's dim-the-others effect.
+   Mega menu — smoothness pass (approach ported from the SBJ/SKIMS build)
+   Three stacked fixes; #2 is the one that actually removes the "glitchy" feel:
+
+   1. Snappy reveal: base.css ships --submenu-animation-speed:360ms (drifty).
+      Drop to 140ms + a decelerate curve. Header height, clip-path reveal and
+      content fade all derive from these vars, so the whole thing stays in sync.
+   2. Kill Horizon's "safety box": Horizon paints an invisible ::after overlay
+      under the active link WHILE the pointer is moving, which swallows
+      pointerenter on the other items until you STOP — that's the sweep-freeze /
+      double-trigger. Hiding it lets each item activate the instant the cursor
+      crosses it, so the panel follows the cursor live in both directions.
+      The link->panel bridge (.menu-list__list-item::after) is left intact, so
+      moving down into an open panel still keeps it open.
+   3. Animated underline as the top-level hover cue (scales in from the left).
+   Scoped to #header-component; no HTML/layout changes.
    ========================================================================== */
 #header-component {
-  --submenu-animation-speed: 150ms;
+  --submenu-animation-speed: 140ms;
   --ease-out-cubic: cubic-bezier(0.22, 0.61, 0.36, 1);
   --animation-easing: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
+/* Snappy easing on the reveal, overflow panel and the dim underlay. */
+#header-component .menu-list__list-item:not([slot='overflow']) > .menu-list__submenu,
+#header-component .overflow-menu::part(overflow),
+#header-component .header__underlay-open {
+  transition-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1) !important;
+}
+/* #2 — the real fix: disable the pointer-blocking safety box so hover-switch is instant. */
+#header-component .menu-list__link[data-safety-box='true']::after {
+  display: none !important;
+}
+/* Content fades a touch faster than the clip reveal so it never lags behind. */
+#header-component .menu-list__list-item:not([slot='overflow']) > .menu-list__submenu,
+#header-component .overflow-menu::part(overflow) {
+  --submenu-content-animation: opacity calc(var(--submenu-animation-speed) * 0.6) ease-out;
+}
 
 @media screen and (min-width: 750px) and (hover: hover) {
-  #header-component .menu-list__link-title {
+  #header-component .menu-list__list-item:not([slot='overflow']) .menu-list__link-title {
     position: relative;
   }
-  #header-component .menu-list__link-title::after {
+  #header-component .menu-list__list-item:not([slot='overflow']) .menu-list__link-title::after {
     content: "";
     position: absolute;
     left: calc(var(--gap-xl, 32px) / 2);
     right: calc(var(--gap-xl, 32px) / 2);
-    bottom: 0;
-    height: 1px;
+    bottom: -4px;
+    height: 2px;
     background-color: currentColor;
     transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 150ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    transform-origin: left center;
+    transition: transform 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
     pointer-events: none;
   }
-  #header-component .menu-list__list-item:where(:hover, :focus-within) .menu-list__link-title::after,
+  #header-component .menu-list__list-item:not([slot='overflow']):hover .menu-list__link-title::after,
+  #header-component .menu-list__list-item:not([slot='overflow']):focus-within .menu-list__link-title::after,
+  #header-component .menu-list__list-item:not([slot='overflow']) .menu-list__link[aria-expanded='true'] .menu-list__link-title::after,
   #header-component .menu-list__link--active .menu-list__link-title::after {
     transform: scaleX(1);
   }
