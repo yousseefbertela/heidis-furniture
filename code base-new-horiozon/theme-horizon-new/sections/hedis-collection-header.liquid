@@ -431,30 +431,54 @@
           endif
         endfor
 
-        assign ahc_bconf = 'Wood=teak~eucalyptus~mahogany~oak~walnut~acacia~mango~pine~cedar~wood|Metal=aluminum~aluminium~iron~steel~metal~brass~zinc|Fabric=olefin~polypropylene~polyester~acrylic~fabric~linen~cotton~velvet~boucle|Wicker=wicker~rattan~polyethylene~rope~resin|Concrete=concrete~cement~grc|Stone=lavastone~stone~marble~travertine~granite~slate~limestone|Ceramic=ceramic~porcelain'
-        assign ahc_buckets = ahc_bconf | split: '|'
-        assign ahc_matched = ''
+        comment
+          DISJOINT bucketing. Each product has ONE material string, so it must
+          land in exactly ONE bucket — otherwise a composite like
+          "Solid Acacia Case, Iron Legs" would sit in both Wood and Metal, and
+          selecting Metal would also tick Wood (the bug we're fixing).
+          Pass 1 assigns every value to a single bucket by PRIORITY (first match
+          wins). Priority puts upholstery (Fabric) and feature materials
+          (Wicker/Stone/Concrete/Ceramic) ahead of Wood, and Metal last, so an
+          iron leg / accent never overrides the piece's real material.
+          Pass 2 emits buckets in a friendly DISPLAY order.
+        endcomment
+        assign ahc_prio = 'Fabric=olefin~polypropylene~polyester~acrylic~fabric~linen~cotton~velvet~boucle~viscose~rayon~wool~nylon~leather~burlap~chenille~suede~sheepskin|Wicker=wicker~rattan~polyethylene~rope~resin~seagrass~jute~cane|Stone=lavastone~marble~travertine~granite~slate~limestone~dolomite~stone|Concrete=concrete~cement~grc|Ceramic=ceramic~porcelain|Wood=teak~eucalyptus~mahogany~oak~walnut~acacia~mango~pine~cedar~parawood~hardwood~veneer~bamboo~wood|Metal=aluminum~aluminium~iron~steel~metal~brass~zinc~nickel'
+        assign ahc_prio_buckets = ahc_prio | split: '|'
 
-        for b in ahc_buckets
-          assign bparts = b | split: '='
-          assign bname = bparts[0]
-          assign bkws = bparts[1] | split: '~'
+        comment Pass 1: assign each value to exactly one bucket name (parallel to .values order). endcomment
+        assign ahc_assigns = ''
+        for v in ahc_mat_filter.values
+          assign lab = v.label | downcase
+          assign assigned = 'Other'
+          for pb in ahc_prio_buckets
+            assign pparts = pb | split: '='
+            assign pkws = pparts[1] | split: '~'
+            assign phit = false
+            for kw in pkws
+              if lab contains kw
+                assign phit = true
+                break
+              endif
+            endfor
+            if phit
+              assign assigned = pparts[0]
+              break
+            endif
+          endfor
+          assign ahc_assigns = ahc_assigns | append: assigned | append: '^'
+        endfor
+        assign ahc_assigns_arr = ahc_assigns | split: '^'
+
+        comment Pass 2: emit buckets in display order, each pulling only its own assigned values. endcomment
+        assign ahc_display = 'Wood,Metal,Fabric,Wicker,Stone,Concrete,Ceramic,Other' | split: ','
+        for dname in ahc_display
           assign bcount = 0
           assign bactive = false
           assign bvals = ''
           for v in ahc_mat_filter.values
-            assign lab = v.label | downcase
-            assign hit = false
-            for kw in bkws
-              if lab contains kw
-                assign hit = true
-                break
-              endif
-            endfor
-            if hit
+            if ahc_assigns_arr[forloop.index0] == dname
               assign bcount = bcount | plus: v.count
               assign bvals = bvals | append: v.value | append: '^'
-              assign ahc_matched = ahc_matched | append: '|#|' | append: v.value | append: '|#|'
               if v.active
                 assign bactive = true
               endif
@@ -465,33 +489,9 @@
             if bactive
               assign bflag = '1'
             endif
-            assign ahc_mat_registry = ahc_mat_registry | append: bname | append: '¦' | append: bcount | append: '¦' | append: bflag | append: '¦' | append: bvals | append: '§'
+            assign ahc_mat_registry = ahc_mat_registry | append: dname | append: '¦' | append: bcount | append: '¦' | append: bflag | append: '¦' | append: bvals | append: '§'
           endif
         endfor
-
-        comment
-          Catch-all: any raw value not matched above, so no product silently drops.
-        endcomment
-        assign ocount = 0
-        assign oactive = false
-        assign ovals = ''
-        for v in ahc_mat_filter.values
-          assign vkey = '|#|' | append: v.value | append: '|#|'
-          unless ahc_matched contains vkey
-            assign ocount = ocount | plus: v.count
-            assign ovals = ovals | append: v.value | append: '^'
-            if v.active
-              assign oactive = true
-            endif
-          endunless
-        endfor
-        if ocount > 0
-          assign oflag = '0'
-          if oactive
-            assign oflag = '1'
-          endif
-          assign ahc_mat_registry = ahc_mat_registry | append: 'Other' | append: '¦' | append: ocount | append: '¦' | append: oflag | append: '¦' | append: ovals | append: '§'
-        endif
       endif
 
       comment
