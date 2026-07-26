@@ -1226,3 +1226,44 @@ body {
 .ah-mm-grp-img__label::before {
   content: "Shop ";
 }
+
+/* ==========================================================================
+   Mega menu — smoothness pass (no layout change)
+   Horizon opens the dropdown with a 360ms ease reveal, which reads as "drift
+   open" / laggy. The header height, the clip-path reveal AND the content fade
+   all derive from --submenu-animation-speed + --ease-out-cubic, so overriding
+   those two (scoped to the header, to avoid touching drawers/dialogs elsewhere)
+   makes the whole reveal snap open quickly and stay in sync.
+     - duration 360ms -> 150ms
+     - easing -> cubic-bezier(0.22,0.61,0.36,1) (fast start, quick settle)
+   Plus an animated underline as the top-level hover cue (scales in from left),
+   instead of relying only on Horizon's dim-the-others effect.
+   ========================================================================== */
+#header-component {
+  --submenu-animation-speed: 150ms;
+  --ease-out-cubic: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --animation-easing: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@media screen and (min-width: 750px) and (hover: hover) {
+  #header-component .menu-list__link-title {
+    position: relative;
+  }
+  #header-component .menu-list__link-title::after {
+    content: "";
+    position: absolute;
+    left: calc(var(--gap-xl, 32px) / 2);
+    right: calc(var(--gap-xl, 32px) / 2);
+    bottom: 0;
+    height: 1px;
+    background-color: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 150ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    pointer-events: none;
+  }
+  #header-component .menu-list__list-item:where(:hover, :focus-within) .menu-list__link-title::after,
+  #header-component .menu-list__link--active .menu-list__link-title::after {
+    transform: scaleX(1);
+  }
+}
