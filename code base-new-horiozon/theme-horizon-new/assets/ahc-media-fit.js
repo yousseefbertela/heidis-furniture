@@ -39,7 +39,14 @@
   // don't want to wait for it before sizing.
   function boot() {
     schedule();
-    [150, 500, 1200].forEach(function (t) { setTimeout(schedule, t); });
+    // The slideshow custom element hydrates its slides after DOMContentLoaded,
+    // so poll briefly until the containers exist, then stop.
+    var tries = 0;
+    var iv = setInterval(function () {
+      tries++;
+      if (document.querySelector('.product-information .product-media-container')) schedule();
+      if (tries > 20) clearInterval(iv);
+    }, 200);
   }
   if (document.readyState !== 'loading') boot();
   else document.addEventListener('DOMContentLoaded', boot);
