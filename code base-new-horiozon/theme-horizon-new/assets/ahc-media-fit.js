@@ -28,10 +28,12 @@
     });
   }
 
-  var raf;
+  var t;
   function schedule() {
-    cancelAnimationFrame(raf);
-    raf = requestAnimationFrame(fit);
+    // Debounce via setTimeout (not requestAnimationFrame — rAF is paused in
+    // background/headless tabs, which would leave the size unset there).
+    clearTimeout(t);
+    t = setTimeout(fit, 0);
   }
 
   // Run several times early: the slideshow hydrates and images decode after
