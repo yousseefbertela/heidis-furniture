@@ -1289,3 +1289,33 @@ body {
     transform: scaleX(1);
   }
 }
+
+/* ==========================================================================
+   PDP product image — "Aspect Fit" (desktop)
+   Goal: show the FULL image (never cropped) as tall as it can be above the
+   fold, with its bottom sitting on the bottom of the screen. Horizon ships the
+   main image as object-fit:cover in a square box (crops). We switch it to
+   contain + bottom-align, and size the box to the real above-fold height via
+   --ahc-media-h (set per-product by ahc-media-fit.js, since the image's top
+   offset — header + breadcrumb — varies). Heights differ per product on
+   purpose: consistency is traded for "never cropped", as requested.
+   ========================================================================== */
+@media screen and (min-width: 750px) {
+  .product-information .product-media-container {
+    height: var(--ahc-media-h, calc(100svh - 200px)) !important;
+    max-height: var(--ahc-media-h, calc(100svh - 200px)) !important;
+    aspect-ratio: auto !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+    background: transparent !important;
+  }
+  .product-information .product-media-container .product-media__image,
+  .product-information .product-media-container img.product-media__image {
+    object-fit: contain !important;
+    object-position: bottom center !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    aspect-ratio: auto !important;
+  }
+}

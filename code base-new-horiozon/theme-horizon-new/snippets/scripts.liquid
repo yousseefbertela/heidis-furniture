@@ -275,6 +275,8 @@
     type="module"
     fetchpriority="low"
   ></script>
+  {%- comment -%} PDP "Aspect Fit" image height helper (desktop). {%- endcomment -%}
+  <script src="{{ 'ahc-media-fit.js' | asset_url }}" defer></script>
   <script type="module">
     import { RecentlyViewed } from '@theme/recently-viewed-products';
     RecentlyViewed.addProduct('{{ product.id }}');
