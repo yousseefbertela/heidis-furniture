@@ -34,10 +34,16 @@
     raf = requestAnimationFrame(fit);
   }
 
-  if (document.readyState !== 'loading') schedule();
-  else document.addEventListener('DOMContentLoaded', schedule);
+  // Run several times early: the slideshow hydrates and images decode after
+  // DOMContentLoaded, and window 'load' can be slow with many images, so we
+  // don't want to wait for it before sizing.
+  function boot() {
+    schedule();
+    [150, 500, 1200].forEach(function (t) { setTimeout(schedule, t); });
+  }
+  if (document.readyState !== 'loading') boot();
+  else document.addEventListener('DOMContentLoaded', boot);
 
-  // Re-measure after images load (natural size can shift layout) and on resize.
   window.addEventListener('load', schedule);
   window.addEventListener('resize', schedule);
   // Re-run after the theme swaps sections (e.g. variant change re-renders media).

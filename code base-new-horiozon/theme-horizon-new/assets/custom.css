@@ -1309,6 +1309,13 @@ body {
     justify-content: center !important;
     background: transparent !important;
   }
+  /* The wrapper between the container and the <img> also needs to be height-
+     capped, otherwise img height:100% resolves against its natural size. */
+  .product-information .product-media-container .product-media {
+    height: 100% !important;
+    max-height: 100% !important;
+    width: 100% !important;
+  }
   .product-information .product-media-container .product-media__image,
   .product-information .product-media-container img.product-media__image {
     object-fit: contain !important;
