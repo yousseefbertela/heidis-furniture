@@ -1,11 +1,51 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "type": "footer",
   "name": "Footer",
   "sections": {
     "hedis_footer": {
       "type": "hedis-footer",
-      "settings": {}
+      "settings": {
+        "teal_color": "#2a6876",
+        "band_text_color": "#ffffff",
+        "dark_color": "#1a1a1a",
+        "heading_color": "#ffffff",
+        "text_color": "#b7b2ab",
+        "link_hover_color": "#ffffff",
+        "show_map": true,
+        "map_coords": "42.3219, -71.1665",
+        "map_label": "Hedi's Furniture",
+        "map_zoom": 15,
+        "promo_1": "Free Shipping US Order $100",
+        "promo_2": "Free Returns*",
+        "promo_3": "Lifetime Warranty Guarantee*",
+        "address_line1": "199 Boylston st., N 231",
+        "address_line2": "Chestnut Hill, MA 02467",
+        "phone": "+1 857-317-0775",
+        "email": "info@hedisfurniture.com",
+        "newsletter_heading": "Newsletter Sign Up",
+        "newsletter_text": "Receive our latest updates about our products & promotions.",
+        "facebook_url": "https://www.facebook.com/",
+        "instagram_url": "https://www.instagram.com/",
+        "pinterest_url": "https://www.pinterest.com/",
+        "col1_heading": "Shop",
+        "col1_menu": "shop",
+        "col2_heading": "Further Info",
+        "col2_menu": "our-company",
+        "col3_heading": "Customer Service",
+        "col3_menu": "footer"
+      }
     }
   },
-  "order": ["hedis_footer"]
+  "order": [
+    "hedis_footer"
+  ]
 }

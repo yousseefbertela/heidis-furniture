@@ -1,10 +1,30 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "type": "header",
   "name": "Header",
   "sections": {
     "hedis_topbar": {
       "type": "hedis-topbar",
-      "settings": {}
+      "settings": {
+        "bg_color": "#1e3d2f",
+        "promo_text": "Save up to 25% off your order*",
+        "promo_link_text": "Learn more",
+        "promo_link": "",
+        "link_1_text": "Trade",
+        "link_1_url": "",
+        "link_2_text": "Make An Appointment",
+        "link_2_url": "",
+        "link_3_text": "Hedi's Business",
+        "link_3_url": ""
+      }
     },
     "header_section": {
       "type": "header",
@@ -15,9 +35,7 @@
           "settings": {
             "hide_logo_on_home_page": false,
             "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
+            "padding-block-end": 0
           },
           "blocks": {}
         },
@@ -45,9 +63,16 @@
         }
       },
       "settings": {
+        "header_icon_stores": true,
+        "header_stores_url": "",
+        "header_icon_delivery": true,
+        "header_delivery_url": "",
+        "header_icon_wishlist": true,
+        "header_wishlist_url": "",
         "logo_position": "center",
         "menu_position": "center",
         "menu_row": "bottom",
+        "customer_account_menu": "customer-account-main-menu",
         "show_search": true,
         "search_position": "left",
         "search_row": "top",
@@ -64,6 +89,10 @@
         "divider_width": 1,
         "divider_size": "full-width",
         "border_width": 1,
+        "actions_display_style": "icon",
+        "actions_font_size": "0.875rem",
+        "actions_font": "body",
+        "actions_text_case": "none",
         "color_scheme_top": "scheme-1",
         "color_scheme_bottom": "scheme-1",
         "color_scheme_transparent": "scheme-6",

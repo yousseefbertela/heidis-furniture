@@ -17,11 +17,11 @@
         "card_ratio": "square",
         "show_arrows": true,
         "show_description": false,
-        "bg_color": "#FFFFFF",
-        "text_color": "#23201B",
-        "accent_color": "#8C6E45",
-        "muted_color": "#8E7E68",
-        "line_color": "#E7E1D6"
+        "bg_color": "#ffffff",
+        "text_color": "#23201b",
+        "accent_color": "#8c6e45",
+        "muted_color": "#8e7e68",
+        "line_color": "#e7e1d6"
       }
     },
     "main": {
@@ -32,7 +32,7 @@
           "static": true,
           "settings": {
             "enable_filtering": false,
-            "filter_style": "horizontal",
+            "filter_style": "vertical",
             "filter_width": "centered",
             "text_label_case": "default",
             "show_swatch_label": false,
@@ -141,6 +141,8 @@
         "layout_type": "grid",
         "product_card_size": "medium",
         "mobile_product_card_size": "small",
+        "enable_infinite_scroll": true,
+        "products_per_page": 24,
         "product_grid_width": "full-width",
         "full_width_on_mobile": true,
         "columns_gap_horizontal": 6,
