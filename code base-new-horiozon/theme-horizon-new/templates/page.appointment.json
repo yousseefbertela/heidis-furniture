@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "appointment": {
+      "type": "hedis-appointment",
+      "settings": {}
+    }
+  },
+  "order": ["appointment"]
+}
