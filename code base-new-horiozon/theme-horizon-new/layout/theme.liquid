@@ -35,7 +35,14 @@
     {%- comment -%} Hedi's Furniture: reference-style customizations (fonts + custom.css) {%- endcomment -%}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&family=Nunito+Sans:wght@300;400;600;700&display=swap">
+    {%- comment -%}
+      Inter is added for PRICES only. Arhaus sets GT America, a licensed face we
+      cannot serve; Inter is the closest freely available neo-grotesque. It is a
+      variable font, so the reference's font-weight:350 renders exactly instead
+      of snapping to 400 the way a static face (Arial) does. Appended to this
+      existing request rather than a new <link>, so it costs no extra round trip.
+    {%- endcomment -%}
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300..500&family=Jost:wght@300;400;500&family=Nunito+Sans:wght@300;400;600;700&display=swap">
     {{ 'custom.css' | asset_url | stylesheet_tag }}
 
     {% if request.design_mode %}

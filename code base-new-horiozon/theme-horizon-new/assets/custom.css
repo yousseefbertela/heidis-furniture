@@ -344,7 +344,7 @@ body {
    where a variable face is available and snaps to 400 otherwise. */
 .product-information .product-details .group-block-content .price,
 .product-information .product-details .price {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
   font-size: 16px !important;
   font-weight: 350 !important;
   letter-spacing: normal !important;
@@ -363,7 +363,7 @@ body {
 
 .product-information .product-details .price-item--regular,
 .product-information .product-details .compare-at-price {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
   font-size: 16px !important;
   font-weight: 350 !important;
   letter-spacing: normal !important;
