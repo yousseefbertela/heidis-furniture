@@ -1291,41 +1291,59 @@ body {
 }
 
 /* ==========================================================================
-   PDP product image — "Aspect Fit" (desktop)
-   Goal: show the FULL image (never cropped) as tall as it can be above the
-   fold, with its bottom sitting on the bottom of the screen. Horizon ships the
-   main image as object-fit:cover in a square box (crops). We switch it to
-   contain + bottom-align, and size the box to the real above-fold height via
-   --ahc-media-h (set per-product by ahc-media-fit.js, since the image's top
-   offset — header + breadcrumb — varies). Heights differ per product on
-   purpose: consistency is traded for "never cropped", as requested.
+   PDP product image — fill the frame (desktop)
+
+   Measured on the live PDP: the media box is 1089px wide and the slideshow
+   arrows sit exactly on its left/right edges. The empty space either side of
+   the photo was NOT a narrow container - it was object-fit:contain
+   letterboxing the image inside a box whose ratio did not match the photo.
+
+   Ringo Bed for example: the box was 1089x750 (ratio 1.452) while its images
+   are 3840x2560 (1.5) and 3840x3840 (1.0). A square image in that box painted
+   only 750x750 and wasted 339px of width.
+
+   Fix: stop forcing a viewport-derived height. Let the box size to the image,
+   so the photo always fills the full width and its height follows its own
+   aspect ratio. No crop, no distortion, no side gaps.
+
+   Note: the carousel gives every slide the same height (tallest image wins),
+   so on a product mixing landscape and square photos the landscape one keeps
+   some space above and below. The cure for that is consistent image aspect
+   ratios in Admin, not CSS.
+
+   This supersedes the old viewport-height approach, so --ahc-media-h (set by
+   assets/ahc-media-fit.js) is no longer read by anything. That script is left
+   in place but is now inert.
    ========================================================================== */
 @media screen and (min-width: 750px) {
   .product-information .product-media-container {
-    height: var(--ahc-media-h, calc(100svh - 200px)) !important;
-    max-height: var(--ahc-media-h, calc(100svh - 200px)) !important;
+    height: auto !important;
+    max-height: none !important;
     aspect-ratio: auto !important;
-    align-items: flex-end !important;
+    align-items: stretch !important;
     justify-content: center !important;
     background: transparent !important;
   }
-  /* The wrapper between the container and the <img> also needs to be height-
-     capped, otherwise img height:100% resolves against its natural size. */
+
   .product-information .product-media-container .product-media {
-    height: 100% !important;
-    max-height: 100% !important;
     width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
   }
+
   .product-information .product-media-container .product-media__image,
   .product-information .product-media-container img.product-media__image {
-    object-fit: contain !important;
-    object-position: bottom center !important;
     width: 100% !important;
-    height: 100% !important;
-    max-height: 100% !important;
+    height: auto !important;
+    /* Guard so a freak very-tall portrait image cannot run away down the page.
+       Does not bind for square or landscape photos. */
+    max-height: 120svh !important;
     aspect-ratio: auto !important;
+    object-fit: contain !important;
+    object-position: center !important;
   }
 }
+
 
 /* ==========================================================================
    Mega menu — timing (pairs with assets/header-menu.js)
