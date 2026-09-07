@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "location": {
+      "type": "hedis-location",
+      "settings": {}
+    }
+  },
+  "order": ["location"]
+}

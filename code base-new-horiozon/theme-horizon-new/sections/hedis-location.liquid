@@ -1,0 +1,284 @@
+{%- comment -%}
+  Hedi's — Location.
+  Showroom address, hours, phone/email and a Get directions button with a map
+  pin icon. Optionally embeds a Google map: paste the src from Google Maps'
+  "Share > Embed a map" into the Map embed URL setting and it appears above the
+  details; leave it blank and the section falls back to the directions button
+  alone, so the page is never broken while the map is being set up.
+  Every line is a section setting, editable in the theme editor.
+{%- endcomment -%}
+{% render 'hedis-home-base' %}
+{%- liquid
+  assign address_lines = section.settings.address | newline_to_br | split: '<br />'
+  assign hours_lines = section.settings.hours | newline_to_br | split: '<br />'
+  assign tel_href = section.settings.phone | remove: ' ' | remove: '-' | remove: '(' | remove: ')'
+  assign map_query = section.settings.map_query
+  if map_query == blank
+    assign map_query = section.settings.address | strip_newlines | replace: '  ', ' '
+  endif
+  # Encode ONLY the search text, not the whole URL, or the scheme and query
+  # separator get escaped too and Google Maps rejects the link.
+  assign map_query_enc = map_query | strip_newlines | strip | url_encode
+  assign map_link = 'https://www.google.com/maps/search/?api=1&query=' | append: map_query_enc
+-%}
+<div class="hh-home hloc" id="hloc-{{ section.id }}">
+  <section class="hloc__sec hh-rv">
+    <div class="hh-wrap hloc__wrap">
+
+      <header class="hloc__head">
+        {%- if section.settings.kicker != blank -%}
+          <p class="hh-kick">{{ section.settings.kicker }}</p>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h1 class="hloc__h">{{ section.settings.heading }}</h1>
+        {%- endif -%}
+        {%- if section.settings.intro != blank -%}
+          <p class="hloc__intro">{{ section.settings.intro }}</p>
+        {%- endif -%}
+      </header>
+
+      {%- if section.settings.map_embed != blank -%}
+        <div class="hloc__map">
+          <iframe
+            src="{{ section.settings.map_embed }}"
+            title="{{ section.settings.heading | default: 'Map' | escape }}"
+            width="600"
+            height="450"
+            style="border:0;"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen
+          ></iframe>
+        </div>
+      {%- endif -%}
+
+      <div class="hloc__grid">
+
+        <div class="hloc__card">
+          <h2 class="hloc__h2">{{ section.settings.address_heading }}</h2>
+          {%- if address_lines.size > 0 -%}
+            <address class="hloc__addr">
+              {%- for line in address_lines -%}
+                {%- assign address_line = line | strip_newlines | strip -%}
+                {%- if address_line != blank -%}
+                  <span class="hloc__addr-l">{{ address_line }}</span>
+                {%- endif -%}
+              {%- endfor -%}
+            </address>
+          {%- endif -%}
+
+          <a class="hloc__map-btn" href="{{ map_link }}" target="_blank" rel="noopener">
+            <svg class="hloc__pin" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
+              <path
+                fill="currentColor"
+                d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"
+              />
+            </svg>
+            <span>{{ section.settings.map_label }}</span>
+          </a>
+        </div>
+
+        <div class="hloc__card">
+          <h2 class="hloc__h2">{{ section.settings.hours_heading }}</h2>
+          {%- if hours_lines.size > 0 -%}
+            <div class="hloc__hours">
+              {%- for line in hours_lines -%}
+                {%- assign hours_line = line | strip_newlines | strip -%}
+                {%- if hours_line != blank -%}
+                  <p class="hloc__hours-l">{{ hours_line }}</p>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+          {%- if section.settings.hours_note != blank -%}
+            <p class="hloc__note">{{ section.settings.hours_note }}</p>
+          {%- endif -%}
+        </div>
+
+        <div class="hloc__card">
+          <h2 class="hloc__h2">{{ section.settings.contact_heading }}</h2>
+          {%- if section.settings.phone != blank -%}
+            <p class="hloc__line"><a href="tel:{{ tel_href }}">{{ section.settings.phone }}</a></p>
+          {%- endif -%}
+          {%- if section.settings.email != blank -%}
+            <p class="hloc__line"><a href="mailto:{{ section.settings.email }}">{{ section.settings.email }}</a></p>
+          {%- endif -%}
+          {%- if section.settings.cta_label != blank -%}
+            <a class="hh-btn hloc__cta" href="{{ section.settings.cta_link | default: '/pages/contact' }}">
+              {{ section.settings.cta_label }}
+            </a>
+          {%- endif -%}
+        </div>
+
+      </div>
+    </div>
+  </section>
+</div>
+
+{% stylesheet %}
+  .hloc {
+    background: var(--bg);
+  }
+
+  .hloc__sec {
+    padding: 76px 0 96px;
+  }
+
+  .hloc__wrap {
+    max-width: 1100px;
+  }
+
+  .hloc__head {
+    text-align: center;
+    margin-bottom: 44px;
+  }
+
+  .hloc__h {
+    font-size: clamp(38px, 5vw, 64px);
+    margin: 0 0 16px;
+  }
+
+  .hloc__intro {
+    margin: 0 auto;
+    max-width: 620px;
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--muted);
+  }
+
+  .hloc__map {
+    margin-bottom: 48px;
+    border: 1px solid #e2ddd5;
+    line-height: 0;
+  }
+
+  .hloc__map iframe {
+    width: 100%;
+    height: clamp(280px, 42vw, 460px);
+    display: block;
+  }
+
+  .hloc__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+
+  .hloc__card {
+    border: 1px solid #e2ddd5;
+    padding: 30px 26px;
+  }
+
+  .hloc__h2 {
+    font-size: 24px;
+    margin: 0 0 16px;
+  }
+
+  .hloc__addr {
+    font-style: normal;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+
+  .hloc__map-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    font-size: 11px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 3px;
+  }
+
+  .hloc__pin {
+    flex: 0 0 auto;
+  }
+
+  .hloc__hours-l {
+    margin: 0 0 6px;
+    font-size: 15px;
+    color: var(--ink);
+  }
+
+  .hloc__line {
+    margin: 0 0 8px;
+    font-size: 15px;
+  }
+
+  .hloc__line a {
+    border-bottom: 1px solid transparent;
+    transition: border-color .3s ease;
+  }
+
+  .hloc__line a:hover {
+    border-bottom-color: var(--accent);
+  }
+
+  .hloc__note {
+    margin: 16px 0 0;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+
+  .hloc__cta {
+    margin-top: 20px;
+  }
+
+  @media (max-width: 989px) {
+    .hloc__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 749px) {
+    .hloc__sec {
+      padding: 54px 0 70px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Hedi's — Location",
+  "tag": "section",
+  "settings": [
+    { "type": "header", "content": "Heading" },
+    { "type": "text", "id": "kicker", "label": "Kicker (small text above heading)", "default": "Visit Us" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Our Showroom" },
+    { "type": "textarea", "id": "intro", "label": "Intro text", "default": "Come and see the pieces in person. Feel the fabrics, test the seating, and talk your space through with someone who knows them." },
+
+    { "type": "header", "content": "Map" },
+    { "type": "paragraph", "content": "In Google Maps click Share, then Embed a map, then copy ONLY the src=\"...\" web address and paste it below. Leave blank to show just the directions button." },
+    { "type": "text", "id": "map_embed", "label": "Map embed URL" },
+    { "type": "text", "id": "map_query", "label": "Map search text", "info": "Used by the directions button. Defaults to the address below.", "default": "Hedi's Furniture, 199 Boylston St, Chestnut Hill, MA 02467" },
+    { "type": "text", "id": "map_label", "label": "Directions button label", "default": "Get directions" },
+
+    { "type": "header", "content": "Address" },
+    { "type": "text", "id": "address_heading", "label": "Address heading", "default": "Address" },
+    { "type": "textarea", "id": "address", "label": "Address (one line per row)", "default": "Hedi's Furniture\n199 Boylston St., N 231\nChestnut Hill, MA 02467" },
+
+    { "type": "header", "content": "Hours" },
+    { "type": "text", "id": "hours_heading", "label": "Hours heading", "default": "Store Hours" },
+    { "type": "textarea", "id": "hours", "label": "Hours (one line per row)", "default": "Monday to Saturday: 11:00am to 6:00pm\nSunday: 12:00pm to 6:00pm" },
+    { "type": "textarea", "id": "hours_note", "label": "Hours note", "default": "Holiday hours may vary. Please call ahead if you are travelling to see us." },
+
+    { "type": "header", "content": "Contact" },
+    { "type": "text", "id": "contact_heading", "label": "Contact heading", "default": "Get In Touch" },
+    { "type": "text", "id": "phone", "label": "Phone number", "default": "+1 857-317-0775" },
+    { "type": "text", "id": "email", "label": "Email address", "default": "info@hedisfurniture.com" },
+    { "type": "text", "id": "cta_label", "label": "Button label", "default": "Contact us" },
+    { "type": "url", "id": "cta_link", "label": "Button link" }
+  ],
+  "presets": [
+    { "name": "Hedi's — Location" }
+  ]
+}
+{% endschema %}
