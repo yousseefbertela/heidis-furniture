@@ -532,7 +532,11 @@ body {
   margin: 24px 2px 0 0;
   height: 0;                    /* zero flow height: buy-buttons aligns to its top */
   overflow: visible;
-  transform: translateY(34px);  /* center the text inside the 44px QTY stepper below */
+  /* Vertically centre the text on the 44px QTY stepper beside it. 34px was
+     hand-guessed and sat 4.5px low; 29.5px was measured on the live PDP and
+     lands the text centre exactly on the stepper centre (offset 0.00px).
+     Verified the ADD TO BAG button does not move (height stays 0). */
+  transform: translateY(29.5px);
   align-self: flex-end;
   text-align: right;
   white-space: nowrap;          /* never wrap to a 2nd line (caused the overlap) */
@@ -541,6 +545,7 @@ body {
   z-index: 2;
   font-family: var(--font-body--family);
   font-size: 13px;
+  font-weight: 700;
   letter-spacing: 0.02em;
   color: #1b1b1b;
   line-height: 1;
@@ -548,7 +553,7 @@ body {
 .product-information .ah-leadtime--oos {
   color: #8c2a2a;
 }
-/* Mobile: the desktop "float beside the QTY row" hack (height:0 + translateY(34px),
+/* Mobile: the desktop "float beside the QTY row" hack (height:0 + translateY(29.5px),
    above) has no horizontal QTY row to sit beside once QTY + ADD TO BAG stack into a
    single column, so the out-of-flow line dropped onto the button. On phones, render
    it as a normal in-flow line above the stepper. margin:0 lets the column's own flex
