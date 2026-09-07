@@ -133,3 +133,23 @@ layout). For content that must persist + stay editable, use **section-setting de
   nav link was deliberately not added. To put it under Design Services: Admin → Navigation → Main menu
   → add item under "Design Services" → `/pages/inspirational-gallery` (this DOES change golden's nav),
   or point Horizon's `header-group.json` at a Horizon-only menu first.
+
+### Material filter buckets (collection pages)
+- **Where:** `sections/hedis-collection-header.liquid`, two strings that must stay in sync:
+  `ahc_prio` (keyword matching, **first match wins**) and `ahc_display` (order shown).
+- **Why buckets exist:** the material metafield is free text and very messy — 396 distinct raw
+  strings across 8 collections, e.g. "Solid Wood Frame + Performance Fabric" written 6 different
+  ways. Shopify's raw facet would list dozens of near-unique values, so we roll them into buckets.
+- **The four upholstery buckets** (replaced a single catch-all "Fabric" that matched 228 of 396
+  strings and was therefore useless):
+  `Performance Fabric` > `Leather` > `Natural Fiber` > `Woven Fabric`.
+  Performance runs **first on purpose** so "faux leather" cannot be classed as `Leather`.
+  A blend is classed by its most distinctive fibre; `Woven Fabric` is the final net for plain
+  "fabric"/polyester so nothing generic is orphaned.
+- **Exhaustiveness is the rule here.** Every value must land in a bucket — `Other` is the last
+  resort and empty buckets are skipped by `if bcount > 0`. Before changing these strings, re-run
+  the old-vs-new simulation over real scraped values and confirm **0 values fall into `Other`**
+  that did not before, and that Wood/Metal/Wicker/Stone/Concrete/Ceramic counts are unchanged.
+- **One value = one bucket.** A sofa offered in both leather and performance fabric shows under
+  one only (Performance Fabric, given the priority). Accepted trade-off; matches the existing
+  single-assignment design.
