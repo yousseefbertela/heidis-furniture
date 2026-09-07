@@ -330,13 +330,45 @@ body {
   margin: 0 !important;
 }
 
-/* Price — clean humanist sans (Arhaus-style). */
+/* Price — matched to the Arhaus reference PDP.
+   Values read off arhaus.com/products/agnes-pendant with getComputedStyle,
+   not eyeballed:
+     font-size 16px, font-weight 350, letter-spacing normal
+     regular price   rgb(34,34,34)   #222222
+     sale price      rgb(137,51,28)  #89331c
+     compare-at      rgb(112,112,112) #707070 + line-through
+
+   Arhaus sets "GT America", a licensed font we cannot serve. "Helvetica Neue"
+   / Helvetica / Arial is the closest neo-grotesque and is already on every
+   machine, so this costs no extra webfont request. Weight 350 renders exactly
+   where a variable face is available and snaps to 400 otherwise. */
 .product-information .product-details .group-block-content .price,
 .product-information .product-details .price {
-  font-family: var(--font-price) !important;
-  font-size: clamp(18px, 1.4vw, 22px) !important;
-  font-weight: 300 !important;
-  color: #1b1b1b !important;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 350 !important;
+  letter-spacing: normal !important;
+  color: #222 !important;
+}
+
+/* On sale, the reduced price turns rust. Horizon wraps both figures in
+   .price__sale ONLY when a compare-at price exists, so keying off that wrapper
+   keeps full-price products at #222 instead of colouring every product rust.
+   The sale and compare figures sit in SEPARATE .price-item__group spans, so a
+   sibling or :has() selector on that group does not work here. */
+.product-information .product-details .price__sale .price-item--sale,
+.product-information .product-details .price__sale .price-item--sale.price {
+  color: #89331c !important;
+}
+
+.product-information .product-details .price-item--regular,
+.product-information .product-details .compare-at-price {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 350 !important;
+  letter-spacing: normal !important;
+  color: #707070 !important;
+  text-decoration: line-through !important;
 }
 
 /* SKU — tiny uppercase tracked light grey, with "SKU :" label (reference).
