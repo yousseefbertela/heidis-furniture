@@ -1328,67 +1328,59 @@ body {
 }
 
 /* ==========================================================================
-   Mega menu — synced open, slow forgiving close (desktop hover only)
+   Mega menu — timing (pairs with assets/header-menu.js)
 
-   Fixes three things, all timing:
+   Approach ported from the "bobs bake" Horizon build, which handles this
+   properly. The grace period and the close sequencing live in JS
+   (DEACTIVATE_DELAY + a debounced close that activate() cancels, plus a
+   [data-animating] flag while the panel fades). This file only supplies the
+   durations and holds the panel visible during that fade.
 
-   1. "Images and text appear before the menu."
-      base.css/_header-menu.liquid fade the CONTENT at 0.6-0.75x the panel's
-      clip-path speed, i.e. FASTER than the panel it lives in. So the text and
-      images finished arriving before the panel had finished opening. Here the
-      content runs at the SAME duration as the panel and starts a beat LATER,
-      so the panel leads and the content follows it in. Never the reverse.
+   Why the JS flag is needed: Horizon hides the panel with
+   `visibility: hidden`, which is NOT in its transition list, so on pointer-out
+   the panel gets yanked and no fade plays at any duration.
 
-   2. "Disappears too quickly."
-      Horizon hides the panel with `visibility: hidden`, which is NOT in its
-      transition list, so on pointer-out the panel was yanked instantly and the
-      fade never played at all. `visibility` is now held by a 0s transition
-      delayed until the fade has finished.
+   Content note: base.css fades submenu CONTENT at 0.6-0.75x the panel's own
+   speed, i.e. faster than the panel holding it, which is why images and text
+   used to land before the menu. Here content matches the panel duration and
+   starts a beat later, so the panel always leads.
 
-   3. "Bugs when I go away and back."
-      header-menu.js calls #deactivate() immediately on pointerleave (its own
-      "after a delay" comment notwithstanding), so out-and-back restarted the
-      animation mid-flight. A grace delay makes a quick out-and-back a no-op.
-
-   TO TUNE: only the four values in the first block. Bigger = slower.
+   TO TUNE: the three values below. Keep CLOSE_ANIMATION_MS in header-menu.js
+   greater than or equal to --hedis-menu-close-speed.
    ========================================================================== */
 @media screen and (min-width: 750px) and (hover: hover) {
   #header-component {
-    --hedis-menu-open-speed: 200ms;
-    --hedis-menu-content-delay: 90ms;
-    --hedis-menu-close-delay: 200ms;
-    --hedis-menu-close-speed: 450ms;
-    --hedis-menu-close-total: calc(var(--hedis-menu-close-delay) + var(--hedis-menu-close-speed));
+    --hedis-menu-open-speed: 180ms;
+    --hedis-menu-content-delay: 70ms;
+    --hedis-menu-close-speed: 260ms;
   }
 
-  /* CLOSED / closing — wait, then fade panel and content together, holding
-     visibility until the fade has actually finished. */
+  /* While JS is closing an item, keep its panel painted and fade the content
+     out. Without this the panel disappears instantly. */
+  #header-component .menu-list__list-item:has([data-animating]) > .menu-list__submenu {
+    --submenu-content-opacity: 0;
+
+    visibility: visible;
+  }
+
+  /* Closing duration. */
   #header-component .menu-list__list-item:not([slot='overflow']) > .menu-list__submenu,
   #header-component .overflow-menu::part(overflow) {
-    transition:
-      clip-path var(--hedis-menu-close-speed) ease-in-out var(--hedis-menu-close-delay),
-      visibility 0s linear var(--hedis-menu-close-total) !important;
-    --submenu-content-animation:
-      opacity var(--hedis-menu-close-speed) ease-in-out var(--hedis-menu-close-delay);
+    transition: clip-path var(--hedis-menu-close-speed) ease-in-out !important;
+    --submenu-content-animation: opacity var(--hedis-menu-close-speed) ease-in-out;
   }
 
-  /* OPEN — panel reveals first, content follows one beat behind at the SAME
-     duration, so they land in the right order and finish together-ish. */
+  /* Opening: panel leads, content follows one beat behind at the same speed. */
   #header-component .menu-list__list-item:has([aria-expanded='true']) > .menu-list__submenu,
   #header-component .menu-list__submenu:is(:hover),
   #header-component .overflow-menu:has([slot='overflow'] [aria-expanded='true'])::part(overflow-list),
   #header-component .overflow-menu::part(overflow):hover {
-    transition:
-      clip-path var(--hedis-menu-open-speed) ease-out 0s,
-      visibility 0s linear 0s !important;
-    --submenu-content-animation:
-      opacity var(--hedis-menu-open-speed) ease-out var(--hedis-menu-content-delay);
+    transition: clip-path var(--hedis-menu-open-speed) ease-out !important;
+    --submenu-content-animation: opacity var(--hedis-menu-open-speed) ease-out var(--hedis-menu-content-delay);
   }
 
-  /* Underlay fades on the same clock, so it never disappears before the panel
-     and leaves it floating over the page. */
+  /* Underlay fades with the panel, not before it. */
   #header-component .header__underlay-open {
     transition-duration: var(--hedis-menu-close-speed) !important;
-    transition-delay: var(--hedis-menu-close-delay) !important;
   }
 }

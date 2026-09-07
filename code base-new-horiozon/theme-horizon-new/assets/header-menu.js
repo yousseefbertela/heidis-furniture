@@ -3,6 +3,21 @@ import { debounce, onDocumentLoaded, setHeaderMenuStyle } from '@theme/utilities
 import { MegaMenuHoverEvent } from '@theme/events';
 
 /**
+ * Grace period before an unhovered menu actually closes (ms).
+ * Cancelled when the pointer comes back, so a quick move away and back is a
+ * no-op instead of a close-then-reopen. Stock Horizon closes immediately,
+ * which is what made the panel flicker on out-and-back.
+ */
+const DEACTIVATE_DELAY = 150;
+
+/**
+ * How long the closing panel stays painted (ms). Must be >= the CSS fade
+ * duration (--hedis-menu-close-speed in custom.css), or the panel is removed
+ * mid-fade and snaps.
+ */
+const CLOSE_ANIMATION_MS = 300;
+
+/**
  * A custom element that manages a header menu.
  *
  * @typedef {Object} State
@@ -49,7 +64,7 @@ class HeaderMenu extends Component {
   }, 100);
 
   #overflowSubmenuListener = () => {
-    this.#deactivate();
+    this.#debouncedDeactivate();
   };
 
   /**
@@ -166,6 +181,10 @@ class HeaderMenu extends Component {
    * @param {PointerEvent | FocusEvent} event
    */
   activate = (event) => {
+    // Cancel any pending close first. Returning to the menu inside the grace
+    // period must be a no-op, not a close followed by a reopen.
+    this.#debouncedDeactivate.cancel();
+
     this.dispatchEvent(new MegaMenuHoverEvent());
 
     if (!(event.target instanceof Element) || !this.headerComponent) return;
@@ -187,6 +206,8 @@ class HeaderMenu extends Component {
     this.#state.activeItem = item;
     this.ariaExpanded = 'true';
     item.ariaExpanded = 'true';
+    // If this item was mid-close, stop it fading out and show it again.
+    item.removeAttribute('data-animating');
 
     let submenu = findSubmenu(item);
     const hasSubmenu = Boolean(submenu);
@@ -269,7 +290,9 @@ class HeaderMenu extends Component {
       return;
     }
 
-    this.#deactivate();
+    // Close after a grace period rather than instantly, so leaving and coming
+    // straight back does not restart the animation mid-flight.
+    this.#debouncedDeactivate();
   }
 
   /**
@@ -296,11 +319,28 @@ class HeaderMenu extends Component {
     this.ariaExpanded = 'false';
     item.ariaExpanded = 'false';
 
-    // Remove active state from submenu after animation completes
-    if (submenu) {
-      delete submenu.dataset.active;
-    }
+    // Keep the panel painted while it fades out. Horizon hides the submenu
+    // with `visibility: hidden`, which is not transitioned, so without this
+    // the panel is yanked instantly and no fade ever plays. custom.css holds
+    // visibility while [data-animating] is set.
+    item.setAttribute('data-animating', '');
+
+    setTimeout(() => {
+      // Reopened in the meantime? Leave it alone.
+      if (this.#state.activeItem === item) return;
+
+      item.removeAttribute('data-animating');
+      if (submenu) {
+        delete submenu.dataset.active;
+      }
+    }, CLOSE_ANIMATION_MS);
   };
+
+  /**
+   * Close the menu after DEACTIVATE_DELAY. Cancelled by activate() when the
+   * pointer returns, which is what removes the out-and-back flicker.
+   */
+  #debouncedDeactivate = debounce(this.#deactivate, DEACTIVATE_DELAY);
 
   #getOverflowListLinksHeight() {
     const slottedMenuLinks = this.overflowMenu?.querySelector('slot')?.assignedElements();
