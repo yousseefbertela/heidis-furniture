@@ -486,7 +486,7 @@
           iron leg / accent never overrides the piece's real material.
           Pass 2 emits buckets in a friendly DISPLAY order.
         endcomment
-        assign ahc_prio = 'Fabric=olefin~polypropylene~polyester~acrylic~fabric~linen~cotton~velvet~boucle~viscose~rayon~wool~nylon~leather~burlap~chenille~suede~sheepskin|Wicker=wicker~rattan~polyethylene~rope~resin~seagrass~jute~cane|Stone=lavastone~marble~travertine~granite~slate~limestone~dolomite~stone|Concrete=concrete~cement~grc|Ceramic=ceramic~porcelain|Wood=teak~eucalyptus~mahogany~oak~walnut~acacia~mango~pine~cedar~parawood~hardwood~veneer~bamboo~wood|Metal=aluminum~aluminium~iron~steel~metal~brass~zinc~nickel'
+        assign ahc_prio = 'Performance Fabric=performance~faux leather~vegan leather~leatherette~vinyl~olefin~polypropylene~acrylic~nylon~washable~solution dyed~sunbrella~crypton|Leather=leather~top grain~full grain~suede~sheepskin~nubuck~cowhide~hide|Natural Fiber=linen~flax~cotton~wool~hemp~silk~burlap|Woven Fabric=velvet~boucle~chenille~corduroy~tweed~mohair~plush~microfiber~viscose~rayon~polyester~fabric~upholstery~woven|Wicker=wicker~rattan~polyethylene~rope~resin~seagrass~jute~cane|Stone=lavastone~marble~travertine~granite~slate~limestone~dolomite~stone|Concrete=concrete~cement~grc|Ceramic=ceramic~porcelain|Wood=teak~eucalyptus~mahogany~oak~walnut~acacia~mango~pine~cedar~parawood~hardwood~veneer~bamboo~wood|Metal=aluminum~aluminium~iron~steel~metal~brass~zinc~nickel'
         assign ahc_prio_buckets = ahc_prio | split: '|'
 
         # Pass 1: assign each value to exactly one bucket name (parallel to .values order).
@@ -514,7 +514,7 @@
         assign ahc_assigns_arr = ahc_assigns | split: '^'
 
         # Pass 2: emit buckets in display order, each pulling only its own assigned values.
-        assign ahc_display = 'Wood,Metal,Fabric,Wicker,Stone,Concrete,Ceramic,Other' | split: ','
+        assign ahc_display = 'Leather,Performance Fabric,Natural Fiber,Woven Fabric,Wood,Metal,Wicker,Stone,Concrete,Ceramic,Other' | split: ','
         for dname in ahc_display
           assign bcount = 0
           assign bactive = false
