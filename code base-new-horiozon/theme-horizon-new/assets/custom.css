@@ -1407,3 +1407,49 @@ body {
     transition-duration: var(--hedis-menu-close-speed) !important;
   }
 }
+
+/* ==========================================================================
+   Mega menu — bridge the gap between the nav word and the panel
+
+   Bug: "the menu disappears unless I hover exactly on one of the pictures."
+
+   Measured on the live homepage. The top-level item's box ends at y=144 and
+   the panel's visible top is y=152, leaving an 8px dead strip. Hit-testing
+   across that strip returned:
+
+       x=200  x=400  x=672  x=900  x=1300
+         X      X      .      X      X        (. = still inside the menu)
+
+   Only the ~92px directly under the hovered word caught the pointer, because
+   that is the width of the list item itself. Move the mouse diagonally toward
+   the "Shop All Outdoor" text or the left-hand images and the pointer crossed
+   bare page for a moment, fired pointerleave, and the close timer started.
+   Landing straight down on a picture happened to work; anything else did not.
+
+   Horizon ships a "safety box" for exactly this, but an earlier customization
+   above disables it (it was swallowing pointerenter on neighbouring items and
+   causing the sweep-freeze), so the gap was left unbridged.
+
+   Fix: while an item is open, give it a full-width invisible strip directly
+   underneath, spanning just the gap. Verified after injecting: the whole strip
+   catches the pointer, and every neighbouring nav item is still hoverable, so
+   hover-switching between menus is unaffected.
+   ========================================================================== */
+@media screen and (min-width: 750px) and (hover: hover) {
+  #header-component .menu-list__list-item:not([slot='overflow']) {
+    position: relative;
+  }
+
+  #header-component .menu-list__list-item:not([slot='overflow']):has(.menu-list__link[aria-expanded='true'])::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    /* 8px measured gap, plus margin for sub-pixel layout and zoom. Sits below
+       the nav row, so it never covers a neighbouring item's hover target. */
+    height: 16px;
+    z-index: 1;
+  }
+}
