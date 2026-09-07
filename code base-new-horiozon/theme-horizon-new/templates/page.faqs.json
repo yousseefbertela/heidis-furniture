@@ -1,0 +1,335 @@
+{
+  "sections": {
+    "faq": {
+      "type": "section",
+      "settings": {
+        "content_direction": "column",
+        "section_width": "page-width",
+        "gap": 16,
+        "padding-block-start": 48,
+        "padding-block-end": 72
+      },
+      "blocks": {
+        "title": {
+          "type": "text",
+          "settings": {
+            "text": "<h1>Frequently Asked Questions</h1>",
+            "alignment": "center",
+            "width": "100%"
+          }
+        },
+        "intro": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Answers to the questions we hear most. If you do not find what you need, call us at +1 857-317-0775 or email info@hedisfurniture.com.</p>",
+            "alignment": "center",
+            "width": "100%"
+          }
+        },
+        "acc": {
+          "type": "accordion",
+          "settings": {
+            "dividers": true
+          },
+          "blocks": {
+            "q1": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "Where is your showroom?",
+                "open_by_default": false
+              },
+              "blocks": {
+                "a1": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>Our showroom is at <strong>199 Boylston St., N 231, Chestnut Hill, MA 02467</strong>, inside The Shops at Chestnut Hill. We would love to see you in person, where you can feel the fabrics, test the seating and talk through your space with our team.</p>"
+                  }
+                }
+              },
+              "block_order": [
+                "a1"
+              ]
+            },
+            "q2": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "What are your store hours?",
+                "open_by_default": false
+              },
+              "blocks": {
+                "a2": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p><strong>Monday to Saturday:</strong> 11:00 AM to 6:00 PM<br><strong>Sunday:</strong> 12:00 PM to 6:00 PM</p><p>Holiday hours may vary. Call us at <a href=\"tel:+18573170775\">+1 857-317-0775</a> before making a long trip.</p>"
+                  }
+                }
+              },
+              "block_order": [
+                "a2"
+              ]
+            },
+            "q3": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "Can I book a design appointment?",
+                "open_by_default": false
+              },
+              "blocks": {
+                "a3": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>Yes. Our design consultants offer complimentary guidance to help you plan, style and furnish any room. Book through our <a href=\"/pages/make-an-appointment\">Make an Appointment</a> page and we will be in touch within one business day.</p>"
+                  }
+                }
+              },
+              "block_order": [
+                "a3"
+              ]
+            },
+            "q4": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "Do you offer interior design services?",
+                "open_by_default": false
+              },
+              "blocks": {
+                "a4": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>We do. Whether you are starting with an empty room or finishing a space that is nearly there, our consultants help with layout, scale, fabric selection and coordinating pieces across rooms. Explore <a href=\"/pages/make-an-appointment\">Design Services</a> to get started.</p>"
+                  }
+                }
+              },
+              "block_order": [
+                "a4"
+              ]
+            },
+            "q5": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "Can I order fabric samples before I buy?",
+                "open_by_default": false
+              },
+              "blocks": {
+                "a5": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>Yes, and we recommend it. Colour reads differently in your own light. Use the <strong>Order Swatches</strong> button on any upholstered product page to have samples sent to you, or browse <a href=\"/collections/upholstery-swatches\">our fabric collection</a>.</p>"
+                  }
+                }
+              },
+              "block_order": [
+                "a5"
+              ]
+            },
+            "q6": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "Can I customise the fabric on upholstered pieces?",
+                "open_by_default": false
+              },
+              "blocks": {
+                "a6": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>Many of our upholstered pieces can be ordered in a range of fabrics and finishes. Options vary by frame and by maker. Contact us at <a href=\"mailto:info@hedisfurniture.com\">info@hedisfurniture.com</a> or visit the showroom and we will walk you through what is available for the piece you have in mind.</p>"
+                  }
+                }
+              },
+              "block_order": [
+                "a6"
+              ]
+            },
+            "q7": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "How does delivery work?",
+                "open_by_default": false
+              },
+              "blocks": {
+                "a7": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>We offer <strong>White Glove Delivery</strong>. Our team unpacks, inspects, assembles and places your furniture in the room of your choice, then removes all packaging and debris. Full details are on our <a href=\"/pages/delivery-shipping\">Delivery &amp; Shipping</a> page.</p>"
+                  }
+                }
+              },
+              "block_order": [
+                "a7"
+              ]
+            },
+            "q8": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "How long will my order take to arrive?",
+                "open_by_default": false
+              },
+              "blocks": {
+                "a8": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>In-stock pieces ship soonest. Made-to-order and custom upholstery take longer, since each piece is built for you. You will receive an order confirmation with estimated timing, and we will keep you updated if anything changes. See <a href=\"/pages/delivery-shipping\">Delivery &amp; Shipping</a> for more.</p>"
+                  }
+                }
+              },
+              "block_order": [
+                "a8"
+              ]
+            },
+            "q9": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "Do I need to measure before my furniture arrives?",
+                "open_by_default": false
+              },
+              "blocks": {
+                "a9": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>Yes, please do. It is the customer’s responsibility to make sure pieces fit the room and can pass through doorways, stairways, elevators and hallways. Measure your entry path as well as the room itself. Our team is happy to help you check dimensions before you order.</p>"
+                  }
+                }
+              },
+              "block_order": [
+                "a9"
+              ]
+            },
+            "q10": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "What is your return policy?",
+                "open_by_default": false
+              },
+              "blocks": {
+                "a10": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>Please see our <a href=\"/pages/returns-exchanges\">Returns &amp; Exchanges</a> page for current terms, including which items are eligible and any timeframes that apply. Custom and made-to-order pieces are treated differently from in-stock items.</p>"
+                  }
+                }
+              },
+              "block_order": [
+                "a10"
+              ]
+            },
+            "q11": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "Is my furniture covered by a warranty?",
+                "open_by_default": false
+              },
+              "blocks": {
+                "a11": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>Yes. Coverage and terms are set out on our <a href=\"/pages/limited-warranty\">Limited Warranty</a> page. If something is not right with your piece, contact us and we will help you sort it out.</p>"
+                  }
+                }
+              },
+              "block_order": [
+                "a11"
+              ]
+            },
+            "q12": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "How do I care for and clean my furniture?",
+                "open_by_default": false
+              },
+              "blocks": {
+                "a12": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>Care depends on the material. Every fabric carries a cleaning code that tells you which cleaning method is safe. Our <a href=\"/pages/cleaning-code\">Cleaning Code</a> guide explains what each code means and how to look after your piece so it ages well.</p>"
+                  }
+                }
+              },
+              "block_order": [
+                "a12"
+              ]
+            },
+            "q13": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "Do you work with interior designers and trade professionals?",
+                "open_by_default": false
+              },
+              "blocks": {
+                "a13": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>Yes. Our <a href=\"/pages/trade-program\">Trade Program</a> supports designers, architects and other trade professionals. Visit the page to learn about the benefits and how to apply.</p>"
+                  }
+                }
+              },
+              "block_order": [
+                "a13"
+              ]
+            },
+            "q14": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "Do you have sale or clearance items?",
+                "open_by_default": false
+              },
+              "blocks": {
+                "a14": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>We do. Browse <a href=\"/collections/clearance\">Clearance</a> for reduced pieces. Availability changes often and clearance stock is limited, so if something catches your eye it is worth acting quickly.</p>"
+                  }
+                }
+              },
+              "block_order": [
+                "a14"
+              ]
+            },
+            "q15": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "How do I get in touch?",
+                "open_by_default": false
+              },
+              "blocks": {
+                "a15": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>Call <a href=\"tel:+18573170775\">+1 857-317-0775</a>, email <a href=\"mailto:info@hedisfurniture.com\">info@hedisfurniture.com</a>, or use the form on our <a href=\"/pages/contact\">Contact Us</a> page. We are also on <a href=\"https://www.instagram.com/hedis.furniture\">Instagram</a>.</p>"
+                  }
+                }
+              },
+              "block_order": [
+                "a15"
+              ]
+            }
+          },
+          "block_order": [
+            "q1",
+            "q2",
+            "q3",
+            "q4",
+            "q5",
+            "q6",
+            "q7",
+            "q8",
+            "q9",
+            "q10",
+            "q11",
+            "q12",
+            "q13",
+            "q14",
+            "q15"
+          ]
+        }
+      },
+      "block_order": [
+        "title",
+        "intro",
+        "acc"
+      ]
+    }
+  },
+  "order": [
+    "faq"
+  ]
+}

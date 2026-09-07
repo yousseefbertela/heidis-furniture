@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "contact": {
+      "type": "hedis-contact",
+      "settings": {}
+    }
+  },
+  "order": ["contact"]
+}
