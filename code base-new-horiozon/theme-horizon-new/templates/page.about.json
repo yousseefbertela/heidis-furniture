@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "about": {
+      "type": "hedis-about",
+      "settings": {}
+    }
+  },
+  "order": ["about"]
+}
