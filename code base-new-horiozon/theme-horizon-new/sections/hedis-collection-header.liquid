@@ -340,26 +340,39 @@
                   endif
                 endfor
               endif
-              # last resort: borrow a related image from the collection being viewed
-              if img == null
-                if collection.image != blank
-                  assign img = collection.image
-                elsif collection.products.first.featured_media.preview_image != blank
-                  assign img = collection.products.first.featured_media.preview_image
-                endif
+              # NOTE: there used to be a "last resort" here that borrowed the
+              # image of the collection being VIEWED when a tile had none of its
+              # own. That is what put the same orange pillow on Candleholders,
+              # Candles & Home Fragrance and New Arrivals at once: those three
+              # collections are empty, every step above failed, and each tile
+              # fell through to the current page's first product. Borrowing an
+              # unrelated image is worse than showing none, because it tells the
+              # customer a category contains something it does not. Removed on
+              # purpose — do not reinstate it.
+
+              # Is this tile a dead end (no image anywhere AND nothing to sell)?
+              assign tile_count = 0
+              if child.type == 'collection_link'
+                assign tile_count = child.object.all_products_count
+              endif
+              assign is_dead_tile = false
+              if img == null and tile_count == 0
+                assign is_dead_tile = true
               endif
               assign alt_text = child.title | escape
             -%}
-            <a class="ahc-cat" href="{{ child.url }}">
-              <div class="ahc-cat__img">
-                {%- if img -%}
-                  {{ img | image_url: width: 620 | image_tag: loading: 'lazy', widths: '240, 320, 420, 620, 820', sizes: '(max-width:600px) 64vw, 23vw', alt: alt_text }}
-                {%- else -%}
-                  <span class="ahc-cat__ph">{{ child.title | slice: 0 }}</span>
-                {%- endif -%}
-              </div>
-              <span class="ahc-cat__label">{{ child.title }}</span>
-            </a>
+            {%- unless is_dead_tile and section.settings.hide_empty_tiles -%}
+              <a class="ahc-cat" href="{{ child.url }}">
+                <div class="ahc-cat__img">
+                  {%- if img -%}
+                    {{ img | image_url: width: 620 | image_tag: loading: 'lazy', widths: '240, 320, 420, 620, 820', sizes: '(max-width:600px) 64vw, 23vw', alt: alt_text }}
+                  {%- else -%}
+                    <span class="ahc-cat__ph">{{ child.title | slice: 0 }}</span>
+                  {%- endif -%}
+                </div>
+                <span class="ahc-cat__label">{{ child.title }}</span>
+              </a>
+            {%- endunless -%}
           {%- endfor -%}
         </div>
       </div>
@@ -767,6 +780,7 @@
     ] },
     { "type": "checkbox", "id": "show_arrows", "label": "Show carousel arrows", "default": true },
     { "type": "checkbox", "id": "show_description", "label": "Show description under title", "default": false },
+    { "type": "checkbox", "id": "hide_empty_tiles", "label": "Hide subcategories that have no products", "info": "An empty collection has no image of its own, so its tile would show a placeholder. Off = show it with a lettered placeholder.", "default": true },
     { "type": "header", "content": "Toolbar & filters" },
     { "type": "text", "id": "breadcrumb_home", "label": "Breadcrumb \"Home\" label", "default": "Home" },
     { "type": "checkbox", "id": "show_filters", "label": "Show filter chips", "default": true },
