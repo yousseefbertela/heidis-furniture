@@ -1328,32 +1328,41 @@ body {
 }
 
 /* ==========================================================================
-   Mega menu — slow, forgiving close (desktop hover only)
+   Mega menu — synced open, slow forgiving close (desktop hover only)
 
-   Problem this fixes:
-   Horizon hides the open panel with `visibility: hidden`, which is NOT in its
-   transition list. So on pointer-out the panel was YANKED instantly and the
-   clip-path fade never got to play. There was also no grace period: JS calls
-   #deactivate() the moment you leave, so leaving and coming straight back
-   restarted the animation mid-flight -> the flicker.
+   Fixes three things, all timing:
 
-   Two changes, both close-side only. Opening stays as snappy as before.
-     1. Grace delay  — nothing starts closing until the delay elapses, so a
-        quick move away and back is a no-op and the panel never flinches.
-     2. Slow fade    — clip-path + content opacity ease out over the fade time,
-        and `visibility` is held with a 0s transition delayed until the fade
-        finishes, so the panel stays painted the whole way down.
+   1. "Images and text appear before the menu."
+      base.css/_header-menu.liquid fade the CONTENT at 0.6-0.75x the panel's
+      clip-path speed, i.e. FASTER than the panel it lives in. So the text and
+      images finished arriving before the panel had finished opening. Here the
+      content runs at the SAME duration as the panel and starts a beat LATER,
+      so the panel leads and the content follows it in. Never the reverse.
 
-   TO TUNE: change the two values below. Bigger = slower / more forgiving.
+   2. "Disappears too quickly."
+      Horizon hides the panel with `visibility: hidden`, which is NOT in its
+      transition list, so on pointer-out the panel was yanked instantly and the
+      fade never played at all. `visibility` is now held by a 0s transition
+      delayed until the fade has finished.
+
+   3. "Bugs when I go away and back."
+      header-menu.js calls #deactivate() immediately on pointerleave (its own
+      "after a delay" comment notwithstanding), so out-and-back restarted the
+      animation mid-flight. A grace delay makes a quick out-and-back a no-op.
+
+   TO TUNE: only the four values in the first block. Bigger = slower.
    ========================================================================== */
 @media screen and (min-width: 750px) and (hover: hover) {
   #header-component {
-    --hedis-menu-close-delay: 320ms;
-    --hedis-menu-close-speed: 800ms;
+    --hedis-menu-open-speed: 200ms;
+    --hedis-menu-content-delay: 90ms;
+    --hedis-menu-close-delay: 200ms;
+    --hedis-menu-close-speed: 450ms;
     --hedis-menu-close-total: calc(var(--hedis-menu-close-delay) + var(--hedis-menu-close-speed));
   }
 
-  /* CLOSED / closing state — wait, then fade slowly, holding visibility. */
+  /* CLOSED / closing — wait, then fade panel and content together, holding
+     visibility until the fade has actually finished. */
   #header-component .menu-list__list-item:not([slot='overflow']) > .menu-list__submenu,
   #header-component .overflow-menu::part(overflow) {
     transition:
@@ -1363,20 +1372,21 @@ body {
       opacity var(--hedis-menu-close-speed) ease-in-out var(--hedis-menu-close-delay);
   }
 
-  /* OPEN state — no delay, original snappy speed. */
+  /* OPEN — panel reveals first, content follows one beat behind at the SAME
+     duration, so they land in the right order and finish together-ish. */
   #header-component .menu-list__list-item:has([aria-expanded='true']) > .menu-list__submenu,
   #header-component .menu-list__submenu:is(:hover),
   #header-component .overflow-menu:has([slot='overflow'] [aria-expanded='true'])::part(overflow-list),
   #header-component .overflow-menu::part(overflow):hover {
     transition:
-      clip-path var(--submenu-animation-speed) var(--ease-out-cubic) 0s,
+      clip-path var(--hedis-menu-open-speed) ease-out 0s,
       visibility 0s linear 0s !important;
     --submenu-content-animation:
-      opacity calc(var(--submenu-animation-speed) * 0.6) ease-out 0s;
+      opacity var(--hedis-menu-open-speed) ease-out var(--hedis-menu-content-delay);
   }
 
-  /* The dim underlay behind the panel should fade on the same clock, or it
-     disappears first and the panel is left floating over the page. */
+  /* Underlay fades on the same clock, so it never disappears before the panel
+     and leaves it floating over the page. */
   #header-component .header__underlay-open {
     transition-duration: var(--hedis-menu-close-speed) !important;
     transition-delay: var(--hedis-menu-close-delay) !important;
