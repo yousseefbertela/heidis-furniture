@@ -1326,3 +1326,59 @@ body {
     aspect-ratio: auto !important;
   }
 }
+
+/* ==========================================================================
+   Mega menu — slow, forgiving close (desktop hover only)
+
+   Problem this fixes:
+   Horizon hides the open panel with `visibility: hidden`, which is NOT in its
+   transition list. So on pointer-out the panel was YANKED instantly and the
+   clip-path fade never got to play. There was also no grace period: JS calls
+   #deactivate() the moment you leave, so leaving and coming straight back
+   restarted the animation mid-flight -> the flicker.
+
+   Two changes, both close-side only. Opening stays as snappy as before.
+     1. Grace delay  — nothing starts closing until the delay elapses, so a
+        quick move away and back is a no-op and the panel never flinches.
+     2. Slow fade    — clip-path + content opacity ease out over the fade time,
+        and `visibility` is held with a 0s transition delayed until the fade
+        finishes, so the panel stays painted the whole way down.
+
+   TO TUNE: change the two values below. Bigger = slower / more forgiving.
+   ========================================================================== */
+@media screen and (min-width: 750px) and (hover: hover) {
+  #header-component {
+    --hedis-menu-close-delay: 320ms;
+    --hedis-menu-close-speed: 800ms;
+    --hedis-menu-close-total: calc(var(--hedis-menu-close-delay) + var(--hedis-menu-close-speed));
+  }
+
+  /* CLOSED / closing state — wait, then fade slowly, holding visibility. */
+  #header-component .menu-list__list-item:not([slot='overflow']) > .menu-list__submenu,
+  #header-component .overflow-menu::part(overflow) {
+    transition:
+      clip-path var(--hedis-menu-close-speed) ease-in-out var(--hedis-menu-close-delay),
+      visibility 0s linear var(--hedis-menu-close-total) !important;
+    --submenu-content-animation:
+      opacity var(--hedis-menu-close-speed) ease-in-out var(--hedis-menu-close-delay);
+  }
+
+  /* OPEN state — no delay, original snappy speed. */
+  #header-component .menu-list__list-item:has([aria-expanded='true']) > .menu-list__submenu,
+  #header-component .menu-list__submenu:is(:hover),
+  #header-component .overflow-menu:has([slot='overflow'] [aria-expanded='true'])::part(overflow-list),
+  #header-component .overflow-menu::part(overflow):hover {
+    transition:
+      clip-path var(--submenu-animation-speed) var(--ease-out-cubic) 0s,
+      visibility 0s linear 0s !important;
+    --submenu-content-animation:
+      opacity calc(var(--submenu-animation-speed) * 0.6) ease-out 0s;
+  }
+
+  /* The dim underlay behind the panel should fade on the same clock, or it
+     disappears first and the panel is left floating over the page. */
+  #header-component .header__underlay-open {
+    transition-duration: var(--hedis-menu-close-speed) !important;
+    transition-delay: var(--hedis-menu-close-delay) !important;
+  }
+}
