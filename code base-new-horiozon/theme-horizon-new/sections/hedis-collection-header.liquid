@@ -205,6 +205,37 @@
 
   /* Filter option = custom checkbox + label (multi-select; shows what's selected) */
   .ahc-opt{ display:flex; align-items:flex-start; gap:10px; cursor:pointer; padding:6px 2px; font-size:13px; line-height:1.35; color:var(--ahc-ink); }
+
+  /* Dimension range slider (Width / Depth / Height) — two native range inputs
+     stacked on one rail so both thumbs are draggable and keyboard-accessible. */
+  .ahc-range__li{ list-style:none; padding:4px 2px 2px; }
+  .ahc-range__track{ position:relative; height:26px; display:flex; align-items:center; }
+  .ahc-range__rail{ position:absolute; left:0; right:0; height:2px; background:var(--ahc-line); }
+  .ahc-range__fill{ position:absolute; height:2px; background:var(--ahc-ink); left:0; right:0; }
+  .ahc-range__in{
+    position:absolute; left:0; width:100%; margin:0; background:none; pointer-events:none;
+    -webkit-appearance:none; appearance:none; height:26px;
+  }
+  .ahc-range__in:focus{ outline:none; }
+  .ahc-range__in::-webkit-slider-thumb{
+    -webkit-appearance:none; appearance:none; pointer-events:auto; cursor:grab;
+    width:18px; height:18px; border-radius:50%; background:#fff;
+    border:1.5px solid var(--ahc-ink); box-shadow:0 1px 4px rgba(0,0,0,.18);
+  }
+  .ahc-range__in::-moz-range-thumb{
+    pointer-events:auto; cursor:grab;
+    width:18px; height:18px; border-radius:50%; background:#fff;
+    border:1.5px solid var(--ahc-ink); box-shadow:0 1px 4px rgba(0,0,0,.18);
+  }
+  .ahc-range__in:focus-visible::-webkit-slider-thumb{ outline:2px solid var(--ahc-accent); outline-offset:2px; }
+  .ahc-range__io{ display:flex; align-items:center; gap:10px; margin-top:12px; }
+  .ahc-range__box{
+    flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+    border:1px solid var(--ahc-line); padding:10px 8px; font-size:14px; color:var(--ahc-ink);
+  }
+  .ahc-range__box em{ font-style:normal; color:var(--ahc-muted); font-size:12px; }
+  .ahc-range__sep{ color:var(--ahc-muted); }
+  .ahc-range__out{ font-variant-numeric:tabular-nums; }
   .ahc-opt__cb{ position:absolute; opacity:0; width:1px; height:1px; margin:0; }
   .ahc-opt__box{ flex:0 0 auto; width:16px; height:16px; margin-top:1px; border:1px solid var(--ahc-ink); border-radius:3px; background:#fff; position:relative; transition:background .15s ease,border-color .15s ease; }
   .ahc-opt:hover .ahc-opt__box{ border-color:var(--ahc-accent); }
@@ -620,6 +651,17 @@
               if ahc_avail_status and ahc_avail_native and filter.param_name == ahc_avail_status.param_name
                 assign ahc_skip_group = true
               endif
+
+              # Numeric dimension facets get a range slider instead of a checkbox
+              # list. Matched on the metafield key so it keeps working whatever
+              # namespace they live in (currently levlocal.width / .depth / .height).
+              assign ahc_is_dimension = false
+              assign ahc_dim_probe = filter.param_name | downcase
+              if ahc_dim_probe contains '.width' or ahc_dim_probe contains '.depth' or ahc_dim_probe contains '.height'
+                if section.settings.dimension_sliders
+                  assign ahc_is_dimension = true
+                endif
+              endif
             -%}
             {%- if filter.values.size > 0 and ahc_skip_group == false -%}
               <div class="ahc-drawer__group">
@@ -640,22 +682,105 @@
                       col_url: collection.url,
                       show_count: true,
                       count_class: 'ahc-drawer__count' -%}
+                  {%- elsif ahc_is_dimension -%}
+                    {%- comment -%}
+                      Dimension facets (Width / Depth / Height) render as a
+                      two-handle range slider instead of a long checkbox list.
+                      Shopify still filters by discrete values, so the slider
+                      simply selects every value that falls inside the chosen
+                      range and applies them all at once (the filter param
+                      accepts repeats). data-values carries the raw labels in
+                      source order; the JS parses and sorts them numerically.
+                    {%- endcomment -%}
+                    {%- liquid
+                      assign dim_values = ''
+                      assign dim_active = ''
+                      for v in filter.values
+                        assign dim_values = dim_values | append: v.label | append: '||'
+                        if v.active
+                          assign dim_active = dim_active | append: v.label | append: '||'
+                        endif
+                      endfor
+                    -%}
+                    <li class="ahc-range__li">
+                      <div
+                        class="ahc-range"
+                        data-ahc-range
+                        data-param="{{ filter.param_name | escape }}"
+                        data-values="{{ dim_values | escape }}"
+                        data-active="{{ dim_active | escape }}"
+                        data-unit="{{ section.settings.dimension_unit | default: 'in' | escape }}"
+                      >
+                        <div class="ahc-range__track">
+                          <span class="ahc-range__rail" aria-hidden="true"></span>
+                          <span class="ahc-range__fill" aria-hidden="true"></span>
+                          <input type="range" class="ahc-range__in ahc-range__in--min" aria-label="{{ filter.label | escape }} minimum">
+                          <input type="range" class="ahc-range__in ahc-range__in--max" aria-label="{{ filter.label | escape }} maximum">
+                        </div>
+                        <div class="ahc-range__io">
+                          <span class="ahc-range__box"><output class="ahc-range__out ahc-range__out--min"></output><em>{{ section.settings.dimension_unit | default: 'in' }}</em></span>
+                          <span class="ahc-range__sep">&ndash;</span>
+                          <span class="ahc-range__box"><output class="ahc-range__out ahc-range__out--max"></output><em>{{ section.settings.dimension_unit | default: 'in' }}</em></span>
+                        </div>
+                      </div>
+                    </li>
                   {%- else -%}
+                    {%- comment -%}
+                      Values are de-duplicated case-insensitively. Shopify treats
+                      "Round" and "round" as two separate facet values because the
+                      underlying metafield strings differ in case, which showed up
+                      as two checkboxes for the same shape. We render one row and
+                      apply every case variant together via data-ahc-merge.
+                    {%- endcomment -%}
+                    {%- assign ahc_seen = '' -%}
                     {%- for v in filter.values -%}
                       {%- liquid
-                        assign vurl = v.url_to_add
-                        if v.active
-                          assign vurl = v.url_to_remove
+                        assign vkey = v.label | downcase | strip
+                        assign vprobe = '||' | append: vkey | append: '||'
+                        assign already = false
+                        if ahc_seen contains vprobe
+                          assign already = true
                         endif
                       -%}
-                      <li>
-                        <label class="ahc-opt{% if v.active %} is-active{% endif %}">
-                          <input type="checkbox" class="ahc-opt__cb" data-ahc-url="{{ vurl }}"{% if v.active %} checked{% endif %}>
-                          <span class="ahc-opt__box" aria-hidden="true"></span>
-                          <span class="ahc-opt__label">{{ v.label }}</span>
-                          <span class="ahc-drawer__count">{{ v.count }}</span>
-                        </label>
-                      </li>
+                      {%- unless already -%}
+                        {%- liquid
+                          assign ahc_seen = ahc_seen | append: '||' | append: vkey | append: '||'
+                          # Sum counts and collect sibling values that differ only by case.
+                          assign vcount = 0
+                          assign vmerge = ''
+                          assign vactive = false
+                          for w in filter.values
+                            assign wkey = w.label | downcase | strip
+                            if wkey == vkey
+                              assign vcount = vcount | plus: w.count
+                              if w.active
+                                assign vactive = true
+                              endif
+                              unless w.label == v.label
+                                assign vmerge = vmerge | append: w.value | append: '||'
+                              endunless
+                            endif
+                          endfor
+                          assign vurl = v.url_to_add
+                          if vactive
+                            assign vurl = v.url_to_remove
+                          endif
+                        -%}
+                        <li>
+                          <label class="ahc-opt{% if vactive %} is-active{% endif %}">
+                            <input
+                              type="checkbox"
+                              class="ahc-opt__cb"
+                              data-ahc-url="{{ vurl }}"
+                              {% if vmerge != blank %}data-ahc-merge="{{ vmerge | escape }}" data-ahc-param="{{ filter.param_name | escape }}"{% endif %}
+                              {% if vactive %} checked{% endif %}
+                            >
+                            <span class="ahc-opt__box" aria-hidden="true"></span>
+                            <span class="ahc-opt__label">{{ v.label }}</span>
+                            <span class="ahc-drawer__count">{{ vcount }}</span>
+                          </label>
+                        </li>
+                      {%- endunless -%}
                     {%- endfor -%}
                   {%- endif -%}
                 </ul>
@@ -786,6 +911,8 @@
     { "type": "checkbox", "id": "show_filters", "label": "Show filter chips", "default": true },
     { "type": "range", "id": "chip_count", "label": "Number of filter chips", "min": 1, "max": 6, "step": 1, "default": 4 },
     { "type": "range", "id": "values_per_chip", "label": "Values shown per chip", "min": 5, "max": 30, "step": 1, "default": 14 },
+    { "type": "checkbox", "id": "dimension_sliders", "label": "Show Width / Depth / Height as sliders", "info": "Off = the old checkbox list.", "default": true },
+    { "type": "text", "id": "dimension_unit", "label": "Dimension unit shown on sliders", "default": "in" },
     { "type": "text", "id": "more_filters_label", "label": "\"More Filters\" button label", "default": "More Filters" },
     { "type": "text", "id": "drawer_title", "label": "All-filters drawer title", "default": "All Filters" },
     { "type": "text", "id": "clear_label", "label": "\"Clear all\" label", "default": "Clear all" },
