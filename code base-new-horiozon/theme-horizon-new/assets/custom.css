@@ -1328,35 +1328,33 @@ body {
 }
 
 /* ==========================================================================
-   PDP product image — fill the frame (desktop)
+   PDP product image + carousel arrows — matched to the Arhaus reference
 
-   Measured on the live PDP: the media box is 1089px wide and the slideshow
-   arrows sit exactly on its left/right edges. The empty space either side of
-   the photo was NOT a narrow container - it was object-fit:contain
-   letterboxing the image inside a box whose ratio did not match the photo.
+   Measured on arhaus.com/products/agnes-pendant at 1600x950:
+     image frame   x=0, 1057x792  -> aspect ratio 4/3 (1.334), flush to the
+                   left edge of the column, image fills it with no gaps
+     arrows        32x32, inset 12px from the frame edges, vertically centred
+                   on the image, circular (border-radius 99999px), solid white
+                   with a 1px #eaeaea border
 
-   Ringo Bed for example: the box was 1089x750 (ratio 1.452) while its images
-   are 3840x2560 (1.5) and 3840x3840 (1.0). A square image in that box painted
-   only 750x750 and wasted 339px of width.
+   Frame: a fixed 4/3 box with object-fit:cover. Arhaus can use a plain fill
+   because every one of their product photos is already 4:3; ours are mixed
+   (1:1 and 3:2), so cover is what reproduces their look - the frame stays the
+   same height on every product and the photo always fills it edge to edge.
+   The trade-off is that a square photo is cropped top and bottom. That is the
+   deliberate choice: it is what makes the page look like the reference.
+   Switch object-fit to contain if uncropped ever matters more than matching.
 
-   Fix: stop forcing a viewport-derived height. Let the box size to the image,
-   so the photo always fills the full width and its height follows its own
-   aspect ratio. No crop, no distortion, no side gaps.
-
-   Note: the carousel gives every slide the same height (tallest image wins),
-   so on a product mixing landscape and square photos the landscape one keeps
-   some space above and below. The cure for that is consistent image aspect
-   ratios in Admin, not CSS.
-
-   This supersedes the old viewport-height approach, so --ahc-media-h (set by
-   assets/ahc-media-fit.js) is no longer read by anything. That script is left
-   in place but is now inert.
+   Arrows: Horizon ships them 44x44, transparent, square and flush to the
+   frame edge, so they are invisible against a photo. Restyled to the
+   reference. .button-unstyled--transparent is included in the selector
+   because that class sets background:transparent and would otherwise win.
    ========================================================================== */
 @media screen and (min-width: 750px) {
   .product-information .product-media-container {
+    aspect-ratio: 4 / 3 !important;
     height: auto !important;
     max-height: none !important;
-    aspect-ratio: auto !important;
     align-items: stretch !important;
     justify-content: center !important;
     background: transparent !important;
@@ -1364,20 +1362,50 @@ body {
 
   .product-information .product-media-container .product-media {
     width: 100% !important;
-    height: auto !important;
+    height: 100% !important;
     max-height: none !important;
   }
 
   .product-information .product-media-container .product-media__image,
   .product-information .product-media-container img.product-media__image {
     width: 100% !important;
-    height: auto !important;
-    /* Guard so a freak very-tall portrait image cannot run away down the page.
-       Does not bind for square or landscape photos. */
-    max-height: 120svh !important;
+    height: 100% !important;
+    max-height: none !important;
     aspect-ratio: auto !important;
-    object-fit: contain !important;
+    object-fit: cover !important;
     object-position: center !important;
+  }
+
+  .product-information .slideshow-control--previous,
+  .product-information .slideshow-control--next,
+  .product-information .slideshow-control--previous.button-unstyled--transparent,
+  .product-information .slideshow-control--next.button-unstyled--transparent {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    border-radius: 99999px !important;
+    background: #fff !important;
+    border: 1px solid #eaeaea !important;
+    color: #222 !important;
+    box-shadow: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .product-information .slideshow-control--previous {
+    margin-left: 12px !important;
+  }
+
+  .product-information .slideshow-control--next {
+    margin-right: 12px !important;
+  }
+
+  .product-information .slideshow-control--previous svg,
+  .product-information .slideshow-control--next svg {
+    width: 14px !important;
+    height: 14px !important;
   }
 }
 
