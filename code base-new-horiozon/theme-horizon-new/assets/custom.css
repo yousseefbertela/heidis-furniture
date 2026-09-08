@@ -1392,6 +1392,11 @@ body {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    /* Horizon ships these with `padding: 0 12.8px 0 0` - a right-only padding.
+       Inside a centred flex box that shifts the arrow glyph 6.41px off centre
+       (mirrored on the previous arrow, which carries .flip-x). Measured on the
+       live PDP; zeroing the padding lands it at exactly 0.00 on both axes. */
+    padding: 0 !important;
   }
 
   .product-information .slideshow-control--previous {
