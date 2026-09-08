@@ -142,8 +142,8 @@ layout). For content that must persist + stay editable, use **section-setting de
   ways. Shopify's raw facet would list dozens of near-unique values, so we roll them into buckets.
 - **The four upholstery buckets** (replaced a single catch-all "Fabric" that matched 228 of 396
   strings and was therefore useless):
-  `Easy Clean` > `Leather` > `Natural` > `Woven Fabric`.
-  `Easy Clean` runs **first on purpose** so "faux leather" cannot be classed as `Leather`.
+  `Cotton & Linen` > `Polyester & Synthetics` > `Leather` > `Woven Fabric`.
+  `Polyester & Synthetics` runs before `Leather` on purpose so "faux leather" cannot be classed as real `Leather`.
   A blend is classed by its most distinctive fibre; `Woven Fabric` is the final net for plain
   "fabric"/polyester so nothing generic is orphaned.
 - **Exhaustiveness is the rule here.** Every value must land in a bucket — `Other` is the last
@@ -151,5 +151,5 @@ layout). For content that must persist + stay editable, use **section-setting de
   the old-vs-new simulation over real scraped values and confirm **0 values fall into `Other`**
   that did not before, and that Wood/Metal/Wicker/Stone/Concrete/Ceramic counts are unchanged.
 - **One value = one bucket.** A sofa offered in both leather and performance fabric shows under
-  one only (Easy Clean, given the priority). Accepted trade-off; matches the existing
+  one only (the fabric bucket, given the priority). Accepted trade-off; matches the existing
   single-assignment design.
