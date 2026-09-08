@@ -140,16 +140,21 @@ layout). For content that must persist + stay editable, use **section-setting de
 - **Why buckets exist:** the material metafield is free text and very messy — 396 distinct raw
   strings across 8 collections, e.g. "Solid Wood Frame + Performance Fabric" written 6 different
   ways. Shopify's raw facet would list dozens of near-unique values, so we roll them into buckets.
-- **The four upholstery buckets** (replaced a single catch-all "Fabric" that matched 228 of 396
-  strings and was therefore useless):
-  `Cotton & Linen` > `Polyester & Synthetics` > `Leather` > `Woven Fabric`.
-  `Polyester & Synthetics` runs before `Leather` on purpose so "faux leather" cannot be classed as real `Leather`.
-  A blend is classed by its most distinctive fibre; `Woven Fabric` is the final net for plain
-  "fabric"/polyester so nothing generic is orphaned.
-- **Exhaustiveness is the rule here.** Every value must land in a bucket — `Other` is the last
-  resort and empty buckets are skipped by `if bcount > 0`. Before changing these strings, re-run
-  the old-vs-new simulation over real scraped values and confirm **0 values fall into `Other`**
-  that did not before, and that Wood/Metal/Wicker/Stone/Concrete/Ceramic counts are unchanged.
-- **One value = one bucket.** A sofa offered in both leather and performance fabric shows under
-  one only (the fabric bucket, given the priority). Accepted trade-off; matches the existing
-  single-assignment design.
+- **The material buckets**, all named after materials the catalogue actually contains
+  (frequency-checked over 396 raw strings, not invented):
+  `Leather` · `Linen & Cotton` · `Polyester & Blends` · `Wood` · `Metal` · `Glass` ·
+  `Stone` · `Ceramic` · `Concrete` · `Wicker` · `Other`.
+  Priority: `Linen & Cotton` > `Polyester & Blends` > `Leather` > `Glass` > `Wicker` >
+  `Stone` > `Concrete` > `Ceramic` > `Wood` > `Metal`.
+  `Linen & Cotton` runs first so a cotton/linen blend is classed by its natural fibre.
+  `Polyester & Blends` runs before `Leather` so "faux leather" is never shown as real
+  leather; it also absorbs velvet/boucle/chenille (only 9 strings between them, not
+  worth their own option) and the generic "fabric"/"upholstery" words, so it doubles
+  as the soft-material safety net.
+- **Keyword traps to respect:** `ash` (wood) is a substring of "washable" — it is safe
+  only because `washable` sits in `Polyester & Blends`, which is matched earlier. Use
+  `pet yarn` as a phrase, never bare `pet`, which would match "carpet". Bucket names may
+  contain "&" (rendered as a label only) but never a comma, which would break the
+  `ahc_display` split.
+- **One value = one bucket.** A sofa offered in both leather and fabric shows under the
+  fabric option only. Accepted trade-off; matches the existing single-assignment design.
