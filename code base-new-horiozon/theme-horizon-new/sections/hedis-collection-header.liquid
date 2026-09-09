@@ -565,8 +565,27 @@
             if ahc_avail_status and ahc_avail_native and filter.param_name == ahc_avail_status.param_name
               assign ahc_skip_chip = true
             endif
+
+            # A criterion offering only ONE option cannot narrow anything - the
+            # single choice is the whole set - so the whole criterion is hidden.
+            # Counted case-insensitively so it agrees with the de-duplication
+            # below: "Round" + "round" is ONE option, and Shape then disappears.
+            assign ahc_distinct = 0
+            assign ahc_seen_cnt = ''
+            for dv in filter.values
+              assign dk = dv.label | downcase | strip
+              assign dprobe = '||' | append: dk | append: '||'
+              unless ahc_seen_cnt contains dprobe
+                assign ahc_seen_cnt = ahc_seen_cnt | append: '||' | append: dk | append: '||'
+                assign ahc_distinct = ahc_distinct | plus: 1
+              endunless
+            endfor
+            # Material renders buckets, not raw values, so count the buckets.
+            if ahc_mat_param != blank and filter.param_name == ahc_mat_param and ahc_mat_registry != blank
+              assign ahc_distinct = ahc_mat_registry | split: '§' | size
+            endif
           -%}
-          {%- if filter.values.size > 0 and ahc_skip_chip == false -%}
+          {%- if ahc_distinct > 1 and ahc_skip_chip == false -%}
             <div class="ahc-chip-wrap">
               <button class="ahc-chip" type="button" aria-expanded="false" data-ahc-chip data-ahc-filter="{{ filter.label | escape }}">
                 {{ filter.label }}
@@ -589,20 +608,64 @@
                       col_url: collection.url,
                       show_count: false -%}
                   {%- else -%}
-                    {%- for v in filter.values limit: values_per_chip -%}
+                    {%- comment -%}
+                      Same case-insensitive de-duplication as the All Filters
+                      drawer. Shopify exposes "Round" and "round" as two facet
+                      values because the metafield strings differ in case; this
+                      renders one row and applies every variant via
+                      data-ahc-merge. Without this the chip dropdown still
+                      showed both, even after the drawer was fixed.
+                    {%- endcomment -%}
+                    {%- assign ahc_seen_chip = '' -%}
+                    {%- assign ahc_shown_chip = 0 -%}
+                    {%- for v in filter.values -%}
+                      {%- if ahc_shown_chip >= values_per_chip -%}
+                        {%- break -%}
+                      {%- endif -%}
                       {%- liquid
-                        assign vurl = v.url_to_add
-                        if v.active
-                          assign vurl = v.url_to_remove
+                        assign vkey = v.label | downcase | strip
+                        assign vprobe = '||' | append: vkey | append: '||'
+                        assign already = false
+                        if ahc_seen_chip contains vprobe
+                          assign already = true
                         endif
                       -%}
-                      <li>
-                        <label class="ahc-opt{% if v.active %} is-active{% endif %}">
-                          <input type="checkbox" class="ahc-opt__cb" data-ahc-url="{{ vurl }}"{% if v.active %} checked{% endif %}>
-                          <span class="ahc-opt__box" aria-hidden="true"></span>
-                          <span class="ahc-opt__label">{{ v.label }}</span>
-                        </label>
-                      </li>
+                      {%- unless already -%}
+                        {%- liquid
+                          assign ahc_seen_chip = ahc_seen_chip | append: '||' | append: vkey | append: '||'
+                          assign ahc_shown_chip = ahc_shown_chip | plus: 1
+                          assign vmerge = ''
+                          assign vactive = false
+                          for w in filter.values
+                            assign wkey = w.label | downcase | strip
+                            if wkey == vkey
+                              if w.active
+                                assign vactive = true
+                              endif
+                              unless w.label == v.label
+                                assign vmerge = vmerge | append: w.value | append: '||'
+                              endunless
+                            endif
+                          endfor
+                          assign vurl = v.url_to_add
+                          if vactive
+                            assign vurl = v.url_to_remove
+                          endif
+                        -%}
+                        <li>
+                          <label class="ahc-opt{% if vactive %} is-active{% endif %}">
+                            <input
+                              type="checkbox"
+                              class="ahc-opt__cb"
+                              data-ahc-url="{{ vurl }}"
+                              {% if vmerge != blank %}data-ahc-merge="{{ vmerge | escape }}" data-ahc-param="{{ filter.param_name | escape }}"{% endif %}
+                              {% if vactive %} checked{% endif %}
+                            >
+                            <span class="ahc-opt__box" aria-hidden="true"></span>
+                            <span class="ahc-opt__label">{{ v.label }}</span>
+                          </label>
+                        </li>
+                      {%- endunless -%}
                     {%- endfor -%}
                   {%- endif -%}
                 </ul>
@@ -662,8 +725,26 @@
                   assign ahc_is_dimension = true
                 endif
               endif
+
+              # Same single-option rule as the chips: a criterion with only one
+              # distinct option is hidden entirely. Case-insensitive, so it
+              # agrees with the de-duplication below. Also removes a one-value
+              # dimension slider, which has nothing to slide between.
+              assign ahc_distinct = 0
+              assign ahc_seen_cnt = ''
+              for dv in filter.values
+                assign dk = dv.label | downcase | strip
+                assign dprobe = '||' | append: dk | append: '||'
+                unless ahc_seen_cnt contains dprobe
+                  assign ahc_seen_cnt = ahc_seen_cnt | append: '||' | append: dk | append: '||'
+                  assign ahc_distinct = ahc_distinct | plus: 1
+                endunless
+              endfor
+              if ahc_mat_param != blank and filter.param_name == ahc_mat_param and ahc_mat_registry != blank
+                assign ahc_distinct = ahc_mat_registry | split: '§' | size
+              endif
             -%}
-            {%- if filter.values.size > 0 and ahc_skip_group == false -%}
+            {%- if ahc_distinct > 1 and ahc_skip_group == false -%}
               <div class="ahc-drawer__group">
                 <p class="ahc-drawer__gtitle">{{ filter.label }}</p>
                 <ul class="ahc-drawer__list">
@@ -839,6 +920,7 @@
     function openDrawer(){ if(!drawer) return; drawer.hidden=false; void drawer.offsetWidth; drawer.classList.add('is-open'); document.body.classList.add('ahc-drawer-open'); if(more) more.setAttribute('aria-expanded','true'); }
     function closeDrawer(){ if(!drawer) return; drawer.classList.remove('is-open'); document.body.classList.remove('ahc-drawer-open'); if(more) more.setAttribute('aria-expanded','false'); setTimeout(function(){ drawer.hidden=true; }, 320); }
     window.__ahcCloseDrawer = closeDrawer;
+    window.__ahcOpenDrawer = openDrawer;
     function scrollDrawerToGroup(label){
       if(!drawer || !label) return;
       var groups = drawer.querySelectorAll('.ahc-drawer__group');

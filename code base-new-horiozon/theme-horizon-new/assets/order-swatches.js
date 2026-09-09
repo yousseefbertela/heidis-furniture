@@ -473,11 +473,27 @@ class OrderSwatchesComponent extends Component {
     const img = this.refs.popoverImg;
     if (img instanceof HTMLImageElement) {
       if (data.image) {
-        img.src = data.image;
+        // The image slot is a fixed 416x416. Previously it was shown as soon as
+        // a src was set, so a swatch whose image 404s or is slow left a large
+        // blank area and the popover read as an empty white box - especially on
+        // fabrics that also have no PATTERN/CARE/CONTENT data to fill it.
+        // Now the slot only appears once the image has actually decoded, and
+        // hides itself again if the load fails.
+        img.style.display = 'none';
+        img.onload = () => {
+          img.style.display = '';
+        };
+        img.onerror = () => {
+          img.style.display = 'none';
+        };
         img.alt = data.name;
-        img.style.display = '';
+        img.src = data.image;
+        // Cached images can finish before the handler is attached.
+        if (img.complete && img.naturalWidth > 0) img.style.display = '';
       } else {
         img.removeAttribute('src');
+        img.onload = null;
+        img.onerror = null;
         img.style.display = 'none';
       }
     }

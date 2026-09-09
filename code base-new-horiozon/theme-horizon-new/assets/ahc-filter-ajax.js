@@ -59,10 +59,39 @@
     if (fresh) current.replaceWith(fresh);
   }
 
+  /* ---- Drawer state across an AJAX swap ---------------------------------
+     openDrawer() puts .ahc-drawer-open on <body>, which is `overflow:hidden`.
+     Filtering replaces the whole header section, so the drawer node the close
+     handler was bound to is destroyed and closeDrawer() never runs - the body
+     class survives and the page can never be scrolled again. That hit every
+     filter click from inside the drawer, and was most obvious with the sliders
+     because they fire a filter on every drag.
+
+     Fix: remember whether the drawer was open (and how far its body was
+     scrolled) before the swap, then put it back afterwards. If it was NOT
+     open, clear the stale lock defensively. */
+  function captureDrawer() {
+    var open = document.querySelector('.ahc-drawer.is-open');
+    var body = open && open.querySelector('.ahc-drawer__body');
+    return { open: !!open, scrollTop: body ? body.scrollTop : 0 };
+  }
+
+  function restoreDrawer(state) {
+    if (state && state.open && typeof window.__ahcOpenDrawer === 'function') {
+      window.__ahcOpenDrawer();
+      var body = document.querySelector('.ahc-drawer .ahc-drawer__body');
+      if (body && state.scrollTop) body.scrollTop = state.scrollTop;
+      return;
+    }
+    // Nothing open - make sure no scroll lock was left behind.
+    document.body.classList.remove('ahc-drawer-open');
+  }
+
   function render(url, isPop) {
     if (busy) return;
     busy = true;
     setLoading(true);
+    var drawerState = captureDrawer();
 
     fetch(fetchUrl(url), { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
       .then(function (r) {
@@ -74,6 +103,7 @@
         swapById(doc, gridSection());
         swapById(doc, headerSection());
         if (typeof window.__ahcInitHeader === 'function') window.__ahcInitHeader();
+        restoreDrawer(drawerState);
         if (doc.title) document.title = doc.title;
         if (!isPop) history.pushState({ ahc: 1 }, '', url);
         setLoading(false);
@@ -81,6 +111,7 @@
         document.dispatchEvent(new CustomEvent('ahc:rendered'));
       })
       .catch(function () {
+        document.body.classList.remove('ahc-drawer-open');
         // Network/parse failure — fall back to a normal navigation so the user
         // is never stuck.
         window.location.href = url;
