@@ -277,6 +277,12 @@
   ></script>
   {%- comment -%} PDP "Aspect Fit" image height helper (desktop). {%- endcomment -%}
   <script src="{{ 'ahc-media-fit.js' | asset_url }}" defer></script>
+  {%- comment -%}
+    Keeps the lead-time / stock line beside QTY in sync with the selected
+    variant. It comes from a custom-liquid block, which Horizon does not morph
+    on variant change, so without this it only updated on a full page refresh.
+  {%- endcomment -%}
+  <script src="{{ 'hedis-leadtime-sync.js' | asset_url }}" defer></script>
   <script type="module">
     import { RecentlyViewed } from '@theme/recently-viewed-products';
     RecentlyViewed.addProduct('{{ product.id }}');
