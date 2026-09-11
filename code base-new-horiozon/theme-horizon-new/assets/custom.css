@@ -462,24 +462,42 @@ body {
   outline: 1.5px solid #1b1b1b !important;
   outline-offset: 2px !important;
 }
-/* Size (text) pills → plain text, underline when selected (reference). */
+/* Text variant options — keep each complete value together in a clean button.
+   Whole buttons wrap to the next row when the product panel runs out of room. */
 .product-information .variant-option--buttons:not(.variant-option--swatches) .variant-option__button-label {
-  border: 0 !important;
-  background: none !important;
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 38px !important;
   min-width: 0 !important;
-  padding: 0 !important;
+  max-width: 100% !important;
+  padding: 8px 14px !important;
+  border: 1px solid #b9b5af !important;
+  border-radius: 0 !important;
+  background: #fff !important;
+  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease !important;
 }
 .product-information .variant-option--buttons:not(.variant-option--swatches) .variant-option__button-label__text {
   font-family: var(--font-body--family) !important;
-  font-size: 13px !important;
-  letter-spacing: 0.08em !important;
+  font-size: 12px !important;
+  line-height: 1.25 !important;
+  letter-spacing: 0.06em !important;
   text-transform: uppercase !important;
+  white-space: nowrap !important;
+  text-wrap: nowrap !important;
   color: #4a4641 !important;
+}
+.product-information .variant-option--buttons:not(.variant-option--swatches) .variant-option__button-label:hover {
+  border-color: #1b1b1b !important;
+}
+.product-information .variant-option--buttons:not(.variant-option--swatches) .variant-option__button-label:has(input:checked) {
+  border-color: #1b1b1b !important;
+  background: #f3f1ed !important;
 }
 .product-information .variant-option--buttons:not(.variant-option--swatches) .variant-option__button-label:has(input:checked) .variant-option__button-label__text {
   color: #1b1b1b !important;
-  text-decoration: underline !important;
-  text-underline-offset: 4px !important;
+  text-decoration: none !important;
 }
 .product-information .variant-option--buttons:not(.variant-option--swatches) .variant-option__button-label__pill {
   display: none !important;
@@ -497,10 +515,14 @@ body {
   cursor: pointer !important;
   outline: none !important;
 }
-/* Remove the rounded outline ring around text sizes (reference = plain text). */
+/* The native animated pill is not needed because the label itself shows selection. */
 .product-information .variant-option--buttons:not(.variant-option--swatches) .variant-option__button-label::before {
   content: none !important;
   display: none !important;
+}
+.product-information .variant-option--buttons:not(.variant-option--swatches) .variant-option__button-label:has(input:focus-visible) {
+  outline: 2px solid #1b1b1b !important;
+  outline-offset: 2px !important;
 }
 
 /* "Order Swatches" trigger — align its left edge with where the swatch chips
