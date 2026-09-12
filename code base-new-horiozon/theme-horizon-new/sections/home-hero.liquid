@@ -7,11 +7,7 @@
     assign img_src = img | image_url: width: 2600
   endif
 -%}
-<div
-  class="hh-home"
-  id="hh-hero-{{ section.id }}"
-  style="--hh-hero-height: {{ section.settings.desktop_height }}px; --hh-hero-height-mobile: {{ section.settings.mobile_height }}px; --hh-hero-position: {{ section.settings.image_position_x }}% {{ section.settings.image_position_y }}%; --hh-hero-position-mobile: {{ section.settings.mobile_image_position_x }}% {{ section.settings.mobile_image_position_y }}%;"
->
+<div class="hh-home" id="hh-hero-{{ section.id }}">
   <section class="hh-hero">
     {%- if img_src != blank -%}
       <img class="hh-hero__img" src="{{ img_src }}" alt="{{ section.settings.heading | escape }}"
@@ -28,17 +24,14 @@
 </div>
 
 {% stylesheet %}
-  .hh-hero { position: relative; height: var(--hh-hero-height, 760px); background: #2b2722; overflow: hidden; }
-  .hh-hero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: var(--hh-hero-position, 50% 58%); }
+  .hh-hero { position: relative; height: 92vh; min-height: 600px; background: #2b2722; overflow: hidden; }
+  .hh-hero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .hh-hero__scrim { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,.65) 42%, rgba(0,0,0,1) 100%); }
   .hh-hero__in { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 24px; text-shadow: 0 2px 26px rgba(0,0,0,.55); }
   .hh-hero__in .hh-kick { color: #fff; }
   .hh-home .hh-hero__title { color: #fff; font-size: clamp(46px, 6.6vw, 96px); max-width: 16ch; }
   .hh-hero__sub { margin: 20px 0 0; color: #fff; font-size: 15px; letter-spacing: .04em; max-width: 44ch; }
-  @media (max-width: 749px) {
-    .hh-hero { height: var(--hh-hero-height-mobile, 620px); }
-    .hh-hero__img { object-position: var(--hh-hero-position-mobile, 50% 52%); }
-  }
+  @media (max-width: 600px) { .hh-hero { height: 84vh; } }
 {% endstylesheet %}
 
 {% schema %}
@@ -49,12 +42,6 @@
     { "type": "header", "content": "Background image" },
     { "type": "image_picker", "id": "image", "label": "Image" },
     { "type": "text", "id": "image_url", "label": "Or image URL (fallback)", "default": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/huxley-sofa-in-modern-spacious-living-room-with-natural-light-fulfily-0.jpg?v=1780164479" },
-    { "type": "range", "id": "desktop_height", "label": "Desktop height", "min": 560, "max": 1000, "step": 20, "unit": "px", "default": 760 },
-    { "type": "range", "id": "mobile_height", "label": "Mobile height", "min": 440, "max": 800, "step": 20, "unit": "px", "default": 620 },
-    { "type": "range", "id": "image_position_x", "label": "Desktop image position — left/right", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 50 },
-    { "type": "range", "id": "image_position_y", "label": "Desktop image position — up/down", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 58 },
-    { "type": "range", "id": "mobile_image_position_x", "label": "Mobile image position — left/right", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 50 },
-    { "type": "range", "id": "mobile_image_position_y", "label": "Mobile image position — up/down", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 52 },
     { "type": "range", "id": "overlay", "label": "Image darkness", "min": 0, "max": 100, "step": 5, "unit": "%", "default": 55 },
     { "type": "header", "content": "Text" },
     { "type": "text", "id": "kicker", "label": "Kicker", "default": "Hedi's Furniture" },
