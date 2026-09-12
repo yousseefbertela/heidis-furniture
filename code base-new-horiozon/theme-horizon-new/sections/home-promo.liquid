@@ -8,7 +8,11 @@
   endif
   assign tc = section.settings.text_color
 -%}
-<div class="hh-home" id="hh-promo-{{ section.id }}">
+<div
+  class="hh-home"
+  id="hh-promo-{{ section.id }}"
+  style="--hh-promo-height: {{ section.settings.desktop_height }}px; --hh-promo-height-mobile: {{ section.settings.mobile_height }}px; --hh-promo-position: {{ section.settings.image_position_x }}% {{ section.settings.image_position_y }}%; --hh-promo-position-mobile: {{ section.settings.mobile_image_position_x }}% {{ section.settings.mobile_image_position_y }}%;"
+>
   <section class="hh-promo hh-rv">
     {%- if img_src != blank -%}
       <img class="hh-promo__img" src="{{ img_src }}" alt="{{ section.settings.heading | escape }}" loading="lazy"
@@ -24,15 +28,18 @@
 </div>
 
 {% stylesheet %}
-  .hh-promo { position: relative; min-height: 90vh; overflow: hidden; background: #2b2722; }
-  .hh-promo__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 8%; }
+  .hh-promo { position: relative; height: var(--hh-promo-height, 760px); overflow: hidden; background: #2b2722; }
+  .hh-promo__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: var(--hh-promo-position, 50% 60%); }
   .hh-promo__veil { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(0,0,0,.58) 0%, rgba(0,0,0,.32) 24%, rgba(0,0,0,0) 54%); pointer-events: none; }
   .hh-promo__in { position: absolute; top: 8%; left: 0; right: 0; z-index: 2; text-align: center; padding: 0 24px; text-shadow: 0 2px 22px rgba(0,0,0,.6); }
   .hh-promo__kick { margin: 0 0 16px; font-size: 11px; letter-spacing: .3em; text-transform: uppercase; }
   .hh-home .hh-promo__h { font-size: clamp(40px, 5.6vw, 86px); line-height: 1.0; }
   .hh-promo__btn { display: inline-block; margin-top: 28px; background: #fff; color: #2a2722; border: 1px solid #fff; padding: 17px 44px; font-size: 11px; letter-spacing: .22em; text-transform: uppercase; transition: all .4s ease; text-shadow: none; box-shadow: 0 2px 18px rgba(0,0,0,.18); }
   .hh-promo__btn:hover { background: transparent; color: #fff; border-color: #fff; box-shadow: none; text-shadow: 0 2px 12px rgba(0,0,0,.5); }
-  @media (max-width: 600px) { .hh-promo { min-height: 80vh; } }
+  @media (max-width: 749px) {
+    .hh-promo { height: var(--hh-promo-height-mobile, 620px); }
+    .hh-promo__img { object-position: var(--hh-promo-position-mobile, 50% 52%); }
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -43,6 +50,12 @@
     { "type": "header", "content": "Background image" },
     { "type": "image_picker", "id": "image", "label": "Image" },
     { "type": "text", "id": "image_url", "label": "Or image URL (fallback)", "default": "https://cdn.shopify.com/s/files/1/0560/2600/5592/files/modern-coastal-interior-dining-space-with-teak-table-fulfily-2.jpg?v=1778011164" },
+    { "type": "range", "id": "desktop_height", "label": "Desktop height", "min": 560, "max": 1000, "step": 20, "unit": "px", "default": 760 },
+    { "type": "range", "id": "mobile_height", "label": "Mobile height", "min": 440, "max": 800, "step": 20, "unit": "px", "default": 620 },
+    { "type": "range", "id": "image_position_x", "label": "Desktop image position — left/right", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 50 },
+    { "type": "range", "id": "image_position_y", "label": "Desktop image position — up/down", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 60 },
+    { "type": "range", "id": "mobile_image_position_x", "label": "Mobile image position — left/right", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 50 },
+    { "type": "range", "id": "mobile_image_position_y", "label": "Mobile image position — up/down", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 52 },
     { "type": "header", "content": "Text" },
     { "type": "text", "id": "kicker", "label": "Kicker", "default": "New Season" },
     { "type": "text", "id": "heading", "label": "Heading", "default": "The Autumn Collection" },
